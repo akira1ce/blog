@@ -1,0 +1,384 @@
+---
+title: '使用 Next.js 构建博客'
+category: ['mdxjs', 'nextjs']
+slug: 'build-blog-with-nextjs'
+date: '2025-06-13 19:00'
+summary: '一个使用 Next.js 和 MDX 构建的现代化博客系统，支持主题切换、代码高亮和页面过渡动画'
+---
+
+# 目录结构
+
+```bash
+blog
+├─ public
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ logo.jpg
+│  ├─ next.svg
+│  ├─ vercel.svg
+│  └─ window.svg
+├─ src
+│  ├─ app
+│  │  ├─ [slug]
+│  │  │  └─ page.tsx
+│  │  ├─ about
+│  │  │  └─ page.tsx
+│  │  ├─ components
+│  │  │  └─ header.tsx
+│  │  ├─ favicon.ico
+│  │  ├─ globals.css
+│  │  ├─ layout.tsx
+│  │  ├─ page.tsx
+│  │  └─ posts
+│  │     └─ page.tsx
+│  ├─ components
+│  │  ├─ FadeInUp.tsx
+│  │  ├─ theme-provider.tsx
+│  │  └─ theme-toggle.tsx
+│  ├─ lib
+│  │  ├─ posts.ts
+│  │  └─ utils.ts
+│  └─ posts
+│     ├─ build-blog-with-nextjs.mdx
+│     ├─ motion.mdx
+│     ├─ nextjs.mdx
+│     └─ react-core.mdx
+├─ .prettierrc
+├─ mdx-components.tsx
+├─ next.config.mjs
+├─ package.json
+├─ postcss.config.mjs
+├─ tailwind.config.ts
+├─ tsconfig.json
+└─ yarn.lock
+```
+
+mdx 文章存放在 `@/posts` 通过 fs 读取。
+
+由于选择了 tailwindcss 会导致一些基本的dom样式丢失。
+
+比如说 h1 h2 p li 等等。
+
+这里采用的方案是使用官方工具 `@tailwindcss/typography`
+
+yarn add @tailwindcss/typography -D
+
+通过 @plugin 加载插件。
+
+> 这里是tailwind4的新功能，实际作用和在 tailwindcss.config.ts 中配置是一样的。
+
+```css
+@plugin "@tailwindcss/typography";
+```
+
+然后在 article 上加上内置的类名即可。
+
+具体用法查看：[@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography)
+
+暗色模式直接通过 class 控制。
+
+```html
+<article className="prose dark:prose-invert">
+```
+
+# mdx 渲染
+
+[mdx-in-nextjs](https://nextjs.org/docs/app/guides/mdx)
+
+基本上就是按照官方文档来。
+
+值得注意是，最好不要使用 turbopack 去构建，有些插件可能无法使用。
+
+> 目前由于无法将 JavaScript 函数传递给 Rust，因此在 Turbopack 中还不能使用带有非序列化选项的 remark 和 rehype 插件
+
+## 安装 mdx 相关包
+```bash
+
+yarn add @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+
+# 安装 rehype、remark 插件
+yarn add rehype-slug rehype-pretty-code remark-frontmatter remark-gfm
+```
+
+## 配置 mdx-components.tsx
+
+根目录下创建 mdx-components.tsx 文件。
+
+```tsx
+/* mdx-components.tsx */
+import type { MDXComponents } from 'mdx/types';
+
+export function useMDXComponents(components: MDXComponents): MDXComponents {
+  return { ...components };
+}
+```
+
+## 配置 next.config.mjs
+
+注意这里必须是 ESM 模块，mjs 才可以，否则会报错。
+
+主要原因是因为 rehype-pretty-code 依赖的 shiki 包是 ESM 模块。
+
+> This package is ESM-only and currently supports shiki ^1.0.0.
+>
+> To use the latest version in Next.js, ensure your config file is ESM: next.config.mjs. Here’s a full example: rehype-pretty-code/examples/next/next.config.mjs
+
+
+```tsx
+/* next.config.mjs */
+/**
+ * @typedef {import('next').NextConfig} NextConfig
+ * @typedef {Array<((config: NextConfig) => NextConfig)>} NextConfigPlugins
+ */
+import nextMDX from '@next/mdx';
+import rehypeSlug from 'rehype-slug';
+import rehypePrettyCode from 'rehype-pretty-code';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+
+/** @type {NextConfig} */
+const nextConfig = {
+  cleanDistDir: true,
+  reactStrictMode: true,
+  poweredByHeader: false,
+  pageExtensions: ['md', 'mdx', 'tsx', 'ts', 'jsx', 'js'],
+};
+
+/** @type {import('rehype-pretty-code').Options} */
+const options = {
+  /* 是否保留背景色 */
+  keepBackground: false,
+  defaultLang: 'plaintext',
+  /* 是否跳过内联代码 */
+  bypassInlineCode: true,
+};
+
+const withMDX = nextMDX({
+  extension: /\.(md|mdx)$/,
+  options: {
+    /* 解析 frontmatter & 解析 gfm */
+    remarkPlugins: [remarkFrontmatter, remarkGfm],
+    /* 代码高亮 & 锚点 */
+    rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
+  },
+});
+
+export default withMDX(nextConfig);
+
+```
+
+## 渲染 mdx 文件
+
+直接通过 import 导入 mdx 文件，在 jsx 中渲染。
+
+```tsx
+export interface Params {
+  slug: string;
+}
+
+interface Props {
+  params: Promise<Params>;
+}
+
+export default async function Page({ params }: Props) {
+  const { slug } = await params;
+
+  const { default: Post } = await import(`@/posts/${slug}.mdx`);
+
+  return (
+    <article className="prose dark:prose-invert mx-auto max-w-4xl px-6 py-8">
+      <Post />
+    </article>
+  );
+}
+```
+
+
+# Dark Mode
+
+## tailwindcss
+
+核心： 
+
+1. 将 dark-mode 转为 class 模式。
+
+2. 通过 css 变量控制，深色浅色模式变化。
+
+> tailwind4 中新增通过 @指令 方式去设置 tailwindcss 配置。
+>
+> 实际效果和在config.ts 配置一样。
+
+```css
+/* /src/app/globals.css */
+
+/* tailwindcss-directives */
+@import 'tailwindcss';
+/* 加载插件 */
+@plugin "@tailwindcss/typography";
+
+/* dark-mode -> class: dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html.light {
+    /* Light theme variables */
+    --bg-main: #ffffff;
+    --bg-fore: #09090b;
+    --bg-card: #fafafa;
+  }
+
+  html.dark {
+    /* Dark theme variables */
+    --bg-main: #09090b;
+    --bg-fore: #ffffff;
+    --bg-card: #18181b;
+  }
+}
+
+/* @theme inline 指令 - 允许使用 var() 函数 */
+/* 将 css 变量映射到 tailwindcss 中 */
+/* colors 会自动生成到 [bg-*,text-*,shadow-*,...] */
+/* 通过 className={'bg-main text-fore'} 使用 */
+@theme inline {
+  --color-main: var(--bg-main);
+  --color-fore: var(--bg-fore);
+  --color-card: var(--bg-card);
+}
+```
+
+## nextjs
+
+通过 next-themes 包实现。
+
+`yarn add next-themes`
+
+### theme-provider
+
+```tsx
+/* /src/app/components/theme-provider.tsx */
+'use client';
+
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import type { ThemeProviderProps } from 'next-themes';
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}
+
+```
+
+### theme-toggle
+
+
+```tsx
+/* /src/app/components/theme-toggle.tsx */
+
+'use client';
+
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  /* 切换主题 */
+  const handleThemeToggle = () => {
+    const switchTheme = () => {
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    };
+
+    /* 使用 startViewTransition 实现动画 */
+    if (!document.startViewTransition) switchTheme();
+    else document.startViewTransition(switchTheme);
+  };
+
+  /* 确保组件挂载后再渲染，避免水合不匹配 */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <button className="flex h-9 w-9 items-center justify-center rounded-md">
+        <div className="h-4 w-4" />
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleThemeToggle}
+      className="bg-main hover:bg-fore/10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120"
+      aria-label="切换主题"
+    >
+      {theme === 'dark' ? (
+        <Sun className="text-fore dark:text-fore h-4 w-4" />
+      ) : (
+        <Moon className="text-fore dark:text-fore h-4 w-4" />
+      )}
+    </button>
+  );
+}
+```
+
+### layout
+
+```tsx
+/* /src/app/layout.tsx */
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-main min-h-screen w-screen antialiased`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          <main className="m-auto w-3/4 flex-1 py-4">{children}</main>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+### view-transition
+
+通过 view-transition 实现页面切换动画。
+
+```css
+::view-transition-group(root) {
+  animation-timing-function: var(--expo-out);
+}
+
+::view-transition-new(root) {
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="0" cy="0" r="18" fill="white" filter="url(%23blur)"/></svg>')
+    top left / 0 no-repeat;
+  mask-origin: content-box;
+  animation: scale 1s;
+  transform-origin: top left;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: scale 1s;
+  transform-origin: top left;
+  z-index: -1;
+}
+
+@keyframes scale {
+  to {
+    mask-size: 350vmax;
+  }
+}
+```
