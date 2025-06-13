@@ -10,13 +10,13 @@ const Page = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {posts.map((post, index) => (
           <FadeInUp
-            className="bg-card col-span-1 rounded-xl p-4 shadow"
+            className="bg-card col-span-1 rounded-xl shadow"
             key={post.slug}
             delay={index * 0.1}
           >
-            <Link href={`/${post.slug}`}>
+            <Link className="flex flex-col gap-2 p-4" href={`/${post.slug}`}>
               <div className="text-fore text-lg font-bold">{post.title}</div>
-              <div className="text-fore text-sm">{post.summary}</div>
+              <div className="text-fore/50 text-sm">{post.summary}</div>
             </Link>
           </FadeInUp>
         ))}
