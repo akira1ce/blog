@@ -26,6 +26,7 @@
   --color-card: var(--bg-card);
 }
 
+/* view-transition */
 ::view-transition-group(root) {
   animation-timing-function: var(--expo-out);
 }
@@ -49,4 +50,31 @@
   to {
     mask-size: 350vmax;
   }
+}
+
+/* prose-code-font */
+
+/* 确保 prose 中的代码元素使用正确的字体 */
+.prose code,
+.prose pre,
+.prose pre code,
+.prose :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  font-family: inherit !important;
+}
+
+.prose :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  font-family: inherit !important;
+}
+
+/* 针对 rehype-pretty-code 生成的代码块 */
+.prose [data-rehype-pretty-code-fragment] pre,
+.prose [data-rehype-pretty-code-fragment] code,
+.prose [data-rehype-pretty-code-title],
+.prose [data-rehype-pretty-code-caption] {
+  font-family: inherit !important;
+}
+
+/* 确保内联代码和代码块都使用正确字体 */
+.prose :not(pre) > code {
+  font-family: inherit !important;
 }
