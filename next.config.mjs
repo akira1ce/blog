@@ -5,9 +5,8 @@
 import nextMDX from '@next/mdx';
 import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
-
-/** @type {NextConfigPlugins} */
-const plugins = [];
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
 
 /** @type {NextConfig} */
 const nextConfig = {
@@ -19,17 +18,19 @@ const nextConfig = {
 
 /** @type {import('rehype-pretty-code').Options} */
 const options = {
+  /* 是否保留背景色 */
   keepBackground: false,
+  defaultLang: 'plaintext',
+  /* 是否跳过内联代码 */
+  bypassInlineCode: true,
 };
 
-plugins.push(
-  nextMDX({
-    extension: /\.(md|mdx)$/,
-    options: {
-      remarkPlugins: [],
-      rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
-    },
-  }),
-);
+const withMDX = nextMDX({
+  extension: /\.(md|mdx)$/,
+  options: {
+    remarkPlugins: [remarkFrontmatter, remarkGfm],
+    rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
+  },
+});
 
-export default () => plugins.reduce((_, plugin) => plugin(_), nextConfig);
+export default withMDX(nextConfig);
