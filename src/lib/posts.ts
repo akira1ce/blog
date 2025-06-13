@@ -1,8 +1,8 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
 
-const POSTS_DIR = path.join(process.cwd(), "src/posts");
+const POSTS_DIR = path.join(process.cwd(), 'src/posts');
 
 export interface FrontMatter {
   title: string;
@@ -19,7 +19,7 @@ export function getAllPosts(): FrontMatter[] {
 
   const files = fs.readdirSync(POSTS_DIR);
   _cache = files.map((file) => {
-    const raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf-8");
+    const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8');
     const { data } = matter(raw);
     return {
       ...(data as FrontMatter),
