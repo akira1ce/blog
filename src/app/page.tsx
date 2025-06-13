@@ -13,9 +13,6 @@ const Page = () => {
       <FadeInUp className="text-md text-gray-500 dark:text-gray-400" delay={0.75}>
         A web developer · Lifelong learner · CS enthusiasts
       </FadeInUp>
-      <FadeInUp className="mt-4 text-sm text-gray-400 dark:text-gray-500" delay={1}>
-        💡 点击右上角按钮切换暗色模式
-      </FadeInUp>
     </div>
   );
 };
