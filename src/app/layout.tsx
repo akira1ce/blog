@@ -28,7 +28,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <main className="m-auto w-3/4 flex-1 py-4">{children}</main>
+          <main className="m-auto w-3/4 py-4">{children}</main>
         </ThemeProvider>
       </body>
     </html>
