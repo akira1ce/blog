@@ -11,11 +11,11 @@ export default async function Page({ params }: Props) {
 
   const { default: Post } = await import(`@/posts/${slug}.mdx`);
 
-  return <Post />;
-}
-
-export function generateStaticParams() {
-  return [];
+  return (
+    <article className="prose dark:prose-invert mx-auto max-w-4xl px-6 py-8">
+      <Post />
+    </article>
+  );
 }
 
 // export const dynamicParams = false;
