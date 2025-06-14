@@ -1,0 +1,363 @@
+---
+title: js utility functions collection
+category: ['javascript']
+slug: js-utility-functions-collection
+date: 2024-08-30
+summary: 汇总平时开发中收集的实用 JavaScript 工具函数。
+---
+
+
+# clsx & twMerge
+
+结合 clsx 和 twMerge。
+
+```ts
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(...inputs));
+};
+```
+
+# formatter
+
+## formatTimeToChatTime
+
+时间转换
+
+```TypeScript
+export const formatTimeToChatTime = (time: Date) => {
+  const now = dayjs();
+  const target = dayjs(time);
+
+  // 如果传入时间小于60秒，返回刚刚
+  if (now.diff(target, 'second') < 60) {
+    return 'common.time.Just now';
+  }
+
+  // 如果时间是今天，展示几时:几分
+  if (now.isSame(target, 'day')) {
+    return target.format('HH:mm');
+  }
+
+  // 如果是昨天，展示昨天
+  if (now.subtract(1, 'day').isSame(target, 'day')) {
+    return 'common.time.Yesterday';
+  }
+
+  // 如果是前天，展示前天
+  if (now.subtract(2, 'day').isSame(target, 'day')) {
+    return 'common.time.The day before yesterday';
+  }
+
+  // 如果是今年，展示某月某日
+  if (now.isSame(target, 'year')) {
+    return target.format('MM/DD');
+  }
+
+  // 如果是更久之前，展示某年某月某日
+  return target.format('YYYY/M/D');
+};
+```
+
+## mergeTableCol
+
+antd-table 列合并
+
+```ts
+/**
+ * antd-table 合并列
+ * @param {any[]} array
+ * @param {string} key
+ * @returns
+ */
+export function mergeTableCol(array = [], key) {
+  array = sortBy(array, key);
+  let count = 0;
+  let indexCount = 1;
+  while (indexCount < array.length) {
+    const item = array.slice(count, count + 1)[0];
+    if (!item.rowSpan) item.rowSpan = 1;
+    if (item[key] === array[indexCount][key]) {
+      item.rowSpan++;
+      array[indexCount].rowSpan = 0;
+    } else {
+      count = indexCount;
+    }
+    indexCount++;
+  }
+  return [...array];
+}
+```
+
+## buildTree
+
+片平数组构建树结构
+
+```ts
+import { groupBy } from 'lodash';
+
+interface FlatItem {
+  [key: string]: any;
+}
+
+interface BuildTreeOptions {
+  /* 主键 */
+  idKey?: string;
+  /* 父级主键 */
+  parentIdKey?: string;
+  /* 子级 */
+  childrenKey?: string;
+  /* 根节点 */
+  rootParentId?: any;
+}
+
+/* 构建树 */
+export const buildTree = <T extends FlatItem>(list: T[], options: BuildTreeOptions = {}): T[] => {
+  const { idKey = 'id', parentIdKey = 'parentId', childrenKey = 'children', rootParentId = null } = options;
+
+  const grouped = groupBy(list, parentIdKey);
+
+  function build(parentId: any): T[] {
+    return (grouped[parentId] || []).map((item) => ({
+      ...item,
+      [childrenKey]: build(item[idKey]),
+    }));
+  }
+
+  return build(rootParentId);
+};
+```
+
+# function
+
+## 带返回的函数防抖
+
+常规防抖
+
+```TypeScript
+function debounce( callback, delay = 300 ){
+    let timer;
+    return ( ...args ) => {
+      clearTimeout( timer );
+      timer = setTimeout( () => {
+        callback( ...args );
+      }, delay );
+    }
+}
+```
+
+问题：无法获取到函数的返回值。
+
+原因：callback 在 settimeout 中执行，返回值自然是没办法返回给使用者的。
+
+> 但实际上，一个函数在一段时间内不一定执行，也不应该拿到期待的返回值。
+
+**解决方案**
+
+1. 回调函数中传递
+2. promise resolve
+
+**回调函数中传递**
+
+这种方式后续的操作都需要在回调中处理。
+
+```TypeScript
+import { debounce } from "lodash-es";
+
+const test = (callback) => {
+  console.log("test");
+  
+  let returnValue = 100
+  callback && callback(returnValue);
+  
+  return returnValue
+};
+
+const debouncedTest = debounce(test, 100);
+
+console.log(
+  "return",
+  debouncedTest((value) => {
+    console.log(value);
+  })
+);
+```
+
+**promise resolve**
+
+将含有返回值的函数当做异步函数对待，通过 promise 承接返回值。
+
+```TypeScript
+function debounceWithReturn( callback, delay ) {
+  let timer;
+
+  return( ...args ) => {
+    return new Promise( ( resolve, reject ) => {
+      clearTimeout(timer);
+      timer = setTimeout( () => {
+          try {
+            let output = callback(...args);
+            resolve( output );
+          } catch ( err ) {
+            reject( err );
+          }
+      }, delay );
+    })
+
+  }
+}
+
+// demo
+const func =  val => {
+  console.log(val)
+  return val
+};
+
+const func1 = debounce(func, 1000);
+
+const a = () => {
+  let t;
+  t =  func1(1);
+  t =  func1(2);
+  t =  func1(3);
+  console.log('akira', t.then(res => console.log('then', res)));
+};
+
+a();
+```
+
+# request
+
+## transParams
+
+将 params 转换为 query 参数，用于拼接在 url 上。
+
+```ts
+/**
+ * 将参数转换为 query 字符串
+ * @param params - 需要转换的参数对象
+ * @returns 转换后的 query 字符串
+ */
+export function transParams(params: Record<string, any>): string {
+  let result = "";
+
+  for (const propName of Object.keys(params)) {
+    const value = params[propName];
+    const part = encodeURIComponent(propName) + "=";
+
+    if (value !== null && value !== "" && typeof value !== "undefined") {
+      if (typeof value === "object") {
+        for (const key of Object.keys(value)) {
+          if (value[key] !== null && value[key] !== "" && typeof value[key] !== "undefined") {
+            const paramKey = `${propName}[${key}]`;
+            const subPart = encodeURIComponent(paramKey) + "=";
+            result += subPart + encodeURIComponent(value[key]) + "&";
+          }
+        }
+      } else {
+        result += part + encodeURIComponent(value) + "&";
+      }
+    }
+  }
+
+  return result;
+}
+```
+
+## download
+
+```ts
+/**
+ * 下载文件
+ * @param url - 文件下载地址
+ * @param filename - 下载后的文件名
+ */
+export function download(url: string, filename: string) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
+ * 下载 Blob 数据
+ * @param blob - Blob 数据
+ * @param filename - 下载后的文件名
+ */
+export function downloadBlob(blob: Blob, filename: string) {
+  const url = window.URL.createObjectURL(blob);
+  download(url, filename);
+  window.URL.revokeObjectURL(url);
+}
+
+/**
+ * 下载文本内容
+ * @param content - 文本内容
+ * @param filename - 下载后的文件名
+ */
+export function downloadText(content: string, filename: string) {
+  const blob = new Blob([content], { type: "text/plain" });
+  downloadBlob(blob, filename);
+}
+```
+
+# tree
+
+## buildTree
+
+将拍平的数组转换为树状结构
+
+```js
+export function buildTree(data,key="children"){
+  const result = []
+  const map = {}
+  data.forEach((value,index)=>{
+    map[value.id] = value
+  })
+  data.forEach((value,index)=>{
+    if(value.pid){
+      const parent = map[value.pid];
+      if(!parent.hasOwnProperty(key)){
+        parent[key] = []
+      }
+      parent[key].push(value)
+    }else{
+      result.push(value)
+    }
+  })
+  return result;
+}
+```
+
+## filterTree
+
+根据条件过滤树，子项包含符合条件的子项，则返回其以及其父级。
+
+```js
+export function filterTree(treeData, filter, childrenKey = "children") {
+  const loop = (data) => {
+    return data
+      .map((item) => {
+        const children = item[childrenKey];
+        const hasMatched = filter(item);
+        const hasMatchingChildren = children && children.some((child) => loop([child])?.length > 0);
+
+        if (hasMatched || hasMatchingChildren) {
+          return {
+            ...item,
+            [childrenKey]: children ? loop(children) : undefined,
+          };
+        }
+
+        return null;
+      })
+      .filter((item) => item !== null);
+  };
+  return loop(treeData);
+}
+```

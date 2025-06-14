@@ -1,0 +1,167 @@
+---
+title: tag-input component
+category: ['react', 'components']
+slug: conponent-tag-input-component
+date: 2024-10-05
+summary: 封装一个支持多标签输入和删除的 tag-input 组件。
+---
+
+
+# TagInput
+
+用于 Form.Item 下的受控组件。
+
+可动态添加的 tag。
+
+```tsx
+import React, { useEffect, useRef, useState } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
+import { Flex, Input, Tag, Tooltip, theme } from 'antd';
+import type { InputRef } from 'antd';
+
+export interface TagInputProps {
+  value?: string[];
+  onChange?: (val: string[]) => void;
+}
+
+const tagInputStyle = {
+  width: 64,
+  height: 22,
+  marginInlineEnd: 8,
+  verticalAlign: 'top',
+};
+
+const TagInput: React.FC<TagInputProps> = ({ value = [], onChange }) => {
+  const { token } = theme.useToken();
+  const [tags, setTags] = useState<string[]>(value);
+  const [inputVisible, setInputVisible] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [editInputIndex, setEditInputIndex] = useState(-1);
+  const [editInputValue, setEditInputValue] = useState('');
+
+  const inputRef = useRef<InputRef>(null);
+  const editInputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    if (inputVisible) {
+      inputRef.current?.focus();
+    }
+  }, [inputVisible]);
+
+  useEffect(() => {
+    editInputRef.current?.focus();
+  }, [editInputValue]);
+
+  useEffect(() => {
+    setTags(value);
+  }, [value]);
+
+  const triggerChange = (newTags: string[]) => {
+    setTags(newTags);
+    onChange?.(newTags);
+  };
+
+  const handleClose = (removedTag: string) => {
+    const newTags = tags.filter((tag) => tag !== removedTag);
+    triggerChange(newTags);
+  };
+
+  const showInput = () => setInputVisible(true);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputConfirm = () => {
+    const newTag = inputValue.trim();
+    if (newTag && !tags.includes(newTag)) {
+      triggerChange([...tags, newTag]);
+    }
+    setInputVisible(false);
+    setInputValue('');
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditInputValue(e.target.value);
+  };
+
+  const handleEditInputConfirm = () => {
+    const newTags = [...tags];
+    if (editInputValue.trim()) {
+      newTags[editInputIndex] = editInputValue.trim();
+      triggerChange(newTags);
+    }
+    setEditInputIndex(-1);
+    setEditInputValue('');
+  };
+
+  const tagPlusStyle = {
+    height: 22,
+    background: token.colorBgContainer,
+    borderStyle: 'dashed',
+    cursor: 'pointer',
+  };
+
+  return (
+    <Flex gap="4px 0" wrap>
+      {tags.map((tag, index) => {
+        if (editInputIndex === index) {
+          return (
+            <Input
+              ref={editInputRef}
+              key={tag}
+              size="small"
+              style={tagInputStyle}
+              value={editInputValue}
+              onChange={handleEditInputChange}
+              onBlur={handleEditInputConfirm}
+              onPressEnter={handleEditInputConfirm}
+            />
+          );
+        }
+
+        const isLongTag = tag.length > 20;
+        const tagElem = (
+          <Tag key={tag} closable style={{ userSelect: 'none' }} onClose={() => handleClose(tag)}>
+            <span
+              onDoubleClick={(e) => {
+                setEditInputIndex(index);
+                setEditInputValue(tag);
+                e.preventDefault();
+              }}
+            >
+              {isLongTag ? `${tag.slice(0, 20)}...` : tag}
+            </span>
+          </Tag>
+        );
+
+        return isLongTag ? (
+          <Tooltip title={tag} key={tag}>
+            {tagElem}
+          </Tooltip>
+        ) : (
+          tagElem
+        );
+      })}
+      {inputVisible ? (
+        <Input
+          ref={inputRef}
+          type="text"
+          size="small"
+          style={tagInputStyle}
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputConfirm}
+          onPressEnter={handleInputConfirm}
+        />
+      ) : (
+        <Tag style={tagPlusStyle} icon={<PlusOutlined />} onClick={showInput}>
+          添加
+        </Tag>
+      )}
+    </Flex>
+  );
+};
+
+export default TagInput;
+```

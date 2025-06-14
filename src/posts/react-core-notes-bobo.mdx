@@ -1,16 +1,17 @@
 ---
-title: react core
-category: ["react", "core"]
-slug: "react-core"
-date: 2023-12-05
-summary: 探索 React 内部的并发模式、任务调度与更新机制
+title: react core notes bobo
+category: ['react', 'core']
+slug: react-core-notes-bobo
+date: 2024-10-22
+summary: 深入剖析 React 源码结构与核心原理，帮助理解框架设计与实现细节。
 ---
+
 
 # 并发
 
-早期单线程 -> **时间切片** -> 快速任务切换 -> **并发模式**
+早期单线程 -> **时间切片** -> 快速任务切换 ->  **并发模式**
 
-随着硬件的革新 -> 多核 CPU -> 多任务执行 -> **并行**
+随着硬件的革新 -> 多核CPU -> 多任务执行 -> **并行**
 
 而并发模式的含义，也随着发现了一些转变，现在，我们把**多个执行单位，对单一执行资源的竞争，叫做并发**。
 
@@ -57,7 +58,7 @@ dispatchSetState -> 「触发状态更新」
 dispatchSetStateInternal ->  「将更新内容合并成 update 对象，挂载到 fiber 上」
 scheduleUpdateOnFiber -> 「确定是否需要触发调度器进行状态更新」
 ensureRootIsScheduled -> 「确保某个根节点的更新任务已经被调度，并会将更新任务推送到调度队列 - 通知根节点有一个更新产生」
-scheduleImmediateTask ->
+scheduleImmediateTask -> 
 processRootScheduleInMicrotask ->
 scheduleTaskForRootDuringMicrotask -> 「转换优先级」
 scheduleCallback(schedulerPriorityLevel, schedulerPriorityLevel, performWorkOnRootViaSchedulerTask.bind(null, root)) -> 「将更新任务推送到任务队列 & 开始循环任务队列」
@@ -84,6 +85,7 @@ if (!didScheduleMicrotask) {
 
 核心作用在于**合并**多次更新，也就是**批处理**。
 
+
 **什么时候会被调用：**
 
 1. 当组件调用 setState 或使用 hooks 进行状态更新时
@@ -95,10 +97,10 @@ if (!didScheduleMicrotask) {
 7. 在批量更新结束时
 
 ```js
-setCounter();
-setCounter();
-setCounter();
-setCounter();
+setCounter()
+setCounter()
+setCounter()
+setCounter()
 ```
 
 每一个 setCounter 最终对应的是一次自顶向下的完整的 diff 更新过程。如果不进行合并，会存巨大的性能问题。
@@ -108,7 +110,7 @@ setCounter();
 setter x N -> microQueue -> taskqueue
 
 > 为什么是微任务？
->
+> 
 > 要合并多个 setCounter，则需要合并逻辑尽量在最后一个 setCounter 之后。前面都是进入队列进行收集等待。但是因为我们并不知道在一轮函数调用栈中，最后一个 setCounter 到底是哪一个。但是我们可以非常确定的知道，在事件循环中，微任务队列是在函数调用栈清空之后才开始执行的，所以这里是一个非常适合的时机。
 
 每次 setter 之后执行 dispatchSetStateInternal，会把更新内容合并到 update 对象，最终挂载到 fiber 上。
@@ -129,7 +131,7 @@ function unstable_scheduleCallback(
   priorityLevel: PriorityLevel,
   /* 任务回调 */
   callback: Callback,
-  options?: { delay: number }
+  options?: {delay: number},
 ): Task {
   // ...
 }
@@ -142,7 +144,7 @@ function unstable_scheduleCallback(
 ## 调用链路
 
 scheduleCallback -> 「将任务加入队列 & 开启循环队列」
-requestHostCallback -> schedulePerformWorkUntilDeadline -> 「类似 settimeout(performWorkUntilDeadline, 0)，开启循环」
+requestHostCallback -> schedulePerformWorkUntilDeadline -> 「类似settimeout(performWorkUntilDeadline, 0)，开启循环」
 performWorkUntilDeadline -> flushwork -> workloop 「开始递归任务」
 
 ```js
@@ -157,12 +159,12 @@ function requestHostCallback() {
 
 /* 类似 settimeout(performWorkUntilDeadline, 0) -> 宏任务中开始循环任务队列 */
 let schedulePerformWorkUntilDeadline;
-if (typeof localSetImmediate === "function") {
+if (typeof localSetImmediate === 'function') {
   // Node.js 或者 老版本的 IE
   schedulePerformWorkUntilDeadline = () => {
     localSetImmediate(performWorkUntilDeadline);
   };
-} else if (typeof MessageChannel !== "undefined") {
+} else if (typeof MessageChannel !== 'undefined') {
   // DOM and Worker environments.
   // We prefer MessageChannel because of the 4ms setTimeout clamping.
   const channel = new MessageChannel();
@@ -238,24 +240,24 @@ function workLoop(initialTime: number) {
 
     // 执行回调
     const callback = currentTask.callback;
-    if (typeof callback === "function") {
+    if (typeof callback === 'function') {
       currentTask.callback = null;
       currentPriorityLevel = currentTask.priorityLevel;
       const didUserCallbackTimeout = currentTask.expirationTime <= currentTime;
-
+      
       /**
        * 执行任务回调
        * 这里的返回值实际上也是 callback，是因为在循环 fiber 链表的过程也可能会中断，所以这里需要记录下来，等待下一次执行
-       */
+      */
       const continuationCallback = callback(didUserCallbackTimeout);
-
+      
       // 处理任务结果
-      if (typeof continuationCallback === "function") {
+      if (typeof continuationCallback === 'function') {
         currentTask.callback = continuationCallback;
         return true; // 还有工作要做 - 重新入队
       }
     }
-
+    
     /* 处理下一个任务 */
     currentTask = peek(taskQueue);
   }
@@ -267,7 +269,7 @@ function workLoop(initialTime: number) {
 /**
  * 1. 清理掉被取消的延迟任务
  * 2. 将符合执行条件的任务换个优先级队列 timerQueue -> taskQueue
- */
+*/
 function advanceTimers(currentTime: number) {
   // Check for tasks that are no longer delayed and add them to the queue.
   let timer = peek(timerQueue);
@@ -347,7 +349,7 @@ const performWorkUntilDeadline = () => {
 };
 ```
 
-`schedulePerformWorkUntilDeadline -> performWorkUntilDeadline -> flushWork -> workLoop --{maybe shouldYield}-> schedulePerformWorkUntilDeadline`
+schedulePerformWorkUntilDeadline -> performWorkUntilDeadline -> flushWork -> workLoop --\{maybe shouldYield}-> schedulePerformWorkUntilDeadline
 
 flushWork -> workLoop 可能存在中断，会返回是否还有剩余任务标识，存在剩余任务则继续递归调用 schedulePerformWorkUntilDeadline
 
@@ -416,7 +418,7 @@ if (prevPendingTransitionCallbacks !== null) {
     processTransitionCallbacks(
       prevPendingTransitionCallbacks,
       endTime,
-      prevRootTransitionCallbacks
+      prevRootTransitionCallbacks,
     );
   });
 }
@@ -515,7 +517,7 @@ fiber tree 在构建的过程中「深度优先遍历」，会交替执行 begin
 
 fiber 树构造循环负责构造新的 fiber 树, 构造过程中同时标记 fiber.flags, 最终把所有被标记的 fiber 节点收集到一个副作用队列中, 这个副作用队列被挂载到根节点上 (rootFiber.alternate.firstEffect). 此时的 fiber 树和与之对应的 DOM 节点都还在内存当中, 等待 commitRoot 阶段进行渲染。
 
-![alt text](assets/13.jpg.png)
+![alt text](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191852329.png)
 
 ## executionContext
 
@@ -537,6 +539,7 @@ export const CommitContext = /*         */ 0b100;
 
 // Describes where we are in the React execution stack
 let executionContext: ExecutionContext = NoContext;
+
 
 // 在其他模块获取当前上下文
 export function getExecutionContext(): ExecutionContext {
@@ -644,9 +647,9 @@ fiber 与 hook 之间，既要能够各自独立，又要能够相互关联。�
 
 组件函数在执行的过程中，会执行 hook，例如 useState。此时会创建 hook 对象，并挂在到 fiber 实例上。
 
-> 执行组件函数「Component」发生在：
+> 执行组件函数「Component」发生在： 
 >
-> beginWork -> updateFunctionComponent -> renderWithWork -> Component()
+> beginWork -> updateFunctionComponent -> renderWithWork -> Component() 
 
 Hook 的类型定义：
 
@@ -654,37 +657,37 @@ Hook 的类型定义：
 // 「state-hook」
 export type Hook = {
   // 当前 hook 的状态值
-  memoizedState: any;
+  memoizedState: any,
   // 基准值 - 每次 update 的基准
-  baseState: any;
+  baseState: any,
   // 存储 高于本次渲染的 update 环形链表
-  baseQueue: Update<any, any> | null;
+  baseQueue: Update<any, any> | null,
   // update 循环链表
-  queue: any;
+  queue: any,
   // 指向下一个 hook
-  next: Hook | null;
+  next: Hook | null,
 };
 
 // 「effect-hook」
 type EffectInstance = {
-  destroy: void | (() => void);
+  destroy: void | (() => void),
 };
 
 export type Effect = {
   // effect 类型
-  tag: HookFlags;
+  tag: HookFlags,
   // 副作用回调
-  create: () => (() => void) | void;
+  create: () => (() => void) | void,
   // 副作用清理函数
-  inst: EffectInstance;
+  inst: EffectInstance,
   // 依赖项
-  deps: Array<mixed> | null;
+  deps: Array<mixed> | null,
   // 指向下一个 effect
-  next: Effect;
+  next: Effect,
 };
 ```
 
-![img](./assets/1.jpg)
+![img](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191902004.jpg)
 
 ```txt
 renderWithHooks
@@ -735,7 +738,7 @@ dom 节点中**移动**的情况是很难去把控的，比如说某一个节点
 >
 > 因为整个列表重新构建可能存在更大的内存消耗，相对于移动来说，并且列表中的移动相对来说是很好判断。
 
-![1](./assets/1.png)
+![1](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191911523.png)
 
 **节点复用**
 
@@ -776,7 +779,7 @@ function reconcileChildrenArray() {...}
 > 这里说的移动，指的是对真实 dom 的操作。
 
 ```js
-旧列表：[A] [B] [C] [D]
+旧列表：[A] [B] [C] [D] 
 新列表：[B] [A] [D] [C]
 
 [B] 不移动
@@ -791,7 +794,7 @@ JSX 不是真实的 DOM，因此上面的事件也不是直接 DOM 上的原生�
 
 React 并不会为每个组件或 DOM 节点都绑定事件。
 
-React 中是通过 **统一的事件监听器** 挂在根节点上，然后在事件触发时，使用一套自己的"合成事件系统"进行处理。
+React 中是通过 **统一的事件监听器** 挂在根节点上，然后在事件触发时，使用一套自己的“合成事件系统”进行处理。
 
 在 fiber-tree 构建的时候，事件回调存储在 fiber 节点中，并且将事件注册在根节点上。
 
@@ -817,6 +820,8 @@ React 捕获 → 找到事件 target 对应的 Fiber 节点
 依照冒泡/捕获阶段顺序执行事件函数 - 「从当前节点向上寻找相同事件」
 ```
 
+
+
 # Sum
 
 ## 为什么 React 内部要自定义帧，不直接使用浏览器已经存在的刷新率呢？或者会问为什么不直接基于 requestIdleCallback 来实现剩余逻辑的执行？
@@ -835,10 +840,10 @@ React 捕获 → 找到事件 target 对应的 Fiber 节点
 
 如果我们将 `hook` 放入条件判断中，那么在不满足条件时，该 `hook` 对象就不会在链表中存在，从而导致两次访问到的 hook 不一致，从而造成**取值错误**
 
-![img](./assets/2.jpg)
+![img](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191922253.jpg)
 
-> [完结 🎉]
+> [完结🎉]
 >
 > 受益匪浅，但有些地方理解不是很透彻，后续有空要重头再过过。
 >
-> 原内容来自波佬的[useHook-React 面试原理](https://usehook.cn/reactprinciple)，强烈推荐购买阅读。
+> 原内容来自波佬的[useHook-React面试原理](https://usehook.cn/reactprinciple)，强烈推荐购买阅读。

@@ -1,0 +1,22 @@
+---
+title: vscode configuration
+category: ['configuration']
+slug: configuration-vscode
+date: 2024-06-20
+summary: 汇总 Visual Studio Code 的常用配置及插件推荐。
+---
+
+# 资源嵌套
+
+将所有不常用的文件收纳到一个目录「非真实目录」嵌套下面。
+
+```js
+// .vscode/setting.json
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "vite.config.ts": ".*rc, .cursor*,*.ini, *.sh, *.json, *.config.js, index.html, README.md, .git*"
+  }
+}
+```
+

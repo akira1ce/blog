@@ -1,0 +1,44 @@
+---
+title: components for rendering markdown
+category: ['react', 'components']
+slug: conponent-markdown-render-components
+date: 2024-08-14
+summary: 在 React 中用于渲染 Markdown 的常用组件。
+---
+
+
+# markdown-render
+
+markdown-it 自定义渲染 markdown 数据。
+
+[markdown-it](https://github.com/markdown-it/markdown-it)
+[github-markdown-css](https://github.com/sindresorhus/github-markdown-css)
+
+```tsx
+import { Typography } from 'antd';
+import MarkdownIt from 'markdown-it';
+import './github-markdown.css';
+
+export interface MarkdownProps {
+  content: string;
+}
+
+const md = MarkdownIt({ html: true, breaks: true });
+
+const Markdown = (props: MarkdownProps) => {
+  const { content } = props;
+  return (
+    <Typography>
+      <div
+        className="markdown-body"
+        dangerouslySetInnerHTML={{
+          __html: md.render(content.replace(/think/g, 'blockquote')),
+        }}
+      />
+    </Typography>
+  );
+};
+
+export default Markdown;
+
+```
