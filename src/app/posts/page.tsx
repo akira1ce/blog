@@ -6,21 +6,22 @@ const Page = () => {
   const posts = getAllPosts();
   return (
     <>
+      <div className="mb-12 text-center text-3xl font-bold">Posts</div>
       {/* posts */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {posts.map((post, index) => (
-          <FadeInUp
-            className="bg-card col-span-1 rounded-xl shadow"
-            key={post.slug}
-            delay={index * 0.1}
-          >
-            <Link className="flex flex-col gap-2 p-4" href={`/${post.slug}`}>
+      <FadeInUp>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {posts.map((post, index) => (
+            <Link
+              key={post.slug}
+              className="bg-card col-span-1 flex flex-col gap-2 rounded-xl p-4 shadow"
+              href={`/${post.slug}`}
+            >
               <div className="text-fore text-lg font-bold">{post.title}</div>
               <div className="text-fore/50 text-sm">{post.summary}</div>
             </Link>
-          </FadeInUp>
-        ))}
-      </div>
+          ))}
+        </div>
+      </FadeInUp>
     </>
   );
 };

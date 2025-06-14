@@ -8,25 +8,34 @@ export interface FrontMatter {
   title: string;
   category: string | string[];
   slug: string;
-  date: string;
+  date: Date;
   summary: string;
 }
 
-let _cache: FrontMatter[] | null = null;
+const getMatter = (file: string) => {
+  const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8');
+  const { data } = matter(raw);
+  return {
+    ...(data as FrontMatter),
+  };
+};
 
+/* 获取所有文章 */
 export function getAllPosts(): FrontMatter[] {
-  if (_cache) return _cache;
-
   const files = fs.readdirSync(POSTS_DIR);
-  _cache = files.map((file) => {
-    const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8');
-    const { data } = matter(raw);
-    return {
-      ...(data as FrontMatter),
-    };
-  });
+  return files
+    .map((file) => getMatter(file))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
 
-  return _cache;
+/* 获取单篇文章 */
+export function getPostBySlug(slug: string) {
+  const files = fs.readdirSync(POSTS_DIR);
+  const file = files.find((file) => file === `${slug}.mdx`);
+  if (!file) {
+    return null;
+  }
+  return getMatter(file);
 }
 
 /* 获取所有分类 */
