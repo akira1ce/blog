@@ -6,7 +6,6 @@ date: 2024-09-16
 summary: 探讨 vite 中动态导入的限制问题，以及如何规避构建错误与模块解析失败。
 ---
 
-
 ## debug
 
 ![alt text](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191353392.jpg)
@@ -21,7 +20,7 @@ summary: 探讨 vite 中动态导入的限制问题，以及如何规避构建�
 
 在部分动态导入的场景中，例如路由的动态加载「后端路由」
 
-`(await import(`xxx${xxx}.tsx`))` vite 就会发出 warning 警告。
+`(await import(`xxx$\{xxx}.tsx`))` vite 就会发出 warning 警告。
 
 这里主要是会影响 vite 的分析过程。
 
