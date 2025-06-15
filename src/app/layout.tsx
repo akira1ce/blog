@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${mapleMono.className} bg-main min-h-screen w-screen antialiased`}>
+      <body className={`${mapleMono.className} bg-main w-full antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -28,7 +28,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <main className="m-auto w-3/4 py-4">{children}</main>
+          <main className="m-auto w-3/4 py-10">{children}</main>
         </ThemeProvider>
       </body>
     </html>

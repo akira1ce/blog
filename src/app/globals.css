@@ -26,6 +26,27 @@
   --color-card: var(--bg-card);
 }
 
+/* scrollbar */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* view-transition */
 ::view-transition-group(root) {
   animation-timing-function: var(--expo-out);

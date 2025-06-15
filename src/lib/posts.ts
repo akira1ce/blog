@@ -41,7 +41,21 @@ export function getPostBySlug(slug: string) {
 /* 获取所有分类 */
 export function getCategories() {
   const posts = getAllPosts();
-  return [...new Set(posts.map((p) => p.category).flat())];
+  const categoryCount: { [key: string]: number } = {};
+
+  posts.forEach((post) => {
+    const categories = Array.isArray(post.category) ? post.category : [post.category];
+    categories.forEach((category) => {
+      categoryCount[category] = (categoryCount[category] || 0) + 1;
+    });
+  });
+
+  return Object.keys(categoryCount)
+    .sort()
+    .map((category) => ({
+      name: category,
+      count: categoryCount[category],
+    }));
 }
 
 /* 根据分类获取文章 */

@@ -145,7 +145,7 @@ const Page = () => {
         </FadeInUp>
 
         {/* Footer */}
-        <div className="border-fore/10 border-t pt-8 text-center">
+        <div className="pt-8 text-center">
           <p className="text-fore/60">感谢你来到我的小站 🥳</p>
         </div>
       </div>

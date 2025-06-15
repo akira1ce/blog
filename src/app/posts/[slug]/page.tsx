@@ -1,4 +1,5 @@
 import { getPostBySlug } from '@/lib/posts';
+import { notFound } from 'next/navigation';
 
 export interface Params {
   slug: string;
@@ -11,7 +12,14 @@ interface Props {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
 
-  const { default: Post } = await import(`@/posts/${slug}.mdx`);
+  let Post;
+
+  try {
+    const mod = await import(`@/posts/${slug}.mdx`);
+    Post = mod.default;
+  } catch (e) {
+    return notFound();
+  }
 
   const matter = getPostBySlug(slug);
 

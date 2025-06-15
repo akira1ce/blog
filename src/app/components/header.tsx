@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ThemeToggle } from '../../components/theme-toggle';
+import { GithubIcon } from 'lucide-react';
 
 const Header = () => {
   return (
@@ -13,15 +14,17 @@ const Header = () => {
           >
             Akira1ce
           </Link>
-          {/* nav */}
         </div>
-        {/* tools */}
+        {/* nav */}
         <div className="flex items-center gap-4">
           <Link href="/about" className="text-fore">
             About
           </Link>
           <Link href="/posts" className="text-fore">
             Posts
+          </Link>
+          <Link href="/categories" className="text-fore">
+            Categories
           </Link>
           <ThemeToggle />
         </div>
