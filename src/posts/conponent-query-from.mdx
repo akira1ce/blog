@@ -7,7 +7,7 @@ summary: 封装通用的 QueryForm 查询表单组件，支持灵活配置和快
 ---
 
 
-```JavaScript
+```js
 // QueryForm.js
 import { useState } from 'react';
 
@@ -51,7 +51,7 @@ const QueryFrom = props => {
 export default QueryFrom;
 ```
 
-```JavaScript
+```js
 // queryFilter.js
 const getPlaceHolder = (type, title) => {
   if (type === 'select') return `请选择${title}`;
@@ -107,7 +107,7 @@ export const getFields = (columns, expand, hidenExpand) => {
 };
 ```
 
-```JavaScript
+```js
 // constanst
 export const colProps = { xs: 24, sm: 12, md: 12, lg: 12, xl: 8 };
 export const labelCol = { sm: 10, md: 8, lg: 6, xl: 6, xxl: 4 };
