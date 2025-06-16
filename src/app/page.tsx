@@ -1,4 +1,4 @@
-import { FadeInUp } from '@/components/fade-in-up';
+import { FadeInUp } from '@/components/FadeInUp';
 import Image from 'next/image';
 
 const Page = () => {

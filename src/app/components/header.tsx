@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ThemeToggle } from '../../components/theme-toggle';
+import { ThemeToggle } from '../../components/ThemeToggle';
 
 const Header = () => {
   return (
@@ -25,9 +25,6 @@ const Header = () => {
           <Link href="/categories" className="text-fore">
             Categories
           </Link>
-        </div>
-        {/* tools */}
-        <div className="flex items-center gap-4">
           <ThemeToggle />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { getAllPosts } from '@/lib/posts';
-import { FadeInUp } from '@/components/fade-in-up';
-import { PostLink } from '@/components/post-link';
+import { FadeInUp } from '@/components/FadeInUp';
+import { PostLink } from '@/components/PostLink';
 
 const Page = () => {
   const posts = getAllPosts();

@@ -1,4 +1,4 @@
-import { CodeBlock } from '@/components/code-block';
+import { CodeBlock } from '@/components/CodeBlock';
 import type { MDXComponents } from 'mdx/types';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {

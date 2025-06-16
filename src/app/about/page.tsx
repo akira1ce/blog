@@ -1,4 +1,4 @@
-import { FadeInUp } from '@/components/fade-in-up';
+import { FadeInUp } from '@/components/FadeInUp';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 

@@ -1,6 +1,6 @@
 import { getPostsByCategory } from '@/lib/posts';
-import { PostLink } from '@/components/post-link';
-import { FadeInUp } from '@/components/fade-in-up';
+import { PostLink } from '@/components/PostLink';
+import { FadeInUp } from '@/components/FadeInUp';
 
 export interface Params {
   category: string;

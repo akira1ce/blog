@@ -1,6 +1,6 @@
 import { getCategories } from '@/lib/posts';
 import Link from 'next/link';
-import { FadeInUp } from '@/components/fade-in-up';
+import { FadeInUp } from '@/components/FadeInUp';
 
 const Page = () => {
   const categories = getCategories();

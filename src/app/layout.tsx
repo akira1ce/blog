@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from './components/header';
-import { ThemeProvider } from '../components/theme-provider';
+import { ThemeProvider } from '../components/ThemeProvider';
 import localFont from 'next/font/local';
 
 const mapleMono = localFont({
