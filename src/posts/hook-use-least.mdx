@@ -1,0 +1,21 @@
+---
+title: hook use least
+category: ['react', 'hook']
+slug: hook-use-least
+date: 2025-06-16
+summary: 保持最新值
+---
+
+```ts
+import { useRef } from 'react';
+
+/**
+ * Keeps the latest value
+ */
+export const useLeast = <T>(value: T) => {
+  const state = useRef(value);
+  state.current = value;
+
+  return state.current;
+};
+```
