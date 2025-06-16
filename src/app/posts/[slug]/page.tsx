@@ -15,13 +15,13 @@ export default async function Page({ params }: Props) {
   let Post;
 
   try {
-    const mod = await import(`@/posts/${slug}.mdx`);
+    const mod = await import(`@/contents/${slug}.mdx`);
     Post = mod.default;
   } catch (e) {
     return notFound();
   }
 
-  const matter = getPostBySlug(slug);
+  const matter = await getPostBySlug(slug);
 
   return (
     <>
