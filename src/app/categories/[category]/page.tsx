@@ -1,6 +1,6 @@
 import { getPostsByCategory } from '@/lib/posts';
-import { PostLink } from '@/components/PostLink';
-import { FadeInUp } from '@/components/FadeInUp';
+import { PostLink } from '@/components/post-link';
+import { FadeInUp } from '@/components/fade-in-up';
 
 export interface Params {
   category: string;
@@ -12,7 +12,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const { category } = await params;
-  const posts = getPostsByCategory(category) || [];
+  const posts = await getPostsByCategory(category);
 
   return (
     <div>

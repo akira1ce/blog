@@ -1,9 +1,9 @@
 import { getCategories } from '@/lib/posts';
 import Link from 'next/link';
-import { FadeInUp } from '@/components/FadeInUp';
+import { FadeInUp } from '@/components/fade-in-up';
 
-const Page = () => {
-  const categories = getCategories();
+const Page = async () => {
+  const categories = await getCategories();
   return (
     <>
       <div className="mb-12 text-center text-3xl font-bold underline">Categories</div>
