@@ -6,6 +6,8 @@ import localFont from 'next/font/local';
 
 const mapleMono = localFont({
   src: './MapleMono-Regular.woff2',
+  display: 'swap',
+  preload: true,
 });
 
 export const metadata: Metadata = {

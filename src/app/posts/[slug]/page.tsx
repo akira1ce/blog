@@ -1,4 +1,4 @@
-import { getPostBySlug } from '@/lib/posts';
+import { getAllPosts, getPostBySlug } from '@/lib/posts';
 import { notFound } from 'next/navigation';
 
 export interface Params {
@@ -9,19 +9,26 @@ interface Props {
   params: Promise<Params>;
 }
 
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.splice(0, 10).map((post) => ({ slug: post.slug }));
+}
+
+export const revalidate = 3600;
+export const dynamicParams = true;
+
 export default async function Page({ params }: Props) {
   const { slug } = await params;
 
-  let Post;
+  let Post, matter;
 
   try {
+    matter = await getPostBySlug(slug);
     const mod = await import(`@/contents/${slug}.mdx`);
     Post = mod.default;
   } catch (e) {
     return notFound();
   }
-
-  const matter = await getPostBySlug(slug);
 
   return (
     <>
@@ -37,5 +44,3 @@ export default async function Page({ params }: Props) {
     </>
   );
 }
-
-// export const dynamicParams = false;

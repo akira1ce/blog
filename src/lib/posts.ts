@@ -16,10 +16,9 @@ export interface FrontMatter {
 let cachedPosts: FrontMatter[] | null = null;
 let lastCacheTime = 0;
 let lastModTime = 0;
-let refreshPromise: Promise<FrontMatter[]> | null = null; // 防止并发刷新
 
 // 缓存有效期（开发环境短一些，生产环境长一些）
-const CACHE_TTL = process.env.NODE_ENV === 'development' ? 1000 : 60000;
+const CACHE_TTL = process.env.NODE_ENV === 'development' ? 1000 : 300000;
 
 /* 解析mdx文件 */
 const getMatter = (file: string) => {
@@ -60,37 +59,27 @@ const isCacheValid = (): boolean => {
 
 // 刷新缓存
 const refreshCache = async (): Promise<FrontMatter[]> => {
-  // 防止并发刷新
-  if (refreshPromise) {
-    return refreshPromise;
+  try {
+    const files = await fs.promises.readdir(POSTS_DIR);
+    const posts = files
+      .filter((file) => file.endsWith('.mdx'))
+      .map((file) => getMatter(file))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    cachedPosts = posts;
+    lastCacheTime = Date.now();
+    lastModTime = await getPostsDirModTime();
+
+    return posts;
+  } catch (error) {
+    console.error('Error refreshing cache:', error);
+    return [];
   }
-
-  refreshPromise = (async () => {
-    try {
-      const files = await fs.promises.readdir(POSTS_DIR);
-      const posts = files
-        .filter((file) => file.endsWith('.mdx'))
-        .map((file) => getMatter(file))
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-      cachedPosts = posts;
-      lastCacheTime = Date.now();
-      lastModTime = await getPostsDirModTime();
-
-      return posts;
-    } finally {
-      refreshPromise = null;
-    }
-  })();
-
-  return refreshPromise;
 };
 
 /* 获取所有文章 */
 export async function getAllPosts(): Promise<FrontMatter[]> {
-  if (isCacheValid()) {
-    return cachedPosts!;
-  }
+  if (isCacheValid()) return cachedPosts!;
 
   return await refreshCache();
 }
