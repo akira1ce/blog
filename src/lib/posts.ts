@@ -20,9 +20,9 @@ let lastModTime = 0;
 // 缓存有效期（开发环境短一些，生产环境长一些）
 const CACHE_TTL = process.env.NODE_ENV === 'development' ? 1000 : 300000;
 
-/* 解析mdx文件 */
-const getMatter = (file: string) => {
-  const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8');
+/* 异步解析mdx文件 */
+const getMatter = async (file: string): Promise<FrontMatter> => {
+  const raw = await fs.promises.readFile(path.join(POSTS_DIR, file), 'utf-8');
   const { data } = matter(raw);
   return {
     ...(data as FrontMatter),
@@ -57,20 +57,25 @@ const isCacheValid = (): boolean => {
   return cachedPosts !== null && now - lastCacheTime < CACHE_TTL && currentModTime === lastModTime;
 };
 
-// 刷新缓存
+// 刷新缓存 - 优化为并行处理
 const refreshCache = async (): Promise<FrontMatter[]> => {
   try {
     const files = await fs.promises.readdir(POSTS_DIR);
-    const posts = files
-      .filter((file) => file.endsWith('.mdx'))
-      .map((file) => getMatter(file))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const mdxFiles = files.filter((file) => file.endsWith('.mdx'));
+    
+    // 并行读取所有文件
+    const posts = await Promise.all(
+      mdxFiles.map(file => getMatter(file))
+    );
+    
+    // 按日期排序
+    const sortedPosts = posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    cachedPosts = posts;
+    cachedPosts = sortedPosts;
     lastCacheTime = Date.now();
     lastModTime = await getPostsDirModTime();
 
-    return posts;
+    return sortedPosts;
   } catch (error) {
     console.error('Error refreshing cache:', error);
     return [];
