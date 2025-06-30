@@ -7,12 +7,11 @@ summary: 用于长文本对比的 React 组件。
 ---
 
 
-> yarn add react-diff-viewer
-yarn add react-window
+> yarn add react-diff-viewer react-window
 
 超大文本拆分为单行进行比对，通过虚拟列表优化性能。
 
-```TypeScript
+```tsx
 import React, { CSSProperties, memo, useMemo } from "react";
 import DiffViewer from "react-diff-viewer";
 import { FixedSizeList as List } from "react-window";

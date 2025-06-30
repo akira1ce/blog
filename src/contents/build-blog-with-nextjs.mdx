@@ -6,7 +6,11 @@ date: 2025-06-13
 summary: '一个使用 Next.js 和 MDX 构建的现代化博客系统，支持主题切换、代码高亮和页面过渡动画'
 ---
 
+import { Tabs, TabItem } from '@/components/tabs';
+
 # 目录结构
+
+`let a = 1;`
 
 ```bash
 blog
@@ -104,14 +108,17 @@ yarn add rehype-slug rehype-pretty-code remark-frontmatter remark-gfm
 
 根目录下创建 mdx-components.tsx 文件。
 
-```tsx
-/* mdx-components.tsx */
-import type { MDXComponents } from 'mdx/types';
+<Tabs>
+  <TabItem label="mdx-components.tsx">
+    ```tsx
+    import type { MDXComponents } from 'mdx/types';
 
-export function useMDXComponents(components: MDXComponents): MDXComponents {
-  return { ...components };
-}
-```
+    export function useMDXComponents(components: MDXComponents): MDXComponents {
+      return { ...components };
+    }
+    ```
+  </TabItem>
+</Tabs>
 
 ## 配置 next.config.mjs
 
@@ -125,7 +132,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
 
 ```tsx
-/* next.config.mjs */
 /**
  * @typedef {import('next').NextConfig} NextConfig
  * @typedef {Array<((config: NextConfig) => NextConfig)>} NextConfigPlugins
@@ -208,9 +214,9 @@ export default async function Page({ params }: Props) {
 >
 > 实际效果和在config.ts 配置一样。
 
-```css
-/* /src/app/globals.css */
 
+```css
+/* global.css */
 /* tailwindcss-directives */
 @import 'tailwindcss';
 /* 加载插件 */
@@ -254,74 +260,72 @@ export default async function Page({ params }: Props) {
 
 ### theme-provider
 
-```tsx
-/* /src/app/components/theme-provider.tsx */
-'use client';
+<Tabs>
+  <TabItem label="theme-provider.tsx">
+    ```tsx
+    'use client';
 
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import type { ThemeProviderProps } from 'next-themes';
+    import { ThemeProvider as NextThemesProvider } from 'next-themes';
+    import type { ThemeProviderProps } from 'next-themes';
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
-}
+    export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+      return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+    }
+    ```
+  </TabItem>
+  <TabItem label="theme-toggle.tsx">
+    ```tsx
+    'use client';
 
-```
+    import { useTheme } from 'next-themes';
+    import { Sun, Moon } from 'lucide-react';
+    import { useEffect, useState } from 'react';
 
-### theme-toggle
+    export function ThemeToggle() {
+      const { theme, setTheme } = useTheme();
+      const [mounted, setMounted] = useState(false);
 
+      /* 切换主题 */
+      const handleThemeToggle = () => {
+        const switchTheme = () => {
+          setTheme(theme === 'dark' ? 'light' : 'dark');
+        };
 
-```tsx
-/* /src/app/components/theme-toggle.tsx */
+        /* 使用 startViewTransition 实现动画 */
+        if (!document.startViewTransition) switchTheme();
+        else document.startViewTransition(switchTheme);
+      };
 
-'use client';
+      /* 确保组件挂载后再渲染，避免水合不匹配 */
+      useEffect(() => {
+        setMounted(true);
+      }, []);
 
-import { useTheme } from 'next-themes';
-import { Sun, Moon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+      if (!mounted) {
+        return (
+          <button className="flex h-9 w-9 items-center justify-center rounded-md">
+            <div className="h-4 w-4" />
+          </button>
+        );
+      }
 
-export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  /* 切换主题 */
-  const handleThemeToggle = () => {
-    const switchTheme = () => {
-      setTheme(theme === 'dark' ? 'light' : 'dark');
-    };
-
-    /* 使用 startViewTransition 实现动画 */
-    if (!document.startViewTransition) switchTheme();
-    else document.startViewTransition(switchTheme);
-  };
-
-  /* 确保组件挂载后再渲染，避免水合不匹配 */
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <button className="flex h-9 w-9 items-center justify-center rounded-md">
-        <div className="h-4 w-4" />
-      </button>
-    );
-  }
-
-  return (
-    <button
-      onClick={handleThemeToggle}
-      className="bg-main hover:bg-fore/10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120"
-      aria-label="切换主题"
-    >
-      {theme === 'dark' ? (
-        <Sun className="text-fore dark:text-fore h-4 w-4" />
-      ) : (
-        <Moon className="text-fore dark:text-fore h-4 w-4" />
-      )}
-    </button>
-  );
-}
-```
+      return (
+        <button
+          onClick={handleThemeToggle}
+          className="bg-main hover:bg-fore/10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120"
+          aria-label="切换主题"
+        >
+          {theme === 'dark' ? (
+            <Sun className="text-fore dark:text-fore h-4 w-4" />
+          ) : (
+            <Moon className="text-fore dark:text-fore h-4 w-4" />
+          )}
+        </button>
+      );
+    }
+    ```
+  </TabItem>
+</Tabs>
 
 ### layout
 

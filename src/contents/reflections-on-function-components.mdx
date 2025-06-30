@@ -11,7 +11,7 @@ summary: 分享对 React 函数组件设计理念、性能优化及最佳实践�
 
 > UI = f(state)
 
-```TypeScript
+```ts
 function Demo() {
   const [count, setCount] = useState(0)
   ...
@@ -28,7 +28,7 @@ function Demo() {
 
 例如我们有这样一个函数
 
-```TypeScript
+```tsx
 function Counter({x}) {
   const [count, setCount] = useState(0)
   return (
@@ -39,7 +39,7 @@ function Counter({x}) {
 
 他可以等价于
 
-```TypeScript
+```tsx
 function Counter({x}, [count = 0, setCount]) {
   return (
     <div>{x + count}</div>

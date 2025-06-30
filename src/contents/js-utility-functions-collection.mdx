@@ -26,7 +26,7 @@ export const cn = (...inputs: ClassValue[]) => {
 
 时间转换
 
-```TypeScript
+```ts
 export const formatTimeToChatTime = (time: Date) => {
   const now = dayjs();
   const target = dayjs(time);
@@ -136,7 +136,7 @@ export const buildTree = <T extends FlatItem>(list: T[], options: BuildTreeOptio
 
 常规防抖
 
-```TypeScript
+```ts
 function debounce( callback, delay = 300 ){
     let timer;
     return ( ...args ) => {
@@ -163,7 +163,7 @@ function debounce( callback, delay = 300 ){
 
 这种方式后续的操作都需要在回调中处理。
 
-```TypeScript
+```ts
 import { debounce } from "lodash-es";
 
 const test = (callback) => {
@@ -189,7 +189,7 @@ console.log(
 
 将含有返回值的函数当做异步函数对待，通过 promise 承接返回值。
 
-```TypeScript
+```ts
 function debounceWithReturn( callback, delay ) {
   let timer;
 

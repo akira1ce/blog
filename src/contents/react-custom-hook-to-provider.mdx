@@ -7,7 +7,7 @@ summary: 将自定义 React Hook 封装成 Context Provider，实现跨组件状
 ---
 
 
-```TypeScript
+```ts
 import { useState } from "react";
 
 interface StoreItem {
@@ -59,7 +59,7 @@ export function createStore<T>(key: string, state: T) {
 
 「用法」
 
-```TypeScript
+```ts
 export interface Counter {
   a: number;
   b: string;

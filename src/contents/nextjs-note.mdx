@@ -6,6 +6,7 @@ date: 2024-08-21
 summary: 记录 Next.js 学习过程中的重点知识点和实用技巧。
 ---
 
+import { Tabs, TabItem } from '@/components/tabs';
 
 # 理解服务端渲染
 
@@ -287,43 +288,42 @@ module.exports = nextConfig
 
 在中间件中，我们通常会进行身份验证，然后将页面根据验证结果跳转到不同的路由中。此时，href 的结果是动态的，但是我们需要提高预设一个需要预加载的页面内容。可以通过 as 属性来做到这个事情。
 
-中间件：
+<Tabs>
+  <TabItem label="middleware.ts">
+    ```ts
+    import { NextResponse } from 'next/server'
 
-```ts
-// middleware.ts
-import { NextResponse } from 'next/server'
-
-export function middleware(request: Request) {
-  const nextUrl = request.nextUrl
-  if (nextUrl.pathname === '/dashboard') {
-    if (request.cookies.authToken) {
-      return NextResponse.rewrite(new URL('/auth/dashboard', request.url))
-    } else {
-      return NextResponse.rewrite(new URL('/public/dashboard', request.url))
+    export function middleware(request: Request) {
+      const nextUrl = request.nextUrl
+      if (nextUrl.pathname === '/dashboard') {
+        if (request.cookies.authToken) {
+          return NextResponse.rewrite(new URL('/auth/dashboard', request.url))
+        } else {
+          return NextResponse.rewrite(new URL('/public/dashboard', request.url))
+        }
+      }
     }
-  }
-}
-```
+    ```
+  </TabItem>
+  <TabItem label="page.tsx">
+    ```tsx
+    'use client'
 
-page 中的逻辑：
+    import Link from 'next/link'
+    import useIsAuthed from './hooks/useIsAuthed' // Your auth hook
 
-```tsx
-// page.tsx
-'use client'
-
-import Link from 'next/link'
-import useIsAuthed from './hooks/useIsAuthed' // Your auth hook
-
-export default function Page() {
-  const isAuthed = useIsAuthed()
-  const path = isAuthed ? '/auth/dashboard' : '/public/dashboard'
-  return (
-    <Link as="/dashboard" href={path}>
-      Dashboard
-    </Link>
-  )
-}
-```
+    export default function Page() {
+      const isAuthed = useIsAuthed()
+      const path = isAuthed ? '/auth/dashboard' : '/public/dashboard'
+      return (
+        <Link as="/dashboard" href={path}>
+          Dashboard
+        </Link>
+      )
+    }
+    ```
+  </TabItem>
+</Tabs>
 
 ## 路由分组
 
