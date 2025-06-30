@@ -98,4 +98,13 @@
 /* 确保内联代码和代码块都使用正确字体 */
 .prose :not(pre) > code {
   font-family: inherit !important;
+  background-color: #f4f3f3;
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+}
+
+/* 确保内联代码的样式正确 */
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: '';
 }

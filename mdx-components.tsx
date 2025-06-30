@@ -1,6 +1,9 @@
-import { CodeBlock } from '@/components/code-block';
+import Code from '@/components/code';
 import type { MDXComponents } from 'mdx/types';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
-  return { pre: (props: any) => <CodeBlock {...props} />, ...components };
+  return {
+    ...components,
+    // code: Code,
+  };
 }

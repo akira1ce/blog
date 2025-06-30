@@ -20,9 +20,7 @@ const nextConfig = {
 const options = {
   /* 是否保留背景色 */
   keepBackground: false,
-  defaultLang: 'plaintext',
-  /* 是否跳过内联代码 */
-  bypassInlineCode: true,
+  defaultLang: 'typescript',
 };
 
 const withMDX = nextMDX({
