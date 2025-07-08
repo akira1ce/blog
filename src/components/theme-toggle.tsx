@@ -5,7 +5,7 @@ import { Sun, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   /* 切换主题 */
@@ -22,6 +22,10 @@ export function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (systemTheme && systemTheme !== theme) handleThemeToggle();
+  }, [systemTheme]);
 
   if (!mounted) {
     return (

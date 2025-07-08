@@ -23,12 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${mapleMono.className} bg-main w-full antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
           <main className="m-auto w-3/4 py-10">{children}</main>
         </ThemeProvider>
