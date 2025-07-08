@@ -4,7 +4,6 @@ import { useRef, useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 
 const Code = (props: any) => {
-  console.log('props :>> ', props);
   const codeRef = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
 
@@ -19,7 +18,6 @@ const Code = (props: any) => {
 
   /* inline code */
   if (!props['data-language']) {
-    console.log('props.children :>> ', props.children);
     return <code {...props} children={props.children.slice(1, -1)} />;
   }
 
