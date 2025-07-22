@@ -18,12 +18,65 @@
     --bg-fore: #ffffff;
     --bg-card: #18181b;
   }
+
+  /* code-block dark-light mode */
+  html.light .shiki,
+  html.light .shiki span {
+    color: var(--shiki-light) !important;
+    background-color: var(--shiki-light-bg) !important;
+  }
+
+  html.dark .shiki,
+  html.dark .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
 }
 
 @theme inline {
   --color-main: var(--bg-main);
   --color-fore: var(--bg-fore);
   --color-card: var(--bg-card);
+}
+
+/* Custom prose styles */
+.prose-custom {
+  @apply prose prose-gray dark:prose-invert max-w-none;
+  @apply prose-headings:text-fore;
+  @apply prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-6;
+  @apply prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4;
+  @apply prose-h3:text-xl prose-h3:font-medium prose-h3:mt-6 prose-h3:mb-3;
+  @apply prose-h4:text-lg prose-h4:font-medium prose-h4:mt-4 prose-h4:mb-2;
+  @apply prose-p:text-fore prose-p:leading-relaxed;
+  @apply prose-a:text-blue-400 prose-a:no-underline prose-a:hover:underline;
+  @apply prose-strong:text-fore prose-strong:font-semibold;
+  @apply prose-ul:text-fore prose-ol:text-fore;
+  @apply prose-li:my-1;
+  @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
+  @apply mx-auto max-w-4xl px-6 py-8;
+}
+
+/* Code block styles */
+.prose-custom pre {
+  @apply bg-main/5 dark:bg-main/80 overflow-x-auto rounded-lg p-4;
+  @apply border border-gray-200 dark:border-gray-700;
+  font-family: inherit;
+}
+
+.prose-custom code {
+  font-family: inherit;
+}
+
+/* Inline code styles */
+.prose-custom :not(pre) > code {
+  @apply text-fore rounded bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
+  @apply border border-gray-200 dark:border-gray-700;
+  font-family: inherit;
+}
+
+.prose-custom :not(pre) > code::before,
+.prose-custom :not(pre) > code::after {
+  content: '';
 }
 
 /* scrollbar */
@@ -71,40 +124,4 @@
   to {
     mask-size: 350vmax;
   }
-}
-
-/* prose-code-font */
-
-/* 确保 prose 中的代码元素使用正确的字体 */
-.prose code,
-.prose pre,
-.prose pre code,
-.prose :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  font-family: inherit !important;
-}
-
-.prose :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  font-family: inherit !important;
-}
-
-/* 针对 rehype-pretty-code 生成的代码块 */
-.prose [data-rehype-pretty-code-fragment] pre,
-.prose [data-rehype-pretty-code-fragment] code,
-.prose [data-rehype-pretty-code-title],
-.prose [data-rehype-pretty-code-caption] {
-  font-family: inherit !important;
-}
-
-/* 确保内联代码和代码块都使用正确字体 */
-.prose :not(pre) > code {
-  font-family: inherit !important;
-  background-color: #f4f3f3;
-  padding: 0.2em 0.4em;
-  border-radius: 0.2em;
-}
-
-/* 确保内联代码的样式正确 */
-.prose :not(pre) > code::before,
-.prose :not(pre) > code::after {
-  content: '';
 }

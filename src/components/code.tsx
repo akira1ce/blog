@@ -1,35 +1,39 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
+import { useState } from 'react';
 
-const Code = (props: any) => {
-  const codeRef = useRef<HTMLElement>(null);
+interface CodeProps {
+  children: string;
+  className?: string;
+  [key: string]: any;
+}
+
+const Code = ({ children, className, ...props }: CodeProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    if (copied) return;
-
-    const code = codeRef.current?.innerText ?? '';
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(children);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
   };
-
-  /* inline code */
-  if (!props['data-language']) {
-    return <code {...props} children={props.children.slice(1, -1)} />;
-  }
 
   return (
     <div className="group relative">
+      <pre className={className} {...props}>
+        {children}
+      </pre>
       <button
         onClick={handleCopy}
-        className="absolute top-2 right-2 hidden rounded bg-white/10 px-2 py-1 text-xs text-white transition group-hover:block hover:bg-white/20"
+        className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded px-2 py-1 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        aria-label="Copy code"
       >
         {copied ? <Check size={16} /> : <Copy size={16} />}
       </button>
-      <code ref={codeRef} {...props} />
     </div>
   );
 };

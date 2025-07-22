@@ -38,7 +38,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={handleThemeToggle}
-      className="bg-main hover:bg-fore/10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120 hover:rotate-270"
+      className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120 hover:rotate-270"
       aria-label="切换主题"
     >
       {theme === 'dark' ? (

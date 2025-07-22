@@ -2,8 +2,22 @@ import Link from 'next/link';
 import { ThemeToggle } from '../../components/theme-toggle';
 
 const Header = () => {
+  const links = [
+    {
+      label: 'About',
+      href: '/about',
+    },
+    {
+      label: 'Posts',
+      href: '/posts',
+    },
+    {
+      label: 'Categories',
+      href: '/categories',
+    },
+  ];
   return (
-    <div className="bg-main/60 sticky top-0 z-10 flex h-20 items-center justify-around py-4 backdrop-blur-md">
+    <div className="sticky top-0 z-10 flex h-20 items-center justify-around py-4">
       <div className="m-auto flex w-3/4 items-center justify-between">
         <div className="flex items-center gap-4">
           {/* logo */}
@@ -15,16 +29,16 @@ const Header = () => {
           </Link>
         </div>
         {/* nav */}
-        <div className="flex items-center gap-4">
-          <Link href="/about" className="text-fore">
-            About
-          </Link>
-          <Link href="/posts" className="text-fore">
-            Posts
-          </Link>
-          <Link href="/categories" className="text-fore">
-            Categories
-          </Link>
+        <div className="bg-fore/5 flex items-center gap-4 rounded-2xl px-4 py-2 shadow-md backdrop-blur-md">
+          {links.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="text-fore transition-all hover:underline"
+            >
+              {link.label}
+            </Link>
+          ))}
           <ThemeToggle />
         </div>
       </div>

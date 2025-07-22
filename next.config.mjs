@@ -21,6 +21,10 @@ const options = {
   /* 是否保留背景色 */
   keepBackground: false,
   defaultLang: 'typescript',
+  theme: {
+    light: 'github-light',
+    dark: 'github-dark',
+  },
 };
 
 const withMDX = nextMDX({
