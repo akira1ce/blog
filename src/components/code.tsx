@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 interface CodeProps {
   children: string;
@@ -11,10 +11,11 @@ interface CodeProps {
 
 const Code = ({ children, className, ...props }: CodeProps) => {
   const [copied, setCopied] = useState(false);
+  const preRef = useRef<HTMLPreElement>(null);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(children);
+      await navigator.clipboard.writeText(preRef.current?.innerText || '');
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -24,7 +25,7 @@ const Code = ({ children, className, ...props }: CodeProps) => {
 
   return (
     <div className="group relative">
-      <pre className={className} {...props}>
+      <pre ref={preRef} className={className} {...props}>
         {children}
       </pre>
       <button
