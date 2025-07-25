@@ -114,27 +114,6 @@ const Page = () => {
               </div>
             </section>
 
-            {/* Interests */}
-            <section className="space-y-4">
-              <h2 className="text-fore text-2xl font-bold">兴趣爱好</h2>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="hover:bg-main/10 flex items-start gap-3 rounded-lg p-4 transition-colors">
-                  <span className="text-2xl">🎮</span>
-                  <div>
-                    <h3 className="text-fore font-medium">CS:GO</h3>
-                    <p className="text-fore/60 text-sm">射击游戏爱好者</p>
-                  </div>
-                </div>
-                <div className="hover:bg-main/10 flex items-start gap-3 rounded-lg p-4 transition-colors">
-                  <span className="text-2xl">💻</span>
-                  <div>
-                    <h3 className="text-fore font-medium">编程</h3>
-                    <p className="text-fore/60 text-sm">探索前端技术的无限可能</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             {/* Quote */}
             <section className="space-y-4">
               <blockquote className="rounded-r-lg border-l-4 border-blue-500 bg-blue-50/50 py-2 pl-6 dark:bg-blue-900/10">
