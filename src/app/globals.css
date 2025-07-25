@@ -58,7 +58,7 @@
 
 /* Code block styles */
 .prose-custom pre {
-  @apply bg-main/5 dark:bg-main/80 overflow-x-auto rounded-lg p-4;
+  @apply bg-fore/5 dark:bg-fore/5 overflow-x-auto rounded-lg p-4;
   @apply border border-gray-200 dark:border-gray-700;
   font-family: inherit;
 }
