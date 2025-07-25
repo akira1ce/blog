@@ -72,7 +72,7 @@ const result = use(_api3())
 
 `Suspense` 能够捕获到子组件首次渲染的异常。因此我们常常将 `Suspense` 当成一种组件错误边界来处理。
 
-```JavaScript
+```js
 import {use, Suspense} from 'react'
 import Message from './Message'
 
@@ -111,7 +111,7 @@ Suspense 提供了一个加载数据的标准。在源码中，Suspense 的子�
 
 当 `primary` 中的 promise 执行完成时「resolve」，会执行刚才保存的 `then` 方法，此时会触发 `Suspense` 再次执行「调度一个更新任务」。由于此时 `primary` 中的 promise 已经 resolve，因此此时就可以拿到数据直接渲染 `primary` 组件。
 
-```Shell
+```bash
 Suspense ->
 primary -> 
 Suspense -> 
@@ -127,7 +127,7 @@ primary ->
 
 Suspense + use
 
-```JavaScript
+```js
 export default function Index() {
   const promise = getMessage()
   return (
@@ -140,7 +140,7 @@ export default function Index() {
 
 useEffect
 
-```JavaScript
+```js
 export default function Index() {
   const [content, update] = useState({value: ''})
   const [loading, setLoading] = useState(true)
@@ -166,7 +166,7 @@ export default function Index() {
 
 默认 `promise` 为 `null`，通过事件更新 promise 状态。
 
-```JavaScript
+```js
 import {use, useState, Suspense} from 'react'
 import Message from './Message'
 import Skeleton from './Skeleton'
@@ -208,7 +208,7 @@ function Content(props) {
 
 只需要给 promise 一个默认的初始值即可。
 
-```JavaScript
+```js
 import {use, useState, Suspense} from 'react'
 import Message from './Message'
 import Skeleton from './Skeleton'
