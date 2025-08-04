@@ -1,0 +1,43 @@
+---
+title: Vite 常见问题
+category: ['Troubleshooting']
+slug: fix-vite-pitfalls
+date: 2024-12-08
+summary: 汇总使用 Vite 过程中踩过的一些坑点与踩雷经验，帮助规避常见问题。
+---
+
+# 环境变量无法访问
+
+**问题描述：**
+
+在 `.env` 文件中定义了自定义环境变量，但在代码中通过 `import.meta.env.xxx` 无法获取到值。
+
+**解决方案：**
+
+Vite 出于安全考虑，只会将以 `VITE_` 前缀开头的环境变量暴露给客户端代码。
+
+确保环境变量名以 `VITE_` 开头：
+
+# 动态导入限制
+
+**问题描述：**
+
+![alt text](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191353392.jpg)
+
+**解决方案：**
+
+在 vite 中动态导入存在一些限制:
+
+1. 导入必须以./或../开头
+2. 导入必须以文件扩展名结尾
+3. 导入到您自己的目录必须指定文件名模式
+
+[dynamic-import-vars](https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations)
+
+在部分动态导入的场景中，例如路由的动态加载「后端路由」
+
+`(await import(`xxx$\{xxx}.tsx`))` vite 就会发出 warning 警告。
+
+这里主要是会影响 vite 的分析过程。
+
+通过 `import.meta.glob` 方式引入全部组件，再动态选取。
