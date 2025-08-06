@@ -63,7 +63,7 @@
 
   /* Image styles */
   img {
-    @apply rounded-xl object-cover dark:invert;
+    @apply border-main/10 rounded-xl border object-cover dark:invert;
   }
 
   /* Code block styles */

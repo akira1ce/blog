@@ -6,7 +6,7 @@ export const PostCard = ({ post, className }: { post: FrontMatter; className?: s
   return (
     <Link
       className={cn(
-        'bg-fore/10 hover:bg-fore/20 relative flex flex-col gap-2 rounded-xl p-4 shadow transition-all duration-300',
+        'bg-fore/10 hover:bg-fore/20 relative flex flex-col gap-2 rounded-xl p-4 shadow transition-all duration-300 hover:scale-95',
         className,
       )}
       href={`/posts/${post.slug}`}

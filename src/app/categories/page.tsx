@@ -7,19 +7,18 @@ const Page = async () => {
   return (
     <>
       <div className="mb-12 text-center text-3xl font-bold underline">Categories</div>
-      <FadeInUp>
-        <div className="flex flex-wrap gap-4">
-          {categories.map((category) => (
+      <div className="flex flex-wrap gap-4">
+        {categories.map((category, index) => (
+          <FadeInUp key={category.name} delay={index * 0.05}>
             <Link
-              className="cursor-pointer rounded-xl bg-blue-500/10 p-2 transition-all duration-300 hover:scale-105"
-              key={category.name}
+              className="bg-fore/10 cursor-pointer rounded-xl p-2 transition-all duration-300 hover:scale-105"
               href={`/categories/${category.name}`}
             >
               {category.name} ({category.count})
             </Link>
-          ))}
-        </div>
-      </FadeInUp>
+          </FadeInUp>
+        ))}
+      </div>
     </>
   );
 };
