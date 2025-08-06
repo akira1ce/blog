@@ -6,7 +6,7 @@
   "scripts": {
     "gen-posts-index": "node scripts/gen-posts-index.js",
     "dev": "npm run gen-posts-index && next dev",
-    "build": "next build",
+    "build": "npm run gen-posts-index && next build",
     "start": "next start",
     "lint": "next lint"
   },
