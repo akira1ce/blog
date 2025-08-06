@@ -13,13 +13,6 @@ export const PostCard = ({ post, className }: { post: FrontMatter; className?: s
     >
       <div className="text-fore text-lg font-bold">{post.title}</div>
       <div className="text-fore/50 line-clamp-1 text-sm">{post.summary}</div>
-      <div className="flex flex-wrap gap-1">
-        {post.category.map((c) => (
-          <span key={c} className="text-fore/60 bg-fore/10 rounded-xl px-2 py-1 text-xs">
-            #{c}
-          </span>
-        ))}
-      </div>
       <div className="text-fore/50 absolute top-4 right-4 text-end text-sm">{post.date}</div>
     </Link>
   );

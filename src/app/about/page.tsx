@@ -17,8 +17,8 @@ const Page = () => {
               className="m-auto mb-4 rounded-full"
               src="/avatar.jpg"
               alt="Akira1ce"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
             />
 
             <h1 className="text-fore text-4xl font-bold">

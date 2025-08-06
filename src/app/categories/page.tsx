@@ -11,7 +11,7 @@ const Page = async () => {
         <div className="flex flex-wrap gap-4">
           {categories.map((category) => (
             <Link
-              className="cursor-pointer rounded-md bg-blue-500/10 p-2 transition-all duration-300 hover:scale-105"
+              className="cursor-pointer rounded-xl bg-blue-500/10 p-2 transition-all duration-300 hover:scale-105"
               key={category.name}
               href={`/categories/${category.name}`}
             >

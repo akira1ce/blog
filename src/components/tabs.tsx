@@ -32,14 +32,14 @@ export const Tabs = ({ children }: TabsProps) => {
               key={label}
               onClick={() => setActiveTab(label)}
               className={cn(
-                'relative cursor-pointer rounded-md px-2 py-1 transition-colors',
+                'relative cursor-pointer rounded-xl px-2 py-1 transition-colors',
                 isActive ? 'font-bold' : 'hover:bg-fore/10 font-normal',
               )}
             >
               {label}
               {isActive && (
                 <motion.div
-                  className="bg-fore/15 absolute bottom-0 left-0 h-full w-full rounded-md"
+                  className="bg-fore/15 absolute bottom-0 left-0 h-full w-full rounded-xl"
                   layoutId="tab-active"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />

@@ -11,7 +11,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="bg-fore/20 text-fore hover:bg-fore/10 rounded-lg px-6 py-3 font-medium transition-colors duration-200"
+        className="bg-fore/20 text-fore hover:bg-fore/10 rounded-xl px-6 py-3 font-medium transition-colors duration-200"
       >
         Back to Home
       </Link>
