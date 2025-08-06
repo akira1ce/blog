@@ -5,31 +5,37 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
-  html.light {
-    /* Light theme variables */
-    --bg-main: #ffffff;
-    --bg-fore: #09090b;
-    --bg-card: #fafafa;
-  }
+  html {
+    &.light {
+      /* Light theme variables */
+      --bg-main: #ffffff;
+      --bg-fore: #09090b;
+      --bg-card: #fafafa;
+    }
 
-  html.dark {
-    /* Dark theme variables */
-    --bg-main: #09090b;
-    --bg-fore: #ffffff;
-    --bg-card: #18181b;
-  }
+    &.dark {
+      /* Dark theme variables */
+      --bg-main: #09090b;
+      --bg-fore: #ffffff;
+      --bg-card: #18181b;
+    }
 
-  /* code-block dark-light mode */
-  html.light .shiki,
-  html.light .shiki span {
-    color: var(--shiki-light) !important;
-    background-color: var(--shiki-light-bg) !important;
-  }
+    /* code-block dark-light mode */
+    &.light {
+      .shiki,
+      .shiki span {
+        color: var(--shiki-light) !important;
+        background-color: var(--shiki-light-bg) !important;
+      }
+    }
 
-  html.dark .shiki,
-  html.dark .shiki span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
+    &.dark {
+      .shiki,
+      .shiki span {
+        color: var(--shiki-dark) !important;
+        background-color: var(--shiki-dark-bg) !important;
+      }
+    }
   }
 }
 
@@ -54,29 +60,34 @@
   @apply prose-li:my-1;
   @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
   @apply mx-auto max-w-4xl px-6 py-8;
-}
 
-/* Code block styles */
-.prose-custom pre {
-  @apply bg-fore/5 dark:bg-fore/5 overflow-x-auto rounded-lg p-4;
-  @apply border border-gray-200 dark:border-gray-700;
-  font-family: inherit;
-}
+  /* Image styles */
+  img {
+    @apply rounded-xl object-cover dark:invert;
+  }
 
-.prose-custom code {
-  font-family: inherit;
-}
+  /* Code block styles */
+  pre {
+    @apply bg-fore/5 dark:bg-fore/5 overflow-x-auto rounded-xl p-4;
+    @apply border border-gray-200 dark:border-gray-700;
+    font-family: inherit;
+  }
 
-/* Inline code styles */
-.prose-custom :not(pre) > code {
-  @apply text-fore rounded bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
-  @apply border border-gray-200 dark:border-gray-700;
-  font-family: inherit;
-}
+  code {
+    font-family: inherit;
+  }
 
-.prose-custom :not(pre) > code::before,
-.prose-custom :not(pre) > code::after {
-  content: '';
+  /* Inline code styles */
+  :not(pre) > code {
+    @apply text-fore rounded bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    font-family: inherit;
+
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
 }
 
 /* scrollbar */
@@ -113,8 +124,7 @@
   transform-origin: top left;
 }
 
-::view-transition-old(root),
-.dark::view-transition-old(root) {
+::view-transition-old(root) {
   animation: scale 1s;
   transform-origin: top left;
   z-index: -1;
