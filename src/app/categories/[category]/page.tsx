@@ -1,5 +1,5 @@
-import { getPostsByCategory } from '@/lib/posts';
-import { PostLink } from '@/components/post-link';
+import { getPostsByCategory, getCategories } from '@/lib/posts';
+import { PostCard } from '@/components/post-link';
 import { FadeInUp } from '@/components/fade-in-up';
 
 export interface Params {
@@ -9,6 +9,16 @@ export interface Params {
 interface Props {
   params: Promise<Params>;
 }
+
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  return categories.map((category) => ({
+    category: category.name,
+  }));
+}
+
+export const revalidate = 3600;
+export const dynamicParams = true;
 
 export default async function Page({ params }: Props) {
   const { category } = await params;
@@ -20,7 +30,7 @@ export default async function Page({ params }: Props) {
       <FadeInUp>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {posts.map((post) => (
-            <PostLink className="col-span-1" key={post.slug} post={post} />
+            <PostCard className="col-span-1" key={post.slug} post={post} />
           ))}
         </div>
       </FadeInUp>

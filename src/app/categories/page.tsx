@@ -14,7 +14,6 @@ const Page = async () => {
               className="cursor-pointer rounded-md bg-blue-500/10 p-2 transition-all duration-300 hover:scale-105"
               key={category.name}
               href={`/categories/${category.name}`}
-              prefetch={false}
             >
               {category.name} ({category.count})
             </Link>

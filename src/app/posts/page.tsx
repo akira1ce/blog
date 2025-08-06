@@ -1,6 +1,6 @@
 import { getAllPosts } from '@/lib/posts';
 import { FadeInUp } from '@/components/fade-in-up';
-import { PostLink } from '@/components/post-link';
+import { PostCard } from '@/components/post-link';
 
 const Page = async () => {
   const posts = await getAllPosts();
@@ -11,7 +11,7 @@ const Page = async () => {
       <FadeInUp>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {posts.map((post, index) => (
-            <PostLink key={post.slug} post={post} className="col-span-1" />
+            <PostCard key={post.slug} post={post} className="col-span-1" />
           ))}
         </div>
       </FadeInUp>

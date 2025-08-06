@@ -11,7 +11,7 @@ interface Props {
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
-  return posts.splice(0, 10).map((post) => ({ slug: post.slug }));
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export const revalidate = 3600;
@@ -36,7 +36,7 @@ export default async function Page({ params }: Props) {
         <div className="text-fore mb-4 text-center text-3xl font-bold underline">
           {matter?.title}
         </div>
-        <div className="text-fore/50 text-center text-sm">{matter?.date.toLocaleDateString()}</div>
+        <div className="text-fore/50 text-center text-sm">{matter?.date}</div>
       </div>
       <article className="prose-custom shiki">
         <Post />
