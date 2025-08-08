@@ -1,0 +1,96 @@
+---
+title: UMI3 中集成 TailwindCSS
+category: ['Frontend']
+slug: fe-umi-tailwindcss
+date: 2025-08-08
+summary: 在 UMI3 项目中配置和使用 TailwindCSS，解决热更新问题的完整指南
+---
+
+> **注意：** UMI4+ 已经内置了 TailwindCSS 支持，只需在 `.umirc` 中配置即可。本文主要针对 UMI3 项目。
+
+## 安装依赖
+
+首先安装 TailwindCSS 及其相关依赖：
+
+```bash
+yarn add -D tailwindcss@3 autoprefixer postcss@8
+```
+
+## 配置文件
+
+### 1. 创建 TailwindCSS 样式文件
+
+在 `src/` 目录下创建 `tailwind.css` 文件：
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### 2. 配置 TailwindCSS
+
+创建 `tailwind.config.js` 配置文件：
+
+```js
+/** @type {import('tailwindcss').Config} */
+export default {
+  mode: 'all',
+  content: ['./src/**/*.{js,jsx,tsx}'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+### 3. 配置 UMI
+
+在 `.umirc` 文件中添加 PostCSS 插件：
+
+```js
+export default {
+  extraPostCSSPlugins: [require('tailwindcss'), require('autoprefixer')],
+};
+```
+
+### 4. 引入样式文件
+
+在你的入口页面或全局样式中引入 `tailwind.css` 文件。
+
+## 热更新问题及解决方案
+
+配置完成后，你可能会遇到一个问题：**修改 TailwindCSS 类名时，样式不会热更新**。每次都需要删除 `.umi` 目录并重新运行项目才能看到效果。
+
+### 临时解决方案
+
+目前没有完美的解决方案，但可以通过以下方式实现类似热更新的效果：
+
+1. **单独启动 TailwindCSS 编译进程**
+
+在 `package.json` 中添加以下脚本：
+
+```json
+{
+  "scripts": {
+    "tw": "tailwindcss -i ./src/tailwind.css -o ./public/output.css --watch",
+    "dev": "cross-env APP_TYPE=site umi dev",
+    "build": "umi build"
+  }
+}
+```
+
+2. **开发时的工作流程**
+
+- 启动两个终端
+- 第一个终端运行：`yarn tw`（启动 TailwindCSS 监听）
+- 第二个终端运行：`yarn dev`（启动 UMI 开发服务器）
+- 每次添加新的 CSS 类后，在 `tailwind.css` 文件中随意保存一下即可触发重新编译
+
+3. **本地配置覆盖**
+
+可以通过 `.umirc.local` 文件来覆盖本地开发环境的配置，实现更好的开发体验。
+
+## 总结
+
+虽然在 UMI3 中集成 TailwindCSS 存在热更新的问题，但通过上述配置和工作流程，仍然可以实现相对流畅的开发体验。建议条件允许的情况下升级到 UMI4+，可以享受更好的 TailwindCSS 集成体验。
