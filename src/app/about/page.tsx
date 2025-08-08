@@ -113,19 +113,12 @@ const Page = () => {
                 </p>
               </div>
             </section>
-
-            {/* Quote */}
-            <section className="space-y-4">
-              <blockquote className="rounded-r-lg border-l-4 border-blue-500 bg-blue-50/50 py-2 pl-6 dark:bg-blue-900/10">
-                <p className="text-fore/80 text-lg italic">"放弃和认命，是一条没有尽头的下坡路"</p>
-              </blockquote>
-            </section>
           </div>
         </FadeInUp>
 
         {/* Footer */}
         <div className="pt-8 text-center">
-          <p className="text-fore/60">感谢你来到我的小站 🥳</p>
+          <p className="text-fore/60">「 放弃和认命，是一条没有尽头的下坡路 」</p>
         </div>
       </div>
     </div>

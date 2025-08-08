@@ -79,7 +79,7 @@
 
   /* Inline code styles */
   :not(pre) > code {
-    @apply text-fore rounded bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
+    @apply text-fore rounded-xl bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
     @apply border border-gray-200 dark:border-gray-700;
     font-family: inherit;
 

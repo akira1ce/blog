@@ -30,7 +30,7 @@ const Code = ({ children, className, ...props }: CodeProps) => {
       </pre>
       <button
         onClick={handleCopy}
-        className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded px-2 py-1 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
         aria-label="Copy code"
       >
         {copied ? <Check size={16} /> : <Copy size={16} />}
