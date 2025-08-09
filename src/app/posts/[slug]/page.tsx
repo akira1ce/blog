@@ -33,7 +33,7 @@ export default async function Page({ params }: Props) {
   }
   return (
     <>
-      <div className="mb-10">
+      <div className="my-10">
         <div className="text-fore mb-4 text-center text-3xl font-bold underline">
           {matter?.title}
         </div>
@@ -58,7 +58,9 @@ export default async function Page({ params }: Props) {
           className="fixed top-40 right-10 hidden max-h-[60vh] w-64 overflow-auto xl:block"
           maxLevel={4}
         />
-        <div className="h-100">footer</div>
+        <footer className="border-fore/10 text-fore/60 mt-20 gap-2 border-t pt-10 text-center">
+          is done, by akira1ce.
+        </footer>
       </div>
     </>
   );

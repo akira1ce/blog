@@ -17,7 +17,7 @@ const Header = () => {
     },
   ];
   return (
-    <div className="sticky top-0 z-10 flex h-20 items-center justify-around py-4">
+    <div className="bg-main/20 sticky top-0 z-10 flex h-20 items-center justify-around py-4 backdrop-blur">
       <div className="m-auto flex w-3/4 items-center justify-between">
         <div className="flex items-center gap-4">
           {/* logo */}
@@ -29,7 +29,7 @@ const Header = () => {
           </Link>
         </div>
         {/* nav */}
-        <div className="bg-fore/5 flex items-center gap-4 rounded-2xl px-4 py-2 shadow-md backdrop-blur-md">
+        <div className="flex items-center gap-4 rounded-2xl px-4 py-2">
           {links.map((link) => (
             <Link
               key={link.label}
