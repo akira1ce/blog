@@ -1,6 +1,7 @@
 import { getAllPosts, getPostBySlug } from '@/lib/posts';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { TableOfContents } from '@/components/table-of-contents';
 
 export interface Params {
   slug: string;
@@ -49,9 +50,16 @@ export default async function Page({ params }: Props) {
           ))}
         </div>
       </div>
-      <article className="prose-custom shiki">
-        <Post />
-      </article>
+      <div className="relative">
+        <article className="prose-custom shiki">
+          <Post />
+        </article>
+        <TableOfContents
+          className="fixed top-40 right-10 hidden max-h-[60vh] w-64 overflow-auto xl:block"
+          maxLevel={4}
+        />
+        <div className="h-100">footer</div>
+      </div>
     </>
   );
 }
