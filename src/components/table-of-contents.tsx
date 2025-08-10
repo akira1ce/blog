@@ -63,7 +63,7 @@ export const TableOfContents = ({
 }: TableOfContentsProps) => {
   const [headings, setHeadings] = useState<TocHeading[]>([]);
   const { activeId, scrollToHeading } = useTableOfContentsHighlight();
-  const activeItemRef = useRef<HTMLLIElement>(null);
+  const activeItemRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Extract headings after component mounts
@@ -92,19 +92,19 @@ export const TableOfContents = ({
       aria-label="Table of contents"
     >
       <div className="text-fore/70 mb-3 text-sm font-semibold tracking-wide uppercase">目录</div>
-      <ol className="space-y-1">
+      <div className="space-y-1">
         {headings.map((heading) => {
           const isActive = activeId === heading.id;
           const indent = (heading.level - 1) * 12; // 12px per level
 
           return (
-            <li
+            <div
               key={heading.id}
               style={{ paddingLeft: `${indent}px` }}
               className="relative"
               ref={isActive ? activeItemRef : null}
             >
-              <button
+              <div
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToHeading(heading.id);
@@ -115,17 +115,17 @@ export const TableOfContents = ({
                 )}
               >
                 {heading.text}
-              </button>
+              </div>
               {isActive && (
                 <motion.div
-                  className="bg-fore absolute -left-4 h-full w-1"
+                  className="bg-fore absolute top-0 -left-4 h-full w-0.5"
                   layoutId="toc-active-indicator"
                 ></motion.div>
               )}
-            </li>
+            </div>
           );
         })}
-      </ol>
+      </div>
     </nav>
   );
 };
