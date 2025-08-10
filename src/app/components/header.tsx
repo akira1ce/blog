@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ThemeToggle } from '../../components/theme-toggle';
+import GlobalSearch from './global-search';
 
 const Header = () => {
   const links = [
@@ -30,6 +31,7 @@ const Header = () => {
         </div>
         {/* nav */}
         <div className="flex items-center gap-4 rounded-2xl px-4 py-2">
+          <GlobalSearch />
           {links.map((link) => (
             <Link
               key={link.label}
