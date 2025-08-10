@@ -15,7 +15,9 @@ const GlobalSearch = () => {
   const filteredPosts = useMemo(() => {
     if (!search.length) return posts.slice(0, 10);
     return posts.filter((post) =>
-      (post.title + post.summary).toLowerCase().includes(search.toLowerCase()),
+      (post.title + ' ' + post.summary + ' ' + post.slug)
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [posts, search]);
 
