@@ -2,263 +2,176 @@
 title: Next.js 博客开发
 category: ['Frontend']
 slug: fe-nextjs-blog-build
-date: 2025-06-13
+date: 2025-08-11
 summary: '一个使用 Next.js 和 MDX 构建的现代化博客系统，支持主题切换、代码高亮和页面过渡动画'
 ---
 
 import { Tabs, TabItem } from '@/components/tabs';
 
+# 技术选型
+
+本文将详细介绍一个基于 Next.js 15 构建的现代化博客系统的技术实现，主要涵盖以下几个核心功能：
+
+- **代码高亮系统** - 基于 Shiki 的语法高亮
+- **主题切换功能** - 支持明暗主题无缝切换
+- **文章索引缓存** - 基于 JSON 的文章元数据缓存
+- **MDX 渲染引擎** - 支持 React 组件的 Markdown 渲染
+- **Markdown 样式** - 基于 Tailwind CSS Typography 的样式系统
+
 # 目录结构
 
-`let a = 1;`
-
-```bash
-blog
-├─ public
-│  ├─ file.svg
-│  ├─ globe.svg
-│  ├─ logo.jpg
-│  ├─ next.svg
-│  ├─ vercel.svg
-│  └─ window.svg
-├─ src
-│  ├─ app
-│  │  ├─ [slug]
-│  │  │  └─ page.tsx
-│  │  ├─ about
-│  │  │  └─ page.tsx
-│  │  ├─ components
-│  │  │  └─ header.tsx
-│  │  ├─ favicon.ico
-│  │  ├─ globals.css
-│  │  ├─ layout.tsx
-│  │  ├─ page.tsx
-│  │  └─ posts
-│  │     └─ page.tsx
-│  ├─ components
-│  │  ├─ FadeInUp.tsx
-│  │  ├─ theme-provider.tsx
-│  │  └─ theme-toggle.tsx
-│  ├─ lib
-│  │  ├─ posts.ts
-│  │  └─ utils.ts
-│  └─ posts
-│     ├─ build-blog-with-nextjs.mdx
-│     ├─ motion.mdx
-│     ├─ nextjs.mdx
-│     └─ react-core.mdx
-├─ .prettierrc
-├─ mdx-components.tsx
-├─ next.config.mjs
-├─ package.json
-├─ postcss.config.mjs
-├─ tailwind.config.ts
-├─ tsconfig.json
-└─ yarn.lock
+```
+blog/
+├── src/
+│   ├── app/                   # Next.js App Router
+│   │   ├── posts/[slug]/      # 动态路由
+│   │   └── components/        # 应用级组件
+│   ├── components/            # 可复用组件
+│   ├── contents/              # MDX 文章
+│   ├── lib/                   # 工具函数
+│   └── hooks/                 # 自定义 Hooks
+├── scripts/                   # 构建脚本
+├── public/                    # 静态资源
+└── mdx-components.tsx         # MDX 组件配置
 ```
 
-mdx 文章存放在 `@/posts` 通过 fs 读取。
+# 代码高亮
 
-由于选择了 tailwindcss 会导致一些基本的dom样式丢失。
+项目采用 **Shiki** 作为代码高亮引擎，通过 **rehype-pretty-code** 插件集成到 MDX 处理流程中。
 
-比如说 h1 h2 p li 等等。
-
-这里采用的方案是使用官方工具 `@tailwindcss/typography`
-
-yarn add @tailwindcss/typography -D
-
-通过 @plugin 加载插件。
-
-> 这里是tailwind4的新功能，实际作用和在 tailwindcss.config.ts 中配置是一样的。
-
-```css
-@plugin "@tailwindcss/typography";
+```json
+{
+  "dependencies": {
+    "rehype-pretty-code": "^0.14.1",
+    "shiki": "^3.6.0"
+  }
+}
 ```
-
-然后在 article 上加上内置的类名即可。
-
-具体用法查看：[@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography)
-
-暗色模式直接通过 class 控制。
-
-```html
-<article className="prose dark:prose-invert">
-```
-
-# mdx 渲染
-
-[mdx-in-nextjs](https://nextjs.org/docs/app/guides/mdx)
-
-基本上就是按照官方文档来。
-
-值得注意是，最好不要使用 turbopack 去构建，有些插件可能无法使用。
-
-> 目前由于无法将 JavaScript 函数传递给 Rust，因此在 Turbopack 中还不能使用带有非序列化选项的 remark 和 rehype 插件
-
-## 安装 mdx 相关包
-```bash
-
-yarn add @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
-
-# 安装 rehype、remark 插件
-yarn add rehype-slug rehype-pretty-code remark-frontmatter remark-gfm
-```
-
-## 配置 mdx-components.tsx
-
-根目录下创建 mdx-components.tsx 文件。
 
 <Tabs>
-  <TabItem label="mdx-components.tsx">
-    ```tsx
-    import type { MDXComponents } from 'mdx/types';
+  <TabItem label="next.config.mjs">
+    ```javascript
+    import nextMDX from '@next/mdx';
+    import rehypePrettyCode from 'rehype-pretty-code';
+    import rehypeSlug from 'rehype-slug';
+    import remarkFrontmatter from 'remark-frontmatter';
+    import remarkGfm from 'remark-gfm';
 
-    export function useMDXComponents(components: MDXComponents): MDXComponents {
-      return { ...components };
-    }
+    /** @type {import('rehype-pretty-code').Options} */
+    const options = {
+      /* 是否保留背景色 */
+      keepBackground: false,
+      defaultLang: 'typescript',
+      theme: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
+    };
+
+    const withMDX = nextMDX({
+      extension: /\.(md|mdx)$/,
+      options: {
+        remarkPlugins: [remarkFrontmatter, remarkGfm],
+        rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
+      },
+    });
+
+    export default withMDX(nextConfig);
     ```
   </TabItem>
 </Tabs>
 
-## 配置 next.config.mjs
-
-注意这里必须是 ESM 模块，mjs 才可以，否则会报错。
-
-主要原因是因为 rehype-pretty-code 依赖的 shiki 包是 ESM 模块。
-
-> This package is ESM-only and currently supports shiki ^1.0.0.
->
-> To use the latest version in Next.js, ensure your config file is ESM: next.config.mjs. Here’s a full example: rehype-pretty-code/examples/next/next.config.mjs
-
-
-```tsx
-/**
- * @typedef {import('next').NextConfig} NextConfig
- * @typedef {Array<((config: NextConfig) => NextConfig)>} NextConfigPlugins
- */
-import nextMDX from '@next/mdx';
-import rehypeSlug from 'rehype-slug';
-import rehypePrettyCode from 'rehype-pretty-code';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-
-/** @type {NextConfig} */
-const nextConfig = {
-  cleanDistDir: true,
-  reactStrictMode: true,
-  poweredByHeader: false,
-  pageExtensions: ['md', 'mdx', 'tsx', 'ts', 'jsx', 'js'],
-};
-
-/** @type {import('rehype-pretty-code').Options} */
-const options = {
-  /* 是否保留背景色 */
-  keepBackground: false,
-  defaultLang: 'plaintext',
-  /* 是否跳过内联代码 */
-  bypassInlineCode: true,
-};
-
-const withMDX = nextMDX({
-  extension: /\.(md|mdx)$/,
-  options: {
-    /* 解析 frontmatter & 解析 gfm */
-    remarkPlugins: [remarkFrontmatter, remarkGfm],
-    /* 代码高亮 & 锚点 */
-    rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
-  },
-});
-
-export default withMDX(nextConfig);
-
-```
-
-## 渲染 mdx 文件
-
-直接通过 import 导入 mdx 文件，在 jsx 中渲染。
-
-```tsx
-export interface Params {
-  slug: string;
-}
-
-interface Props {
-  params: Promise<Params>;
-}
-
-export default async function Page({ params }: Props) {
-  const { slug } = await params;
-
-  const { default: Post } = await import(`@/posts/${slug}.mdx`);
-
-  return (
-    <article className="prose dark:prose-invert mx-auto max-w-4xl px-6 py-8">
-      <Post />
-    </article>
-  );
-}
-```
-
-
-# Dark Mode
-
-## tailwindcss
-
-核心： 
-
-1. 将 dark-mode 转为 class 模式。
-
-2. 通过 css 变量控制，深色浅色模式变化。
-
-> tailwind4 中新增通过 @指令 方式去设置 tailwindcss 配置。
->
-> 实际效果和在config.ts 配置一样。
-
+通过 CSS 变量实现主题适配的代码高亮：
 
 ```css
-/* global.css */
-/* tailwindcss-directives */
-@import 'tailwindcss';
-/* 加载插件 */
-@plugin "@tailwindcss/typography";
-
-/* dark-mode -> class: dark */
-@custom-variant dark (&:where(.dark, .dark *));
-
-@layer base {
-  html.light {
-    /* Light theme variables */
-    --bg-main: #ffffff;
-    --bg-fore: #09090b;
-    --bg-card: #fafafa;
+/* globals.css */
+html {
+  &.light {
+    .shiki,
+    .shiki span {
+      color: var(--shiki-light) !important;
+      background-color: var(--shiki-light-bg) !important;
+    }
   }
 
-  html.dark {
-    /* Dark theme variables */
-    --bg-main: #09090b;
-    --bg-fore: #ffffff;
-    --bg-card: #18181b;
+  &.dark {
+    .shiki,
+    .shiki span {
+      color: var(--shiki-dark) !important;
+      background-color: var(--shiki-dark-bg) !important;
+    }
   }
-}
-
-/* @theme inline 指令 - 允许使用 var() 函数 */
-/* 将 css 变量映射到 tailwindcss 中 */
-/* colors 会自动生成到 [bg-*,text-*,shadow-*,...] */
-/* 通过 className={'bg-main text-fore'} 使用 */
-@theme inline {
-  --color-main: var(--bg-main);
-  --color-fore: var(--bg-fore);
-  --color-card: var(--bg-card);
 }
 ```
 
-## nextjs
+## 复制功能
 
-通过 next-themes 包实现。
+<Tabs>
+  <TabItem label="code.tsx">
+    ```tsx
+    'use client';
 
-`yarn add next-themes`
+    import { Check, Copy } from 'lucide-react';
+    import { useRef, useState } from 'react';
 
-### theme-provider
+    interface CodeProps {
+      children: string;
+      className?: string;
+      [key: string]: any;
+    }
+
+    const Code = ({ children, className, ...props }: CodeProps) => {
+      const [copied, setCopied] = useState(false);
+      const preRef = useRef<HTMLPreElement>(null);
+
+      const handleCopy = async () => {
+        try {
+          await navigator.clipboard.writeText(preRef.current?.innerText || '');
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+          console.error('Failed to copy text: ', err);
+        }
+      };
+
+      return (
+        <div className="group relative">
+          <pre ref={preRef} className={className} {...props}>
+            {children}
+          </pre>
+          <button
+            onClick={handleCopy}
+            className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+            aria-label="Copy code"
+          >
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+          </button>
+        </div>
+      );
+    };
+
+    export default Code;
+    ```
+  </TabItem>
+</Tabs>
+
+通过 `mdx-components.tsx` 将自定义组件映射到 MDX：
+
+```tsx
+import type { MDXComponents } from 'mdx/types';
+import Code from './src/components/code';
+
+export function useMDXComponents(components: MDXComponents): MDXComponents {
+  return {
+    ...components,
+    pre: Code, // 将 pre 标签替换为自定义组件
+  };
+}
+```
+
+# Dark Theme
+
+使用 **next-themes** 库实现主题管理，结合 **View Transition API** 提供流畅的切换动画。
 
 <Tabs>
   <TabItem label="theme-provider.tsx">
@@ -273,6 +186,26 @@ export default async function Page({ params }: Props) {
     }
     ```
   </TabItem>
+  <TabItem label="layout.tsx">
+    ```tsx
+    export default function RootLayout({
+      children,
+    }: {
+      children: React.ReactNode;
+    }) {
+      return (
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${mapleMono.className} bg-main w-full antialiased`}>
+            <ThemeProvider attribute="class" defaultTheme="system">
+              <Header />
+              <main className="m-auto w-3/4 py-10">{children}</main>
+            </ThemeProvider>
+          </body>
+        </html>
+      );
+    }
+    ```
+  </TabItem>
   <TabItem label="theme-toggle.tsx">
     ```tsx
     'use client';
@@ -282,7 +215,7 @@ export default async function Page({ params }: Props) {
     import { useEffect, useState } from 'react';
 
     export function ThemeToggle() {
-      const { theme, setTheme } = useTheme();
+      const { theme, setTheme, systemTheme } = useTheme();
       const [mounted, setMounted] = useState(false);
 
       /* 切换主题 */
@@ -291,7 +224,7 @@ export default async function Page({ params }: Props) {
           setTheme(theme === 'dark' ? 'light' : 'dark');
         };
 
-        /* 使用 startViewTransition 实现动画 */
+        // 使用 View Transition API 实现动画
         if (!document.startViewTransition) switchTheme();
         else document.startViewTransition(switchTheme);
       };
@@ -301,9 +234,10 @@ export default async function Page({ params }: Props) {
         setMounted(true);
       }, []);
 
+      // 防止水合不匹配的占位符
       if (!mounted) {
         return (
-          <button className="flex h-9 w-9 items-center justify-center rounded-md">
+          <button className="flex h-9 w-9 items-center justify-center rounded-xl">
             <div className="h-4 w-4" />
           </button>
         );
@@ -312,7 +246,7 @@ export default async function Page({ params }: Props) {
       return (
         <button
           onClick={handleThemeToggle}
-          className="bg-main hover:bg-fore/10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full transition-all duration-300 hover:scale-120 hover:rotate-270"
           aria-label="切换主题"
         >
           {theme === 'dark' ? (
@@ -327,40 +261,45 @@ export default async function Page({ params }: Props) {
   </TabItem>
 </Tabs>
 
-### layout
+## CSS Variables
 
-```tsx
-/* /src/app/layout.tsx */
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-main min-h-screen w-screen antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Header />
-          <main className="m-auto w-3/4 flex-1 py-4">{children}</main>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+使用 Tailwind CSS 4 的新特性实现主题变量：
+
+```css
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+/* 声明暗黑模式为 class 模式 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    &.light {
+      --bg-main: #ffffff;
+      --bg-fore: #09090b;
+      --bg-card: #fafafa;
+    }
+
+    &.dark {
+      --bg-main: #09090b;
+      --bg-fore: #ffffff;
+      --bg-card: #18181b;
+    }
+  }
+}
+
+/* 将 CSS 变量映射到 Tailwind 类名 */
+@theme inline {
+  --color-main: var(--bg-main);
+  --color-fore: var(--bg-fore);
+  --color-card: var(--bg-card);
 }
 ```
 
-### view-transition
-
-通过 view-transition 实现页面切换动画。
+## View Transition 动画
 
 ```css
+/* 主题切换动画 */
 ::view-transition-group(root) {
   animation-timing-function: var(--expo-out);
 }
@@ -373,8 +312,7 @@ export default function RootLayout({
   transform-origin: top left;
 }
 
-::view-transition-old(root),
-.dark::view-transition-old(root) {
+::view-transition-old(root) {
   animation: scale 1s;
   transform-origin: top left;
   z-index: -1;
@@ -386,3 +324,613 @@ export default function RootLayout({
   }
 }
 ```
+
+# 文章索引缓存
+
+为了提升性能，博客系统采用预构建的 JSON 索引文件来存储所有文章的元数据，避免运行时频繁的文件系统操作。
+
+<Tabs>
+  <TabItem label="gen-posts-index.js">
+    ```javascript
+    import fs from 'fs';
+    import path from 'path';
+    import matter from 'gray-matter';
+
+    const POSTS_DIR = path.join(process.cwd(), 'src/contents');
+    const OUTPUT_FILE = path.join(process.cwd(), 'public/posts-index.json');
+
+    /**
+     * 处理单个文章文件
+     */
+    function processPostFile(file) {
+      try {
+        const filePath = path.join(POSTS_DIR, file);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const { data } = matter(content);
+
+        // 验证必要字段
+        if (!data.slug || !data.title || !data.date) {
+          console.warn(`⚠️  Missing required fields in ${file}`);
+          return null;
+        }
+
+        return {
+          slug: data.slug,
+          title: data.title,
+          date: data.date.toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }),
+          summary: data.summary || '',
+          category: data.category || 'uncategorized',
+        };
+      } catch (error) {
+        console.error(`❌ Error processing file ${file}:`, error.message);
+        return null;
+      }
+    }
+
+    /**
+     * 生成文章索引
+     */
+    function generatePostsIndex() {
+      try {
+        console.log('🚀 Starting posts index generation...');
+        
+        const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith('.mdx'));
+        console.log(`📂 Found ${files.length} MDX files`);
+
+        const posts = files
+          .map((file) => processPostFile(file))
+          .filter(Boolean)
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        fs.writeFileSync(OUTPUT_FILE, JSON.stringify(posts, null, 2), 'utf-8');
+        console.log(`✅ Generated index with ${posts.length} posts`);
+      } catch (error) {
+        console.error('❌ Error generating posts index:', error.message);
+        process.exit(1);
+      }
+    }
+
+    generatePostsIndex();
+    ```
+  </TabItem>
+    <TabItem label="posts.ts">
+    ```typescript
+    import fs from 'fs';
+    import path from 'path';
+
+    const POSTS_INDEX_PATH = path.join(process.cwd(), 'public/posts-index.json');
+
+    export interface FrontMatter {
+      title: string;
+      category: string[];
+      slug: string;
+      date: string;
+      summary: string;
+    }
+
+    // 获取所有文章
+    export async function getAllPosts(): Promise<FrontMatter[]> {
+      try {
+        const indexContent = await fs.promises.readFile(POSTS_INDEX_PATH, 'utf-8');
+        const posts = JSON.parse(indexContent);
+        return posts;
+      } catch (error) {
+        console.error('Error loading posts from index:', error);
+        return [];
+      }
+    }
+
+    /* 获取单篇文章 */
+    export async function getPostBySlug(slug: string) {
+      const posts = await getAllPosts();
+      return posts.find((post) => post.slug === slug) || null;
+    }
+
+    /* 获取所有分类 */
+    export async function getCategories() {
+      const posts = await getAllPosts();
+      const categoryCount: { [key: string]: number } = {};
+
+      posts.forEach((post) => {
+        const categories = Array.isArray(post.category) ? post.category : [post.category];
+        categories.forEach((category) => {
+          categoryCount[category] = (categoryCount[category] || 0) + 1;
+        });
+      });
+
+      return Object.keys(categoryCount)
+        .sort()
+        .map((category) => ({
+          name: category,
+          count: categoryCount[category],
+        }));
+    }
+
+    /* 根据分类获取文章 */
+    export async function getPostsByCategory(category: string) {
+      const posts = await getAllPosts();
+      return posts.filter((p) => {
+        const categories = Array.isArray(p.category) ? p.category : [p.category];
+        return categories.includes(category);
+      });
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+在 `package.json` 中集成索引生成：
+
+```json
+{
+  "scripts": {
+    "gen-posts-index": "node scripts/gen-posts-index.js",
+    "dev": "npm run gen-posts-index && next dev",
+    "build": "npm run gen-posts-index && next build"
+  }
+}
+```
+
+# MDX 渲染引擎
+
+项目使用 Next.js 官方的 MDX 解决方案：
+
+```json
+{
+  "dependencies": {
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^15.3.3",
+    "@types/mdx": "^2.0.13"
+  }
+}
+```
+
+## 插件配置
+
+MDX 处理流程中集成了多个插件来增强功能：
+
+- **remark-frontmatter** - 解析 YAML 前置元数据
+- **remark-gfm** - 支持 GitHub Flavored Markdown
+- **rehype-pretty-code** - 语法高亮
+- **rehype-slug** - 自动生成标题锚点
+
+## 动态路由实现
+
+<Tabs>
+  <TabItem label="[slug]/page.tsx">
+    ```tsx
+    import { getAllPosts, getPostBySlug } from '@/lib/posts';
+    import { notFound } from 'next/navigation';
+    import { TableOfContents } from '@/components/table-of-contents';
+
+    export interface Params {
+      slug: string;
+    }
+
+    interface Props {
+      params: Promise<Params>;
+    }
+
+    // 静态生成所有文章路径
+    export async function generateStaticParams() {
+      const posts = await getAllPosts();
+      return posts.map((post) => ({ slug: post.slug }));
+    }
+
+    export const revalidate = 3600; // ISR 重新验证间隔
+    export const dynamicParams = true;
+
+    export default async function Page({ params }: Props) {
+      const { slug } = await params;
+
+      let Post, matter;
+
+      try {
+        // 获取文章元数据
+        matter = await getPostBySlug(slug);
+        // 动态导入 MDX 组件
+        const mod = await import(`@/contents/${slug}.mdx`);
+        Post = mod.default;
+      } catch (e) {
+        return notFound();
+      }
+
+      return (
+        <>
+          {/* 文章头部信息 */}
+          <div className="my-10">
+            <div className="text-fore mb-4 text-center text-3xl font-bold underline">
+              {matter?.title}
+            </div>
+            <div className="text-fore/50 mb-4 text-center text-sm">{matter?.date}</div>
+            <div className="flex justify-center gap-1">
+              {matter?.category.map((item) => (
+                <Link
+                  key={item}
+                  className="text-fore/60 bg-fore/10 rounded-xl px-2 py-1 text-xs"
+                  href={`/categories/${item}`}
+                >
+                  #{item}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* 文章内容和目录 */}
+          <div className="relative">
+            <article className="prose-custom shiki">
+              <Post />
+            </article>
+            <TableOfContents
+              className="fixed top-40 right-10 hidden max-h-[60vh] w-64 overflow-auto xl:block"
+              maxLevel={4}
+            />
+          </div>
+        </>
+      );
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+# Markdown 样式系统
+
+## Tailwind CSS Typography
+
+项目使用 `@tailwindcss/typography` 插件提供基础的 Markdown 样式：
+
+```css
+@plugin "@tailwindcss/typography";
+```
+
+## 自定义样式类
+
+<Tabs>
+  <TabItem label="prose-custom">
+    ```css
+    .prose-custom {
+      @apply prose prose-gray dark:prose-invert max-w-none;
+      @apply prose-headings:text-fore;
+      @apply prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-6;
+      @apply prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4;
+      @apply prose-h3:text-xl prose-h3:font-medium prose-h3:mt-6 prose-h3:mb-3;
+      @apply prose-h4:text-lg prose-h4:font-medium prose-h4:mt-4 prose-h4:mb-2;
+      @apply prose-p:text-fore prose-p:leading-relaxed;
+      @apply prose-a:text-blue-400 prose-a:no-underline prose-a:hover:underline;
+      @apply prose-strong:text-fore prose-strong:font-semibold;
+      @apply prose-ul:text-fore prose-ol:text-fore;
+      @apply prose-li:my-1;
+      @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
+      @apply mx-auto max-w-4xl px-6 py-8;
+
+      /* 图片样式 */
+      img {
+        @apply border-main/10 rounded-xl border object-cover dark:invert;
+      }
+
+      /* 代码块样式 */
+      pre {
+        @apply bg-fore/5 dark:bg-fore/5 overflow-x-auto rounded-xl p-4;
+        @apply border border-gray-200 dark:border-gray-700;
+        font-family: inherit;
+      }
+
+      /* 内联代码样式 */
+      :not(pre) > code {
+        @apply text-fore rounded-xl bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
+        @apply border border-gray-200 dark:border-gray-700;
+        font-family: inherit;
+
+        &::before,
+        &::after {
+          content: none; /* 移除默认的引号 */
+        }
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+# Toc
+
+Toc 即 Table of Contents，文章的目录。
+
+直接 `document.querySelectorAll` 获取所有标题（h1-h4），然后根据标题的 level 和 id 生成目录。
+
+跟随滚动高亮当前标题则是利用 `IntersectionObserver` 来监听标题的可见性，然后设置 `activeId`。这里做过特殊优化，在滚动停止后，触发更新 `activeId`，避免滚动过程中频繁触发。
+
+<Tabs>
+  <TabItem label="table-of-contents.tsx">
+    ```tsx
+    'use client';
+
+    import { useTableOfContentsHighlight } from '@/hooks/use-table-of-contents-highlight';
+    import { cn } from '@/lib/utils';
+    import { motion } from 'motion/react';
+    import { useEffect, useState, useRef } from 'react';
+
+    /**
+     * Heading structure for the table of contents
+     */
+    export interface TocHeading {
+      id: string;
+      text: string;
+      level: number;
+    }
+
+    /**
+     * Props for the TableOfContents component
+     */
+    export interface TableOfContentsProps {
+      /**
+       * Custom class name for the container
+       */
+      className?: string;
+      /**
+       * Whether to show the table of contents (useful for responsive design)
+       * @default true
+       */
+      show?: boolean;
+      /**
+       * Maximum heading level to include in TOC
+       * @default 4
+       */
+      maxLevel?: number;
+    }
+
+    /**
+     * Extract headings from the DOM and create TOC structure
+     */
+    const extractHeadings = (maxLevel: number): TocHeading[] => {
+      const headingSelector = Array.from({ length: maxLevel }, (_, i) => `h${i + 1}`).join(', ');
+      const headingElements = document.querySelectorAll(headingSelector);
+
+      return Array.from(headingElements)
+        .filter((heading) => heading.id && heading.textContent)
+        .map((heading) => ({
+          id: heading.id,
+          text: heading.textContent?.trim() || '',
+          level: parseInt(heading.tagName.substring(1), 10),
+        }));
+    };
+
+    /**
+     * Table of Contents component that highlights the currently visible section
+     *
+     * @param props - Component props
+     * @returns JSX element for the table of contents
+     */
+    export const TableOfContents = ({
+      className = '',
+      show = true,
+      maxLevel = 4,
+    }: TableOfContentsProps) => {
+      const [headings, setHeadings] = useState<TocHeading[]>([]);
+      const { activeId, scrollToHeading } = useTableOfContentsHighlight();
+      const activeItemRef = useRef<HTMLDivElement>(null);
+
+      useEffect(() => {
+        // Extract headings after component mounts
+        const tocHeadings = extractHeadings(maxLevel);
+        setHeadings(tocHeadings);
+      }, [maxLevel]);
+
+      useEffect(() => {
+        if (activeId && activeItemRef.current) {
+          const activeElement = activeItemRef.current;
+
+          activeElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+      }, [activeId]);
+
+      if (!show || headings.length === 0) {
+        return null;
+      }
+
+      return (
+        <nav
+          className={`toc border-fore/10 border-l px-4 py-2 ${className}`}
+          aria-label="Table of contents"
+        >
+          <div className="text-fore/70 mb-3 text-sm font-semibold tracking-wide uppercase">目录</div>
+          <div className="space-y-1">
+            {headings.map((heading) => {
+              const isActive = activeId === heading.id;
+              const indent = (heading.level - 1) * 12; // 12px per level
+
+              return (
+                <div
+                  key={heading.id}
+                  style={{ paddingLeft: `${indent}px` }}
+                  className="relative"
+                  ref={isActive ? activeItemRef : null}
+                >
+                  <div
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToHeading(heading.id);
+                    }}
+                    className={cn(
+                      'toc-link hover:text-fore text-fore/60 block w-full cursor-pointer text-left text-sm transition-all duration-200',
+                      isActive && 'text-fore',
+                    )}
+                  >
+                    {heading.text}
+                  </div>
+                  {isActive && (
+                    <motion.div
+                      className="bg-fore absolute top-0 -left-4 h-full w-0.5"
+                      layoutId="toc-active-indicator"
+                    ></motion.div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </nav>
+      );
+    };
+    ```  
+  </TabItem>
+  <TabItem label="use-table-of-contents-highlight.ts">
+    ```ts
+    import { useEffect, useState, useCallback, useRef } from 'react';
+
+    /**
+     * Options for the table of contents highlight hook
+     */
+    export interface UseTableOfContentsHighlightOptions {
+      /**
+       * Root margin for the intersection observer
+       * @default '0px 0px -50% 0px'
+       */
+      rootMargin?: string;
+      /**
+       * Intersection threshold
+       * @default 0.1
+       */
+      threshold?: number;
+      /**
+       * Selector for heading elements
+       * @default 'h1, h2, h3, h4, h5, h6'
+       */
+      headingSelector?: string;
+    }
+
+    /**
+     * A React hook that highlights table of contents items based on the currently visible heading
+     */
+    export const useTableOfContentsHighlight = (options: UseTableOfContentsHighlightOptions = {}) => {
+      const {
+        rootMargin = '0px 0px -50% 0px',
+        threshold = 0.1,
+        headingSelector = 'h1, h2, h3, h4, h5, h6',
+      } = options;
+
+      const [activeId, setActiveId] = useState<string>('');
+      const [headingElements, setHeadingElements] = useState<Element[]>([]);
+      const isScrollingRef = useRef(false);
+      const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+      /**
+       * Scroll to a specific heading with smooth behavior
+       */
+      const scrollToHeading = useCallback((id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+          // 立即设置目标activeId
+          setActiveId(id);
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, []);
+
+      useEffect(() => {
+        // Get all heading elements that have an id
+        const headings = Array.from(document.querySelectorAll(headingSelector)).filter(
+          (heading) => heading.id,
+        );
+
+        setHeadingElements(headings);
+
+        if (headings.length === 0) {
+          return;
+        }
+
+        // Create intersection observer to track visible headings
+        const observer = new IntersectionObserver(
+          (entries) => {
+            // 如果正在滚动，不更新activeId
+            if (isScrollingRef.current) return;
+
+            // Find all currently intersecting entries
+            const intersectingEntries = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => {
+                // Sort by position from top of viewport
+                return a.boundingClientRect.top - b.boundingClientRect.top;
+              });
+            if (intersectingEntries.length > 0) {
+              // Use the topmost intersecting heading
+              const topEntry = intersectingEntries[0];
+              setActiveId(topEntry.target.id);
+            } else {
+              // If no headings are intersecting, find the closest one above the viewport
+              const allEntries = entries.sort((a, b) => {
+                return a.boundingClientRect.top - b.boundingClientRect.top;
+              });
+
+              // Find the last heading that's above the viewport
+              for (let i = allEntries.length - 1; i >= 0; i--) {
+                const entry = allEntries[i];
+                if (entry.boundingClientRect.top < 0) {
+                  setActiveId(entry.target.id);
+                  break;
+                }
+              }
+            }
+          },
+          {
+            threshold,
+            rootMargin,
+          },
+        );
+
+        // 滚动事件处理器，用于检测任何滚动行为
+        const handleScroll = () => {
+          // 标记正在滚动
+          isScrollingRef.current = true;
+          
+          // 清除之前的定时器
+          if (scrollTimeoutRef.current) {
+            clearTimeout(scrollTimeoutRef.current);
+          }
+          
+          // 设置新的定时器，滚动停止后一段时间重新启用检测
+          scrollTimeoutRef.current = setTimeout(() => {
+            isScrollingRef.current = false;
+            // 滚动停止后，手动触发一次检测来更新activeId
+            observer.disconnect();
+            headings.forEach((heading) => {
+              observer.observe(heading);
+            });
+          }, 150); // 150ms 的防抖时间
+        };
+
+        // Observe all heading elements
+        headings.forEach((heading) => {
+          observer.observe(heading);
+        });
+
+        // 添加滚动事件监听
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Cleanup observer on unmount
+        return () => {
+          observer.disconnect();
+          window.removeEventListener('scroll', handleScroll);
+          if (scrollTimeoutRef.current) {
+            clearTimeout(scrollTimeoutRef.current);
+          }
+        };
+      }, [headingSelector, rootMargin, threshold]);
+
+      useEffect(() => {
+        console.log('akira.activeId', activeId);
+      }, [activeId]);
+
+      return {
+        activeId,
+        scrollToHeading,
+        headingElements,
+      };
+    };
+    ```
+  </TabItem>
+</Tabs>
