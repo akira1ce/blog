@@ -59,7 +59,7 @@ export default async function Page({ params }: Props) {
           maxLevel={4}
         />
         <footer className="border-fore/10 text-fore/60 mt-20 gap-2 border-t pt-10 text-center">
-          is done, by akira1ce.
+          「 Is All 」
         </footer>
       </div>
     </>
