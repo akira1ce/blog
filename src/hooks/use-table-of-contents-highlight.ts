@@ -138,10 +138,6 @@ export const useTableOfContentsHighlight = (options: UseTableOfContentsHighlight
     };
   }, [headingSelector, rootMargin, threshold]);
 
-  useEffect(() => {
-    console.log('akira.activeId', activeId);
-  }, [activeId]);
-
   return {
     activeId,
     scrollToHeading,
