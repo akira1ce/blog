@@ -18,7 +18,7 @@ const Header = () => {
     },
   ];
   return (
-    <div className="bg-main/20 sticky top-0 z-10 flex h-20 items-center justify-around py-4 backdrop-blur">
+    <div className="bg-main/20 sticky top-0 z-10 flex h-20 items-center justify-around backdrop-blur">
       <div className="m-auto flex w-3/4 items-center justify-between">
         <div className="flex items-center gap-4">
           {/* logo */}

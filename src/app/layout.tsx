@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`${mapleMono.className} bg-main w-full antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
-          <main className="m-auto w-3/4 py-10">{children}</main>
+          <main className="m-auto w-3/4 pb-10">{children}</main>
         </ThemeProvider>
       </body>
     </html>
