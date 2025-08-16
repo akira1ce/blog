@@ -11,6 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@akira1ce/r-hooks": "^1.0.12",
     "@iconify/react": "^6.0.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",

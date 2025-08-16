@@ -55,7 +55,7 @@ export default async function Page({ params }: Props) {
           <Post />
         </article>
         <TableOfContents
-          className="fixed top-40 right-10 hidden max-h-[60vh] w-64 overflow-auto xl:block"
+          className="fixed top-40 right-0 hidden max-h-[60vh] w-64 overflow-auto xl:block"
           maxLevel={4}
         />
         <footer className="border-fore/10 text-fore/60 mt-20 gap-2 border-t pt-10 text-center">

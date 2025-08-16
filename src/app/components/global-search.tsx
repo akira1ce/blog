@@ -51,7 +51,11 @@ const GlobalSearch = () => {
         className="text-fore/60 bg-fore/10 flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1 text-sm"
         onClick={() => setOpen(true)}
       >
-        <Command className="size-3" />K
+        <Search className="size-3" />
+        <div className="flex items-center gap-1">
+          <Command className="size-3" />
+          <span className="text-sm">K</span>
+        </div>
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <div className="bg-fore/10 mb-4 flex w-full items-center gap-2 rounded-xl px-4 py-2">
@@ -64,18 +68,18 @@ const GlobalSearch = () => {
             autoFocus
           />
         </div>
-        <div className="flex max-h-[60vh] w-[80vw] flex-col gap-4 overflow-auto pr-4 transition-all sm:w-[60vw] xl:w-[40vw]">
+        <div className="-mr-4 flex max-h-[60vh] w-[80vw] flex-col gap-4 overflow-auto pr-4 transition-all sm:w-[60vw] xl:w-[40vw]">
           {filteredPosts.map((post) => (
             <div
               key={post.slug}
-              className="group relative flex cursor-pointer items-center justify-between gap-2 p-2 hover:font-semibold"
+              className="group hover:bg-fore/20 relative flex cursor-pointer items-center justify-between gap-2 rounded-xl px-4 py-2 transition-all"
               onClick={() => handleLink(post.slug)}
             >
               <div>
                 <div key={post.slug}>{post.title}</div>
-                <div className="text-fore/60 text-sm">{post.summary}</div>
+                <div className="text-fore/60 line-clamp-1 text-sm">{post.summary}</div>
               </div>
-              <ArrowRight className="size-4 opacity-0 transition-all group-hover:translate-x-2 group-hover:opacity-100" />
+              <ArrowRight className="mr-2 size-4 opacity-0 transition-all group-hover:translate-x-2 group-hover:opacity-100" />
             </div>
           ))}
           {filteredPosts.length === 0 && (

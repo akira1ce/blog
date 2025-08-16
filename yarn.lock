@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@akira1ce/r-hooks@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@akira1ce/r-hooks/-/r-hooks-1.0.12.tgz#7b7a59473a14966c59045d1f39ebe2ffcf603dc6"
+  integrity sha512-dOYzmrkOaCJ1LbAWgEXuKF+SurERYFRF5hfEiMHU1MeqniIEzhrN5wQIv175e9n7gbKnEdnsZVB2gxdd2t2JuA==
+
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"

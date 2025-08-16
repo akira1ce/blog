@@ -68,11 +68,8 @@ export const CommandDialog = (props: CommandDialogProps) => {
 
   // Lock body scroll when dialog is open
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (open) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
 
     return () => {
       document.body.style.overflow = '';
@@ -107,7 +104,7 @@ export const CommandDialog = (props: CommandDialogProps) => {
           <motion.div
             ref={dialogRef}
             className={cn(
-              'bg-main/80 border-fore/10 relative overflow-y-auto rounded-xl border p-4 shadow-2xl',
+              'bg-main/60 border-fore/10 shadow-fore/10 relative overflow-y-auto rounded-xl border p-4 shadow-2xl',
             )}
             role="dialog"
             aria-modal="true"
