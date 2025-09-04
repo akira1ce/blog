@@ -13,7 +13,7 @@ interface Props {
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  return posts.slice(0, 20).map((post) => ({ slug: post.slug }));
 }
 
 export const revalidate = 3600;

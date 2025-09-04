@@ -9,15 +9,13 @@
     &.light {
       /* Light theme variables */
       --bg-main: #ffffff;
-      --bg-fore: #09090b;
-      --bg-card: #fafafa;
+      --bg-fore: #000000;
     }
 
     &.dark {
       /* Dark theme variables */
-      --bg-main: #09090b;
+      --bg-main: #000000;
       --bg-fore: #ffffff;
-      --bg-card: #18181b;
     }
 
     /* code-block dark-light mode */
@@ -42,7 +40,6 @@
 @theme inline {
   --color-main: var(--bg-main);
   --color-fore: var(--bg-fore);
-  --color-card: var(--bg-card);
 }
 
 /* Custom prose styles */
