@@ -1,0 +1,30 @@
+---
+title: Docker 常见问题
+category: ['Troubleshooting']
+slug: fix-docker-pitfalls
+date: 2025-09-09
+summary: 汇总 Docker 一些坑点与踩雷经验。
+---
+
+# Error response from daemon: Cannot restart container
+
+```bash
+Error response from daemon: Cannot restart container 
+4af58df0dd863a26e2e581d697869ff3f25e1cbff58c8e89385272c63b8cb310: 
+driver failed programming external connectivity on endpoint web-yunweitai-app (7fa77bda20722f725f71a121183dcc107b9b421ac5bf017f3cdaffdd6764acce): 
+(iptables failed: iptables --wait -t nat -A DOCKER -p tcp -d 0/0 --dport 80 -j DNAT --to-destination 172.25.0.2:80 ! -i br-a6a43c5b7ea2: 
+iptables: No chain/target/match by that name.)
+```
+
+该问题通常是由于 docker 网络配置错误导致的，或重置网络影响到 docker 网络。
+
+**解决方案：**
+
+重启 docker 服务，后重新启动容器。
+
+```bash
+sudo systemctl restart docker
+docker-compose up -d;
+```
+
+> docker-compose 只能重启已经启动的容器，不能重启未启动的容器。
