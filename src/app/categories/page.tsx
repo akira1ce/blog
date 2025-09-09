@@ -11,7 +11,7 @@ const Page = async () => {
         {categories.map((category, index) => (
           <FadeInUp key={category.name} delay={index * 0.05}>
             <Link
-              className="bg-fore/10 hover:bg-fore/20 block cursor-pointer rounded-xl p-2 transition-all hover:scale-95"
+              className="bg-fore/5 hover:bg-fore/10 block cursor-pointer rounded-xl p-2 transition-all hover:scale-95 hover:font-bold"
               href={`/categories/${category.name}`}
             >
               {category.name} ({category.count})

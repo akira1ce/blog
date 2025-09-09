@@ -1,19 +1,20 @@
 import { FrontMatter } from '@/lib/posts';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
 
 export const PostCard = ({ post, className }: { post: FrontMatter; className?: string }) => {
   return (
     <Link
       className={cn(
-        'bg-fore/10 hover:bg-fore/20 relative flex flex-col gap-2 rounded-xl p-4 shadow transition-all duration-300 hover:scale-95',
+        'bg-fore/5 hover:bg-fore/10 group relative flex flex-col gap-2 rounded-xl p-4 shadow transition-all duration-300',
         className,
       )}
       href={`/posts/${post.slug}`}
     >
       <div className="text-fore text-lg font-bold">{post.title}</div>
       <div className="text-fore/50 line-clamp-1 text-sm">{post.summary}</div>
-      <div className="text-fore/50 absolute top-4 right-4 text-end text-sm">{post.date}</div>
+      <ArrowRight className="text-fore/50 absolute top-4 right-4 size-4 transition-all group-hover:scale-110" />
     </Link>
   );
 };
