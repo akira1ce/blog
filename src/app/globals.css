@@ -85,6 +85,15 @@
       content: none;
     }
   }
+
+  blockquote {
+    p {
+      &::before,
+      &::after {
+        content: none;
+      }
+    }
+  }
 }
 
 /* scrollbar */
