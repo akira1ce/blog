@@ -1,0 +1,69 @@
+---
+title: View Transition 动画闪烁问题
+category: ['Frontend']
+slug: fe-view-transition-flash-problem
+date: 2025-09-10
+summary: 记录 View Transitions API 配合 mask 动画在新版 Chrome 中出现闪烁问题的排查过程和解决方案。
+---
+
+最近在做暗黑模式切换时，我用了 View Transitions API 配合 mask 动画来实现一个类似水波扩散的效果。之前在浏览器旧版本里效果很好，但在升级到新版 Chrome 后，切换结束的时候出现了一个"闪一下"的问题。
+
+## 问题复现
+
+![7e7ee9ccf497fee5285f1f61a022db5f](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/202509101444350.jpg)
+
+代码大致如下：
+
+```css
+/* view-transition */
+::view-transition-group(root) {
+  animation-timing-function: var(--expo-out);
+}
+
+::view-transition-new(root) {
+  mask: url('data:image/svg+xml,<svg ...><circle cx="0" cy="0" r="18" fill="white"/></svg>')
+    top left / 0 no-repeat;
+  mask-origin: content-box;
+  animation: scale 1s;
+  transform-origin: top left;
+}
+
+::view-transition-old(root) {
+  animation: scale 1s;
+  transform-origin: top left;
+  z-index: -1;
+}
+
+@keyframes scale {
+  to {
+    mask-size: 350vmax;
+  }
+}
+```
+
+在旧版本浏览器里，`mask-size: 350vmax` 让遮罩足够大，最终效果是全屏覆盖。但在新版浏览器，动画收尾时会闪一下。
+
+## 原因分析
+
+浏览器渲染机制的变化：
+
+老版本： mask-size 超出屏幕时，浏览器会继续当作"全屏遮罩"渲染，过渡到最后一帧仍然平滑。
+
+新版本： mask 超出范围时，等价于没有遮罩。所以动画最后一帧时，mask 突然消失，导致出现"闪一下"。
+
+具体多少版本算新，没有明确说明，我测试的 140+ 版本是新版本。
+
+## 解决办法
+
+此时我们可以通过保留动画最后一帧状态来解决这个问题。
+
+加上 `animation-fill-mode: forwards;`，避免动画结束后 mask 突然消失。
+
+```css
+::view-transition-new(root) {
+  animation: scale 1s forwards;
+}
+```
+
+![cd4a787286a0a75c53e2c04a46ffd9ad](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/202509101444828.jpg)
+
