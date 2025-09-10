@@ -2,7 +2,7 @@
 title: macOS 开发命令
 category: ['DevTools']
 slug: dev-mac-commands
-date: 2025-09-04
+date: 2025-09-05
 summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升效率的小技巧合集。
 ---
 
@@ -33,3 +33,37 @@ summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升�
 | 功能 | 命令 |
 |------|------|
 | 忽略证书错误 | `yarn config set "strict-ssl" false -g` |
+
+## Github connnect error
+
+`git pull` 时报错：
+
+```bash
+git pull
+Connection closed by 127.0.0.1 port 6153
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+# or
+
+ssh: connect to host github.com port 22: Operation timed out
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+```
+
+这里本质上是当前网络环境无法访问 github 22 端口，可能是 22 端口被防火墙、网络运营商屏蔽了。
+
+我们需要做的是，不在走 22 端口，而是走 443 端口。
+
+> 是否被墙可以通过 telnet、nc 来判断： `telnet github.com 22` 或 `nc -vz github.com 22`
+
+```bash
+# ~/.ssh/config
+Host github.com
+Hostname ssh.github.com
+Port 443
+```
