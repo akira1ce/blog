@@ -14,7 +14,7 @@ export const PostCard = ({ post, className }: { post: FrontMatter; className?: s
     >
       <div className="text-fore text-lg font-bold">{post.title}</div>
       <div className="text-fore/50 line-clamp-1 text-sm">{post.summary}</div>
-      <ArrowRight className="text-fore/50 absolute top-4 right-4 size-4 transition-all group-hover:scale-110" />
+      <ArrowRight className="text-fore/50 absolute top-4 right-8 size-4 opacity-0 transition-all group-hover:right-4 group-hover:scale-110 group-hover:opacity-100" />
     </Link>
   );
 };
