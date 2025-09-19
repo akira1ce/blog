@@ -1,192 +1,108 @@
 ---
-title: 远程选择器组件
+title: remote-select
 category: ['Components']
 slug: comp-remote-select
-date: 2024-07-22
+date: 2025-09-18
 summary: 实现一个支持远程数据请求的下拉组件，适用于搜索选择类表单场景。
 ---
 
 
 ```tsx
-import React, {
-  forwardRef,
-  memo,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { message, Select, SelectProps } from 'antd';
-import { cloneDeep, debounce, get, isEqual, uniqBy } from 'lodash';
+import { useControllableValue, useMemoizedFn } from "ahooks";
+import { debounce, differenceWith, isEqual } from "lodash";
+import { memo, useEffect, useMemo, useState } from "react";
+import { Select, type SelectProps } from "antd";
 
-type OmitSelectProps = 'options' | 'loading' | 'onSelect' | 'labelInValue';
+type OmitSelectProps = "options" | "loading" | "labelInValue" | "onSearch" | "showSearch";
 
-export interface SearchParams {
-  pageNum?: number;
-  pageSize?: number;
-  [key: string]: any;
+export interface Option {
+	label: string;
+	value: string;
 }
 
-interface Res {
-  records: any[];
-  total: number;
+export interface RemoteSelectProps<T, K> extends Omit<SelectProps, OmitSelectProps> {
+	/** 请求 */
+	api: (params: T) => Promise<K>;
+	/** 搜索参数 */
+	searchParams?: T;
+	/** 搜索参数回调 */
+	onChangeSearchParams?: (searchParams: T) => void;
+	/** 错误回调 */
+	onError?: (error: any) => void;
+	/** 响应回调 */
+	transformOptions?: (response: K) => Option[];
+	/** 搜索参数回调 */
+	transformSearchParams?: (searchValue: string) => T;
 }
-
-interface Response {
-  res: Res;
-  error: string | null;
-  code: number;
-  trace: string | null;
-}
-
-export interface RemoteSelectProps extends Omit<SelectProps, OmitSelectProps> {
-  /** 请求 */
-  api: (params: SearchParams) => Promise<Response>;
-  /** 下拉初始值 */
-  defaultOptions?: SelectProps['options'];
-  /** 搜索参数 */
-  searchParams?: SearchParams;
-  /** value 字段 支持 xxx.xxx 嵌套类型 */
-  valueField?: string;
-  /** label 字段 支持 xxx.xxx 嵌套类型 */
-  labelField?: string;
-}
-
-export interface RemoteSelectRef {}
-
-const DEFAULT_SEARCHPARAMS: SearchParams = {
-  pageNum: 1,
-  pageSize: 10,
-};
-
-/* 生成Options */
-const genOptions = (item: any) => ({ label: item.label, value: item.value });
 
 /**
  * 远程下拉组件
  * 由于下拉数据需要走请求，导致回显存在异常情况，默认采用 labelInValue 模式
- * 除 'options' | 'loading' | 'onSelect' | 'labelInValue' 字段，支持原生 antd Select 所有属性
- * @example
- * <RemoteSelect api={api}/>
  */
-const RemoteSelect: React.ForwardRefRenderFunction<RemoteSelectRef, RemoteSelectProps> = (
-  props,
-  ref,
-) => {
-  const {
-    api,
-    defaultOptions = [],
-    searchParams,
-    labelField = 'name',
-    valueField = 'id',
-    ...selectProps
-  } = props;
+const RemoteSelect = <T, K>(props: RemoteSelectProps<T, K>) => {
+	const { api, onError, transformOptions, transformSearchParams, ...resetProps } = props;
 
-  const { value, showSearch, mode } = selectProps;
+	const { value, mode } = resetProps;
 
-  const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState<SelectProps['options']>(defaultOptions);
-  const [extraOptions, setExtraOptions] = useState<SelectProps['options']>([]);
+	const [loading, setLoading] = useState(false);
+	const [options, setOptions] = useState<Option[]>([]);
 
-  const isManualSelect = useRef(false);
-  const preSearchParams = useRef<SearchParams>();
+	const [searchParams, setSearchParams] = useControllableValue<T>(props, {
+		valuePropName: "searchParams",
+		trigger: "onChangeSearchParams",
+	});
 
-  /* options 去重 */
-  const optionsUniq = useMemo(() => {
-    if (!extraOptions.length) return options;
-    return uniqBy([...extraOptions, ...options], 'value');
-  }, [options, extraOptions]);
+	/* 合并选项 */
+	const mergegOptions = useMemo(() => {
+		if (!value || value.length === 0) return options;
 
-  /* api-params */
-  const params = useRef({ ...DEFAULT_SEARCHPARAMS });
+		/* 转换为数组 */
+		const val = mode === "multiple" ? value : [value];
+		/* 当前选项 */
+		const currentOptions = val.map((item: any) => ({ label: item.label, value: item.value }));
+		/* 判断是否包含 */
+		const isInclude = differenceWith(currentOptions, options, isEqual).length === 0;
+		/* 如果包含，则返回原选项 */
+		if (isInclude) return options;
+		/* 如果不包含，则返回合并后的选项 */
+		return [...currentOptions, ...options];
+	}, [options, value]);
 
-  const handleSearch = useCallback(
-    debounce((val: string) => {
-      params.current.fuzzyKeyword = val;
-      setLoading(true);
-    }, 300),
-    [],
-  );
+	const handleSearch = useMemoizedFn(
+		debounce((val: string) => {
+			const _searchParams = transformSearchParams?.(val);
+			if (!_searchParams) return;
+			setSearchParams((prev) => ({ ...prev, ..._searchParams }));
+		}, 300)
+	);
 
-  useImperativeHandle(ref, () => ({}));
+	/* 请求数据 */
+	const fetcher = useMemoizedFn(
+		debounce(async () => {
+			try {
+				setLoading(true);
+				const res = await api(searchParams);
+				const _options = transformOptions?.(res) || [];
+				setOptions(_options);
+				setLoading(false);
+			} catch (err) {
+				setLoading(false);
+				console.error(err);
+				onError?.(err);
+			}
+		}, 300)
+	);
 
-  useEffect(() => {
-    /* 深比较是否相等 */
-    if (isEqual(preSearchParams.current, searchParams)) return;
-    preSearchParams.current = cloneDeep(searchParams);
+	useEffect(() => {
+		fetcher();
+	}, [searchParams]);
 
-    params.current = {
-      ...params.current,
-      ...searchParams,
-    };
-    setLoading(true);
-  }, [searchParams]);
-
-  useEffect(() => {
-    // @ts-ignore
-    if (!loading) return;
-    let lock = false;
-    try {
-      api(params.current).then((ress) => {
-        if (lock) return;
-        if (ress.code !== 0) throw new Error(ress.error || '未知错误');
-
-        const _options = ress.res?.records?.map((item, index: number) => ({
-          label: get(item, labelField)?.toString() || `${labelField}字段不存在`,
-          value: get(item, valueField)?.toString() || `${valueField}字段不存在`,
-        }));
-
-        setOptions(_options);
-        setLoading(false);
-      });
-    } catch (err: any) {
-      message.error(err.message || err.toString());
-      setLoading(false);
-    }
-    return () => {
-      lock = true;
-    };
-  }, [loading]);
-
-  useEffect(() => {
-    /* 手动选择 */
-    if (isManualSelect.current) {
-      isManualSelect.current = false;
-      setExtraOptions([]);
-      return;
-    }
-
-    if (mode === 'multiple') {
-      /* 多选模式下，没有值时，不重置 */
-      if (!value || !value.length) return;
-      /* 额外 Option */
-      setExtraOptions(value.map(genOptions));
-    } else {
-      /* 空数据 */
-      if (!value || !value?.value) return;
-      /* 额外 Option */
-      setExtraOptions([{ value: value.value, label: value.label }]);
-    }
-  }, [value]);
-
-  return (
-    <Select
-      {...selectProps}
-      showSearch={showSearch}
-      filterOption={false}
-      loading={loading}
-      options={optionsUniq}
-      onSearch={showSearch ? handleSearch : undefined}
-      onSelect={() => (isManualSelect.current = true)}
-      labelInValue
-    />
-  );
+	return (
+		<Select {...resetProps} loading={loading} options={mergegOptions} labelInValue showSearch onSearch={handleSearch} />
+	);
 };
 
-export default memo(forwardRef(RemoteSelect));
-
+export default memo(RemoteSelect) as typeof RemoteSelect;
 ```
 
 
