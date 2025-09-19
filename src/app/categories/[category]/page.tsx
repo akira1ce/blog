@@ -1,6 +1,7 @@
 import { getPostsByCategory, getCategories } from '@/lib/posts';
-import { PostCard } from '@/components/post-link';
+import { PostCard } from '@/components/post-card';
 import { FadeInUp } from '@/components/fade-in-up';
+import Link from 'next/link';
 
 export interface Params {
   category: string;
@@ -30,7 +31,9 @@ export default async function Page({ params }: Props) {
       <FadeInUp>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {posts.map((post) => (
-            <PostCard className="col-span-1" key={post.slug} post={post} />
+            <Link key={post.slug} href={`/posts/${post.slug}`}>
+              <PostCard post={post} className="bg-fore/5 hover:bg-fore/10 col-span-1" />
+            </Link>
           ))}
         </div>
       </FadeInUp>
