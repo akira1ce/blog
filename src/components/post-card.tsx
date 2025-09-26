@@ -11,7 +11,7 @@ export const PostCard = ({ post, className, ...restProps }: PostCardProps) => {
   return (
     <div
       className={cn(
-        'group relative flex flex-col gap-1 rounded-xl p-4 shadow transition-all duration-300',
+        'group relative flex flex-col gap-1 rounded-xl p-4 transition-all duration-300',
         className,
       )}
       {...restProps}
