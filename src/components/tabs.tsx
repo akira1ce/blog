@@ -33,8 +33,8 @@ export const Tabs = ({ children }: TabsProps) => {
               key={`${uid}-${index}`}
               onClick={() => setActiveTab(index)}
               className={cn(
-                'relative cursor-pointer rounded-xl px-2 py-1 transition-all',
-                isActive ? 'font-bold' : 'hover:bg-fore/10 font-normal',
+                'hover:bg-fore/5 relative cursor-pointer rounded-xl px-2 py-1 transition-all',
+                isActive ? 'font-semibold' : 'font-normal',
               )}
             >
               {label}
@@ -50,7 +50,7 @@ export const Tabs = ({ children }: TabsProps) => {
         })}
       </div>
       <div className="-mt-4">
-        <FadeInUp key={`${uid}-${activeTab}`}>{tabs[activeTab]?.props.children}</FadeInUp>
+        <FadeInUp>{tabs[activeTab]?.props.children}</FadeInUp>
       </div>
     </div>
   );

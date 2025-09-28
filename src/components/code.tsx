@@ -28,13 +28,15 @@ const Code = ({ children, className, ...props }: CodeProps) => {
       <pre ref={preRef} className={className} {...props}>
         {children}
       </pre>
-      <button
-        onClick={handleCopy}
-        className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-        aria-label="Copy code"
-      >
-        {copied ? <Check size={16} /> : <Copy size={16} />}
-      </button>
+      <div className="absolute top-2 right-2">
+        <button
+          onClick={handleCopy}
+          className="bg-fore/10 hover:bg-fore/20 cursor-pointer rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          aria-label="Copy code"
+        >
+          {copied ? <Check size={16} /> : <Copy size={16} />}
+        </button>
+      </div>
     </div>
   );
 };
