@@ -1,0 +1,62 @@
+---
+title: show
+category: ['Components']
+slug: comp-show
+date: 2025-09-28
+summary: React 条件渲染
+---
+
+import Demo from "@/app/_demos/comp-show-demo"
+import Preview from '@/components/preview';
+import { Tabs, TabItem } from '@/components/tabs';
+
+实现类似 vue 中的 `<Show />` 组件，用于条件渲染。
+
+<Preview>
+  <Demo />
+</Preview>
+
+<Tabs>
+  <TabItem label="index.tsx">
+    ```tsx
+    import { useState } from 'react';
+    import Show from './components/show';
+
+    const Index = () => {
+      const [show, setShow] = useState(false);
+
+      return (
+        <>
+          <button className="cursor-pointer" onClick={() => setShow(!show)}>
+            Click me!
+          </button>
+          <Show when={show}>
+            <div>我来</div>
+          </Show>
+        </>
+      );
+    };
+
+    export default Index;
+    ```
+  </TabItem>
+  <TabItem label="show.tsx">
+  ```tsx
+  import { ReactNode } from 'react';
+
+  export interface ShowProps {
+    when: boolean;
+    fallback?: ReactNode;
+    children: ReactNode;
+  }
+
+  const Show = (props: ShowProps) => {
+    const { when, fallback = null, children } = props;
+
+    return when ? children : fallback;
+  };
+
+  export default Show;
+  ```
+  </TabItem>
+</Tabs>
