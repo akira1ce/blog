@@ -6,7 +6,7 @@ import { GalleryThumbnails, RotateCcw } from 'lucide-react';
 const Preview = ({ children }: { children: ReactNode }) => {
   const [key, setKey] = useState(0);
   return (
-    <div className="bg-fore/5 mb-4 rounded-xl p-4">
+    <div className="bg-fore/5 mb-4 rounded-xl p-4 shadow">
       <div className="mb-4 flex justify-between px-2">
         <div className="flex items-center gap-2">
           <GalleryThumbnails className="size-4" />
@@ -16,7 +16,7 @@ const Preview = ({ children }: { children: ReactNode }) => {
           <RotateCcw className="size-4 cursor-pointer" onClick={() => setKey(key + 1)} />
         </div>
       </div>
-      <div className="bg-main/80 rounded-xl p-4" key={key}>
+      <div className="bg-main rounded-xl p-4" key={key}>
         {children}
       </div>
     </div>
