@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "gen-preview-code": "node scripts/gen-preview-code.js",
     "gen-posts-index": "node scripts/gen-posts-index.js",
     "dev": "npm run gen-posts-index && next dev",
     "build": "npm run gen-posts-index && next build",
