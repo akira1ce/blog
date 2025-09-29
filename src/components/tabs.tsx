@@ -23,7 +23,7 @@ export const Tabs = ({ children }: TabsProps) => {
   const uid = useId();
 
   return (
-    <div>
+    <div className="bg-fore/5 rounded-xl p-4 shadow">
       <div className="flex items-center gap-2">
         {tabs.map((child: any, index) => {
           const label = child.props.label;
@@ -49,7 +49,7 @@ export const Tabs = ({ children }: TabsProps) => {
           );
         })}
       </div>
-      <div className="-mt-4">
+      <div className="-mt-4 -mb-8">
         <FadeInUp>{tabs[activeTab]?.props.children}</FadeInUp>
       </div>
     </div>

@@ -58,9 +58,7 @@ export default async function Page({ params }: Props) {
           className="fixed top-40 right-0 hidden max-h-[60vh] w-64 overflow-auto xl:block"
           maxLevel={4}
         />
-        <footer className="border-fore/10 text-fore/60 mt-20 gap-2 border-t pt-10 text-center">
-          我也是有底线的 🫠
-        </footer>
+        <footer className="text-fore/60 gap-2 pt-20 text-center">我也是有底线的 🫠</footer>
       </div>
     </>
   );

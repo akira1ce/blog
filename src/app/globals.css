@@ -6,15 +6,18 @@
 
 @layer base {
   html {
+    /* 滚动条浮动 */
+    overflow: overlay;
+
     &.light {
       /* Light theme variables */
       --bg-main: #ffffff;
-      --bg-fore: #000000;
+      --bg-fore: #030712;
     }
 
     &.dark {
       /* Dark theme variables */
-      --bg-main: #000000;
+      --bg-main: #030712;
       --bg-fore: #ffffff;
     }
 
@@ -65,8 +68,7 @@
 
   /* Code block styles */
   pre {
-    @apply bg-fore/5 overflow-x-auto rounded-xl p-4;
-    @apply border border-gray-200 dark:border-gray-700;
+    @apply bg-fore/5 overflow-x-auto rounded-xl p-4 shadow;
     font-family: inherit;
   }
 
