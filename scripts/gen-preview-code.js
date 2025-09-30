@@ -38,7 +38,7 @@ function generateTabs(dirPath) {
       if (item.isDirectory()) {
         collectFiles(fullPath);
       } else if (item.isFile() && /\.(tsx?|jsx?|css|scss|json)$/.test(item.name)) {
-        files.push(fullPath);
+        files.unshift(fullPath);
       }
     }
   }
