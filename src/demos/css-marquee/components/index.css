@@ -1,0 +1,26 @@
+.marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  .wrapper-item {
+    width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee linear infinite;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}

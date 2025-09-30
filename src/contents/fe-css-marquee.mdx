@@ -1,0 +1,96 @@
+---
+title: CSS 跑马灯效果
+category: ['Frontend']
+slug: fe-css-marquee
+date: 2024-09-12
+summary: 使用 CSS 无缝轮播效果。
+---
+
+import CssMarquee from "@/demos/css-marquee"
+import Preview from '@/components/preview';
+import { Tabs, TabItem } from '@/components/tabs';
+
+<Preview>
+  <CssMarquee />
+</Preview>
+
+<Tabs>
+  <TabItem label="index.tsx">
+    ```tsx
+    import Marquee from './components/marquee';
+
+    const MarqueeText = ({ text }: any) => {
+      return <Marquee duration={3 + text.length / 2}>{text}</Marquee>;
+    };
+
+    const Index = () => {
+      return (
+        <>
+          <MarqueeText text={' Assad sad sad撒啊撒大大啊撒大大'} />
+          <MarqueeText text={'盛大开业！！！！！盛大开业！！！！！盛大开业！！！！！'} />
+          <MarqueeText text={'asdsdssadsdasdsdaasdsdsadsadad'} />
+        </>
+      );
+    };
+
+    export default Index;
+
+    ```
+  </TabItem>
+  <TabItem label="components/marquee.tsx">
+    ```tsx
+    import './index.css';
+
+    export interface MarqueeProps {
+      children: React.ReactNode;
+      duration?: number;
+    }
+
+    const Marquee = (props: MarqueeProps) => {
+      const { children, duration = 2 } = props;
+
+      return (
+        <div className="marquee-wrapper">
+          <div className="wrapper-item" style={{ animationDuration: `${duration}s` }}>
+            {children}
+          </div>
+        </div>
+      );
+    };
+
+    export default Marquee;
+
+    ```
+  </TabItem>
+  <TabItem label="components/index.css">
+    ```css
+    .marquee-wrapper {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      .wrapper-item {
+        width: 100%;
+        display: inline-block;
+        white-space: nowrap;
+        animation: marquee linear infinite;
+      }
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    ```
+  </TabItem>
+</Tabs>
