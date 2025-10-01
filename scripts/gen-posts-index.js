@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import dayjs from 'dayjs';
 
 const POSTS_DIR = path.join(process.cwd(), 'src/contents');
 const OUTPUT_FILE = path.join(process.cwd(), 'public/posts-index.json');
@@ -29,17 +30,9 @@ function processPostFile(file) {
       return null;
     }
 
-    return {
-      slug: data.slug,
-      title: data.title,
-      date: data.date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }),
-      summary: data.summary || '',
-      category: data.category || 'uncategorized',
-    };
+    const { slug, title, date, summary = '', category = 'uncategorized' } = data;
+
+    return { slug, title, summary, category, date: dayjs(date).format('YYYY-MM-DD') };
   } catch (error) {
     console.error(`\n❌ Error processing file ${file}:`, error.message);
     return null;
@@ -66,7 +59,7 @@ function generatePostsIndex() {
     const posts = files
       .map((file) => processPostFile(file))
       .filter(Boolean)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+      .sort((a, b) => b.date.localeCompare(a.date));
 
     const outputDir = path.dirname(OUTPUT_FILE);
     if (!fs.existsSync(outputDir)) {
