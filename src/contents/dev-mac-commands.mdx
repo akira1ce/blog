@@ -2,7 +2,7 @@
 title: macOS 开发命令
 category: ['DevTools']
 slug: dev-mac-commands
-date: 2025-09-05
+date: 2025-10-17
 summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升效率的小技巧合集。
 ---
 
@@ -14,7 +14,7 @@ summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升�
 | 功能 | 命令  |
 |------|------|
 | 查看本机IP | `ifconfig \| grep "inet " \| grep -v 127.0.0.1` |
-| 关闭网络服务 | `networksetup -setairportpower en0 off` | 
+| 关闭网络服务 | `networksetup -setairportpower en0 off` |
 | 重置DNS | `sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder` |
 | 重启网络服务 | `sudo ifconfig en0 down && sudo ifconfig en0 up` |
 | 查询网络端口对应的设备名称 | `networksetup -listallhardwareports` |
@@ -34,7 +34,7 @@ summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升�
 |------|------|
 | 忽略证书错误 | `yarn config set "strict-ssl" false -g` |
 
-## Github connnect error
+### Github connnect error
 
 `git pull` 时报错：
 
@@ -66,4 +66,14 @@ and the repository exists.
 Host github.com
 Hostname ssh.github.com
 Port 443
+```
+
+## 系统设置
+
+### 减少 dock-hover 延迟
+
+```bash
+write http://com.apple.dock autohide-time-modifier -float 0.2
+defaults write http://com.apple.dock autohide-delay -float 0
+killall Dock
 ```

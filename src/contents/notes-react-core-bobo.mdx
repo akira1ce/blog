@@ -53,12 +53,12 @@ set 方法可以看做任务触发器，它所对应的要执行的任务逻辑�
 
 **set 之后调用链路：**
 
-```txt
+```
 dispatchSetState -> 「触发状态更新」
 dispatchSetStateInternal ->  「将更新内容合并成 update 对象，挂载到 fiber 上」
 scheduleUpdateOnFiber -> 「确定是否需要触发调度器进行状态更新」
 ensureRootIsScheduled -> 「确保某个根节点的更新任务已经被调度，并会将更新任务推送到调度队列 - 通知根节点有一个更新产生」
-scheduleImmediateTask -> 
+scheduleImmediateTask ->
 processRootScheduleInMicrotask ->
 scheduleTaskForRootDuringMicrotask -> 「转换优先级」
 scheduleCallback(schedulerPriorityLevel, schedulerPriorityLevel, performWorkOnRootViaSchedulerTask.bind(null, root)) -> 「将更新任务推送到任务队列 & 开始循环任务队列」
@@ -110,7 +110,7 @@ setCounter()
 setter x N -> microQueue -> taskqueue
 
 > 为什么是微任务？
-> 
+>
 > 要合并多个 setCounter，则需要合并逻辑尽量在最后一个 setCounter 之后。前面都是进入队列进行收集等待。但是因为我们并不知道在一轮函数调用栈中，最后一个 setCounter 到底是哪一个。但是我们可以非常确定的知道，在事件循环中，微任务队列是在函数调用栈清空之后才开始执行的，所以这里是一个非常适合的时机。
 
 每次 setter 之后执行 dispatchSetStateInternal，会把更新内容合并到 update 对象，最终挂载到 fiber 上。
@@ -244,20 +244,20 @@ function workLoop(initialTime: number) {
       currentTask.callback = null;
       currentPriorityLevel = currentTask.priorityLevel;
       const didUserCallbackTimeout = currentTask.expirationTime <= currentTime;
-      
+
       /**
        * 执行任务回调
        * 这里的返回值实际上也是 callback，是因为在循环 fiber 链表的过程也可能会中断，所以这里需要记录下来，等待下一次执行
       */
       const continuationCallback = callback(didUserCallbackTimeout);
-      
+
       // 处理任务结果
       if (typeof continuationCallback === 'function') {
         currentTask.callback = continuationCallback;
         return true; // 还有工作要做 - 重新入队
       }
     }
-    
+
     /* 处理下一个任务 */
     currentTask = peek(taskQueue);
   }
@@ -373,7 +373,7 @@ callback 单任务内部实际上就是 fiber 链表 的循环。
 
 存在多个优先级，且存在转换关系。
 
-```txt
+```
 Lane -> EventPriority -> PriorityLevel -> expirationTime -> sortIndex
 
 Lane、EventPriority 都是 LaneLevel
@@ -561,25 +561,29 @@ update 是一个挂载在 fiber.updateQueue 上的更新对象，记录了 setSt
 
 **三者关系:**
 
-```txt
-setState() 触发 -> 生成 update.lane
-                  |
-                  V
-        update 被挂载到 fiber.updateQueue
-                  |
-                  V
-           fiber.lanes |= update.lane
-                  |
-                  V
-     markUpdateLaneFromFiberToRoot()
-                  |
-                  V
-           root.pendingLanes |= update.lane
-                  |
-          ↓ 调度 ↓ 进入 render
-                  |
-                  V
-          renderLanes = getNextLanes()
+```
+  setState() 触发
+          │
+          ▼
+  生成 update.lane
+          │
+          ▼
+  update 挂载到 fiber.updateQueue
+          │
+          ▼
+  fiber.lanes |= update.lane
+          │
+          ▼
+  markUpdateLaneFromFiberToRoot()
+          │
+          ▼
+  root.pendingLanes |= update.lane
+          │
+          ▼
+  ↓ 调度 ↓ 进入 render
+          │
+          ▼
+  renderLanes = getNextLanes()
 ```
 
 update.lanes --合并-> fiber.lanes --合并-> root.paddingLanes
@@ -647,9 +651,9 @@ fiber 与 hook 之间，既要能够各自独立，又要能够相互关联。�
 
 组件函数在执行的过程中，会执行 hook，例如 useState。此时会创建 hook 对象，并挂在到 fiber 实例上。
 
-> 执行组件函数「Component」发生在： 
+> 执行组件函数「Component」发生在：
 >
-> beginWork -> updateFunctionComponent -> renderWithWork -> Component() 
+> beginWork -> updateFunctionComponent -> renderWithWork -> Component()
 
 Hook 的类型定义：
 
@@ -689,7 +693,7 @@ export type Effect = {
 
 ![img](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/20250614191902004.jpg)
 
-```txt
+```
 renderWithHooks
   ├── mountState / updateState（构造 useState）
   ├── mountEffect / updateEffect（构造 useEffect）
@@ -779,7 +783,7 @@ function reconcileChildrenArray() {...}
 > 这里说的移动，指的是对真实 dom 的操作。
 
 ```js
-旧列表：[A] [B] [C] [D] 
+旧列表：[A] [B] [C] [D]
 新列表：[B] [A] [D] [C]
 
 [B] 不移动
