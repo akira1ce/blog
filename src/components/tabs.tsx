@@ -24,7 +24,7 @@ export const Tabs = ({ children }: TabsProps) => {
 
   return (
     <div className="bg-fore/5 rounded-xl p-4 shadow">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-auto">
         {tabs.map((child: any, index) => {
           const label = child.props.label;
           const isActive = activeTab === index;
