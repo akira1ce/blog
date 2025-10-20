@@ -61,11 +61,6 @@
   @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
   @apply mx-auto max-w-4xl px-6 py-8;
 
-  /* Image styles */
-  img {
-    @apply border-main/10 rounded-xl border object-cover dark:invert;
-  }
-
   /* Code block styles */
   pre {
     @apply bg-fore/5 overflow-x-auto rounded-xl p-4 shadow;
