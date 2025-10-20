@@ -87,7 +87,7 @@ export const TableOfContents = ({
   }
 
   return (
-    <nav className={`toc border-fore/10 border-l p-4 ${className}`} aria-label="Table of contents">
+    <nav className={`border-fore/10 border-l p-4 ${className}`} aria-label="Table of contents">
       <div className="text-fore/70 mb-3 text-sm font-semibold tracking-wide uppercase">目录</div>
       <div className="space-y-1">
         {headings.map((heading) => {
@@ -102,14 +102,14 @@ export const TableOfContents = ({
               ref={isActive ? activeItemRef : null}
             >
               <div
+                className={cn(
+                  'hover:text-fore text-fore/60 cursor-pointer truncate text-left text-sm transition-all duration-200',
+                  isActive && 'text-fore',
+                )}
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToHeading(heading.id);
                 }}
-                className={cn(
-                  'toc-link hover:text-fore text-fore/60 block w-full cursor-pointer text-left text-sm transition-all duration-200',
-                  isActive && 'text-fore',
-                )}
               >
                 {heading.text}
               </div>
