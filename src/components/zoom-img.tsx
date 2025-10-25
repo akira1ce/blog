@@ -13,11 +13,9 @@ export interface ZoomImgProps {
 
 const imgCls = 'border-main/10 cursor-zoom-out rounded-xl border object-cover dark:invert';
 
-// 缩放预览图片
 const ZoomImg = (props: ZoomImgProps) => {
   const [open, setOpen] = useState(false);
 
-  // 滚动缩小图片
   useEventListener('scroll', () => open && setOpen(false));
 
   return (
