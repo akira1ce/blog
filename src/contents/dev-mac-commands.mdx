@@ -18,6 +18,9 @@ summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升�
 | 重置DNS | `sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder` |
 | 重启网络服务 | `sudo ifconfig en0 down && sudo ifconfig en0 up` |
 | 查询网络端口对应的设备名称 | `networksetup -listallhardwareports` |
+| 网路连通性测试（telnet平替） | `nc -vz github.com 22` |
+
+> open-connect 无法连接、卡住大概率：dns 缓存问题，清空所有的 dns 或者 将 dns 设置为 8.8.8.8 即可。
 
 ## Shell相关命令
 
@@ -27,6 +30,18 @@ summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升�
 | 查看当前shell的版本 | `echo $SHELL_VERSION` |
 | 查看当前shell的类型 | `echo $SHELL_TYPE` |
 | 同步时间 | `sudo sntp -sS pool.ntp.org` |
+
+## brew相关命令
+
+| 功能 | 命令 |
+|------|------|
+| 更新brew | `brew update` |
+| 更新brew包 | `brew upgrade` |
+| 清理brew缓存 | `brew cleanup` |
+| 查看依赖关系 | `brew deps --installed` |
+| 清理brew包缓存 | `brew cleanup --prune=all` |
+| 清理无用依赖 | `brew autoremove` |
+
 
 ## Git相关命令
 
