@@ -1,0 +1,50 @@
+---
+title: Prettier 配置指南
+category: ['Configuration']
+slug: config-prettier
+date: 2024-11-5
+summary: Prettier 常用配置示例，包括代码格式化、代码风格和代码规范。
+---
+
+# 相关依赖包
+
+``` bash
+# prettier
+yarn add prettier -D
+
+# sort-tailwindcss
+yarn add prettier-plugin-tailwindcss -D
+
+# sort imports
+yarn add @trivago/prettier-plugin-sort-imports -D
+```
+
+# .prettierrc
+
+```json
+{
+	"semi": true,
+	"trailingComma": "es5",
+	"printWidth": 120,
+	"tabWidth": 2,
+	"useTabs": true,
+	"endOfLine": "lf",
+	"plugins": [
+		"@trivago/prettier-plugin-sort-imports",
+		"prettier-plugin-tailwindcss"
+	],
+	"importOrder": [
+		"^react$",
+		"^react-dom$",
+		"^react/(.*)$",
+		"^react-router(.*)$",
+		"^antd$",
+		"^antd/(.*)$",
+		"^@/(.*)$",
+		"^[./]"
+	],
+	"importOrderSortSpecifiers": true,
+	"importOrderGroupNamespaceSpecifiers": true,
+	"importOrderCaseInsensitive": true
+}
+```
