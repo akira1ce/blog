@@ -8,31 +8,31 @@ summary: 实现一个支持远程数据请求的下拉组件，适用于搜索�
 
 
 ```tsx
-import { useControllableValue, useMemoizedFn } from "ahooks";
-import { debounce, differenceWith, isEqual } from "lodash";
-import { memo, useEffect, useMemo, useState } from "react";
-import { Select, type SelectProps } from "antd";
+import { useControllableValue, useMemoizedFn } from 'ahooks';
+import { Select, type SelectProps } from 'antd';
+import { debounce, differenceWith, isEqual } from 'lodash';
+import { memo, useEffect, useMemo, useState } from 'react';
 
-type OmitSelectProps = "options" | "loading" | "labelInValue" | "onSearch" | "showSearch";
+type OmitSelectProps = 'options' | 'loading' | 'labelInValue' | 'onSearch' | 'showSearch';
 
 export interface Option {
-	label: string;
-	value: string;
+  label: string;
+  value: string;
 }
 
 export interface RemoteSelectProps<T, K> extends Omit<SelectProps, OmitSelectProps> {
-	/** 请求 */
-	api: (params: T) => Promise<K>;
-	/** 搜索参数 */
-	searchParams?: T;
-	/** 搜索参数回调 */
-	onChangeSearchParams?: (searchParams: T) => void;
-	/** 错误回调 */
-	onError?: (error: any) => void;
-	/** 响应回调 */
-	transformOptions?: (response: K) => Option[];
-	/** 搜索参数回调 */
-	transformSearchParams?: (searchValue: string) => T;
+  /** 请求 */
+  api: (params: T) => Promise<K>;
+  /** 搜索参数 */
+  searchParams?: T;
+  /** 搜索参数回调 */
+  onChangeSearchParams?: (searchParams: T) => void;
+  /** 错误回调 */
+  onError?: (error: any) => void;
+  /** 响应回调 */
+  transformOptions?: (response: K) => Option[];
+  /** 搜索参数回调 */
+  transformSearchParams?: (searchValue: string) => T;
 }
 
 /**
@@ -40,66 +40,74 @@ export interface RemoteSelectProps<T, K> extends Omit<SelectProps, OmitSelectPro
  * 由于下拉数据需要走请求，导致回显存在异常情况，默认采用 labelInValue 模式
  */
 const RemoteSelect = <T, K>(props: RemoteSelectProps<T, K>) => {
-	const { api, onError, transformOptions, transformSearchParams, ...resetProps } = props;
+  const {
+    api,
+    onError,
+    transformOptions,
+    transformSearchParams,
+    searchParams: _searchParams,
+    onChangeSearchParams: _onChangeSearchParams,
+    ...resetProps
+  } = props;
 
-	const { value, mode } = resetProps;
+  const { value, mode } = resetProps;
 
-	const [loading, setLoading] = useState(false);
-	const [options, setOptions] = useState<Option[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState<Option[]>([]);
 
-	const [searchParams, setSearchParams] = useControllableValue<T>(props, {
-		valuePropName: "searchParams",
-		trigger: "onChangeSearchParams",
-	});
+  const [searchParams, setSearchParams] = useControllableValue<T>(props, {
+    valuePropName: 'searchParams',
+    trigger: 'onChangeSearchParams',
+  });
 
-	/* 合并选项 */
-	const mergegOptions = useMemo(() => {
-		if (!value || value.length === 0) return options;
+  /* 合并选项 */
+  const mergegOptions = useMemo(() => {
+    if (!value || value.length === 0) return options;
 
-		/* 转换为数组 */
-		const val = mode === "multiple" ? value : [value];
-		/* 当前选项 */
-		const currentOptions = val.map((item: any) => ({ label: item.label, value: item.value }));
-		/* 判断是否包含 */
-		const isInclude = differenceWith(currentOptions, options, isEqual).length === 0;
-		/* 如果包含，则返回原选项 */
-		if (isInclude) return options;
-		/* 如果不包含，则返回合并后的选项 */
-		return [...currentOptions, ...options];
-	}, [options, value]);
+    /* 转换为数组 */
+    const val = mode === 'multiple' ? value : [value];
+    /* 当前选项 */
+    const currentOptions = val.map((item: any) => ({ label: item.label, value: item.value }));
+    /* 判断是否包含 */
+    const isInclude = differenceWith(currentOptions, options, isEqual).length === 0;
+    /* 如果包含，则返回原选项 */
+    if (isInclude) return options;
+    /* 如果不包含，则返回合并后的选项 */
+    return [...currentOptions, ...options];
+  }, [options, value]);
 
-	const handleSearch = useMemoizedFn(
-		debounce((val: string) => {
-			const _searchParams = transformSearchParams?.(val);
-			if (!_searchParams) return;
-			setSearchParams((prev) => ({ ...prev, ..._searchParams }));
-		}, 300)
-	);
+  const handleSearch = useMemoizedFn(
+    debounce((val: string) => {
+      const _searchParams = transformSearchParams?.(val);
+      if (!_searchParams) return;
+      setSearchParams(prev => ({ ...prev, ..._searchParams }));
+    }, 300)
+  );
 
-	/* 请求数据 */
-	const fetcher = useMemoizedFn(
-		debounce(async () => {
-			try {
-				setLoading(true);
-				const res = await api(searchParams);
-				const _options = transformOptions?.(res) || [];
-				setOptions(_options);
-				setLoading(false);
-			} catch (err) {
-				setLoading(false);
-				console.error(err);
-				onError?.(err);
-			}
-		}, 300)
-	);
+  /* 请求数据 */
+  const fetcher = useMemoizedFn(
+    debounce(async () => {
+      try {
+        setLoading(true);
+        const res = await api(searchParams);
+        const _options = transformOptions?.(res) || [];
+        setOptions(_options);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.error(err);
+        onError?.(err);
+      }
+    }, 300)
+  );
 
-	useEffect(() => {
-		fetcher();
-	}, [searchParams]);
+  useEffect(() => {
+    fetcher();
+  }, [searchParams]);
 
-	return (
-		<Select {...resetProps} loading={loading} options={mergegOptions} labelInValue showSearch onSearch={handleSearch} />
-	);
+  return (
+    <Select {...resetProps} loading={loading} options={mergegOptions} labelInValue showSearch onSearch={handleSearch} />
+  );
 };
 
 export default memo(RemoteSelect) as typeof RemoteSelect;
