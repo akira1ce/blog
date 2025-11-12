@@ -1,0 +1,255 @@
+---
+title: Git 统计工具
+category: ['DevTools']
+slug: dev-git-statistics-tool
+summary: 收集 Git 相关的统计工具。
+---
+
+```js
+import { execSync } from 'child_process';
+
+/**
+ * 执行 git 命令并返回结果
+ */
+function execGitCommand(command) {
+  try {
+    return execSync(command, { encoding: 'utf-8', cwd: process.cwd() });
+  } catch (error) {
+    console.error(`❌ Error executing git command: ${command}`);
+    console.error(error.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * 解析 git log --numstat 输出（带重复检测）
+ */
+function parseGitStats(options = {}) {
+  const { excludeMerges = false, showDetails = false } = options;
+
+  // 排除合并提交可以避免重复计算
+  const mergeOption = excludeMerges ? '--no-merges' : '';
+  const command = `git log ${mergeOption} --numstat --pretty=format:"%H|||%an|||%ae|||%s"`;
+  const output = execGitCommand(command);
+  const lines = output.trim().split('\n');
+
+  const stats = {};
+  const fileStats = {}; // 用于跟踪文件被统计的次数
+  let currentAuthor = null;
+  let currentCommit = null;
+
+  for (const line of lines) {
+    // 检查是否是提交信息行（包含 ||| 分隔符）
+    if (line.includes('|||')) {
+      const parts = line.split('|||');
+      if (parts.length >= 4) {
+        currentCommit = parts[0].trim();
+        const name = parts[1].trim();
+        const email = parts[2].trim();
+        currentAuthor = name;
+
+        if (!stats[currentAuthor]) {
+          stats[currentAuthor] = {
+            name: currentAuthor,
+            email: email,
+            added: 0,
+            deleted: 0,
+            files: 0,
+            commits: new Set(), // 跟踪提交数
+            fileChanges: {}, // 跟踪每个文件的变更次数
+          };
+        }
+        stats[currentAuthor].commits.add(currentCommit);
+      }
+      continue;
+    }
+
+    // 解析文件变更统计（格式：added deleted filename）
+    if (currentAuthor && line.trim()) {
+      const parts = line.split('\t');
+      if (parts.length >= 3) {
+        const added = parseInt(parts[0], 10) || 0;
+        const deleted = parseInt(parts[1], 10) || 0;
+        const filename = parts[2].trim();
+
+        stats[currentAuthor].added += added;
+        stats[currentAuthor].deleted += deleted;
+        stats[currentAuthor].files += 1;
+
+        // 跟踪文件统计次数
+        const fileKey = `${currentAuthor}:${filename}`;
+        if (!fileStats[fileKey]) {
+          fileStats[fileKey] = {
+            author: currentAuthor,
+            filename: filename,
+            count: 0,
+            totalAdded: 0,
+            totalDeleted: 0,
+            commits: [],
+          };
+        }
+        fileStats[fileKey].count += 1;
+        fileStats[fileKey].totalAdded += added;
+        fileStats[fileKey].totalDeleted += deleted;
+        fileStats[fileKey].commits.push(currentCommit);
+
+        // 跟踪每个作者的文件变更次数
+        if (!stats[currentAuthor].fileChanges[filename]) {
+          stats[currentAuthor].fileChanges[filename] = 0;
+        }
+        stats[currentAuthor].fileChanges[filename] += 1;
+      }
+    }
+  }
+
+  return { stats, fileStats };
+}
+
+/**
+ * 检测重复统计的文件
+ */
+function detectDuplicates(fileStats) {
+  const duplicates = [];
+
+  for (const [key, fileStat] of Object.entries(fileStats)) {
+    if (fileStat.count > 1) {
+      duplicates.push({
+        ...fileStat,
+        key,
+      });
+    }
+  }
+
+  return duplicates.sort((a, b) => b.count - a.count);
+}
+
+/**
+ * 格式化输出统计结果
+ */
+function formatStats({ stats, fileStats }, options = {}) {
+  const { showDetails = false, showDuplicates = false } = options;
+
+  const authors = Object.values(stats).sort((a, b) => b.added + b.deleted - (a.added + a.deleted));
+
+  console.log('\n📊 Git 代码统计（按作者分类）\n');
+  console.log('='.repeat(80));
+
+  let totalAdded = 0;
+  let totalDeleted = 0;
+  let totalFiles = 0;
+  let totalCommits = 0;
+
+  for (const author of authors) {
+    const total = author.added + author.deleted;
+    totalAdded += author.added;
+    totalDeleted += author.deleted;
+    totalFiles += author.files;
+    totalCommits += author.commits.size;
+
+    console.log(`\n👤 ${author.name}`);
+    console.log(`   📧 ${author.email}`);
+    console.log(`   ➕ 新增行数: ${author.added.toLocaleString()}`);
+    console.log(`   ➖ 删除行数: ${author.deleted.toLocaleString()}`);
+    console.log(`   📝 修改文件数: ${author.files.toLocaleString()}`);
+    console.log(`   📈 总计变更: ${total.toLocaleString()} 行`);
+    console.log(`   🔢 提交次数: ${author.commits.size}`);
+
+    // 显示详细信息
+    if (showDetails) {
+      const fileChangeEntries = Object.entries(author.fileChanges)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10); // 只显示前10个被修改最多次的文件
+
+      if (fileChangeEntries.length > 0) {
+        console.log(`   📋 被修改最多次的文件（前10）:`);
+        for (const [filename, count] of fileChangeEntries) {
+          console.log(`      - ${filename}: ${count} 次`);
+        }
+      }
+    }
+  }
+
+  console.log('\n' + '='.repeat(80));
+  console.log('\n📋 总计统计');
+  console.log(`   ➕ 总新增行数: ${totalAdded.toLocaleString()}`);
+  console.log(`   ➖ 总删除行数: ${totalDeleted.toLocaleString()}`);
+  console.log(`   📝 总修改文件数: ${totalFiles.toLocaleString()}`);
+  console.log(`   📈 总变更行数: ${(totalAdded + totalDeleted).toLocaleString()}`);
+  console.log(`   🔢 总提交次数: ${totalCommits.toLocaleString()}`);
+  console.log(`   👥 贡献者数量: ${authors.length}`);
+
+  // 显示重复统计的文件
+  if (showDuplicates) {
+    const duplicates = detectDuplicates(fileStats);
+    if (duplicates.length > 0) {
+      console.log('\n' + '='.repeat(80));
+      console.log('\n⚠️  检测到可能重复统计的文件（被统计多次）\n');
+      console.log('前20个被统计最多次的文件：\n');
+
+      duplicates.slice(0, 20).forEach((dup, index) => {
+        console.log(`${index + 1}. ${dup.filename}`);
+        console.log(`   作者: ${dup.author}`);
+        console.log(`   被统计次数: ${dup.count}`);
+        console.log(`   累计新增: ${dup.totalAdded.toLocaleString()}`);
+        console.log(`   累计删除: ${dup.totalDeleted.toLocaleString()}`);
+        console.log(`   涉及的提交: ${dup.commits.length} 个`);
+        console.log('');
+      });
+    } else {
+      console.log('\n✅ 未检测到明显的重复统计');
+    }
+  }
+
+  console.log('\n');
+}
+
+/**
+ * 主函数
+ */
+function main() {
+  try {
+    const args = process.argv.slice(2);
+    const excludeMerges = args.includes('--no-merges');
+    const showDetails = args.includes('--details');
+    const showDuplicates = args.includes('--duplicates');
+
+    if (args.includes('--help') || args.includes('-h')) {
+      console.log(`
+用法: node git-stats.js [选项]
+
+选项:
+  --no-merges    排除合并提交（推荐，避免重复计算）
+  --details      显示详细信息（每个作者被修改最多次的文件）
+  --duplicates   检测并显示可能重复统计的文件
+  --help, -h     显示此帮助信息
+
+示例:
+  node git-stats.js --no-merges --duplicates
+  node git-stats.js --details
+      `);
+      return;
+    }
+
+    console.log('🚀 开始统计 Git 代码贡献...\n');
+    if (excludeMerges) {
+      console.log('ℹ️  已启用：排除合并提交（避免重复计算）\n');
+    }
+
+    const result = parseGitStats({ excludeMerges });
+    formatStats(result, { showDetails, showDuplicates });
+  } catch (error) {
+    console.error('❌ 统计过程中发生错误:', error.message);
+    process.exit(1);
+  }
+}
+
+// 执行统计
+main();
+```
+
+示例：
+
+```bash
+node git-stats.js --no-merges --duplicates
+node git-stats.js --details
+```
