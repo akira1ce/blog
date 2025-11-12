@@ -25,18 +25,23 @@ function processPostFile(file) {
     const { data } = matter(content);
 
     // 验证必要字段
-    if (!data.slug || !data.title) {
+    if (!data.slug || !data.title || !data.createdTime || !data.updatedTime) {
       console.warn(`\n⚠️  Missing required fields in ${file}`);
       return null;
     }
 
-    const { slug, title, summary = '', category = 'uncategorized' } = data;
+    const {
+      slug,
+      title,
+      summary = '',
+      category = 'uncategorized',
+      createdTime,
+      updatedTime,
+    } = data;
 
-    // 使用文件修改时间作为日期
-    const stats = fs.statSync(filePath);
-
-    const updatedDate = dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss');
-    const createdDate = dayjs(stats.birthtime).format('YYYY-MM-DD HH:mm:ss');
+    // 从 frontmatter 中读取时间
+    const createdDate = dayjs(createdTime).format('YYYY-MM-DD HH:mm:ss');
+    const updatedDate = dayjs(updatedTime).format('YYYY-MM-DD HH:mm:ss');
 
     return { slug, title, summary, category, createdDate, updatedDate };
   } catch (error) {
@@ -65,7 +70,7 @@ function generatePostsIndex() {
     const posts = files
       .map((file) => processPostFile(file))
       .filter(Boolean)
-      .sort((a, b) => b.updatedDate.localeCompare(a.createdDate));
+      .sort((a, b) => b.updatedDate.localeCompare(a.updatedDate));
 
     const outputDir = path.dirname(OUTPUT_FILE);
     if (!fs.existsSync(outputDir)) {
