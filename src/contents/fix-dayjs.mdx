@@ -1,0 +1,51 @@
+---
+title: Day.js 踩坑指南
+category: ['Troubleshooting']
+slug: fix-dayjs
+date: 2025-11-12
+summary: 记录使用 dayjs 过程中踩过的坑，以及对应的解决思路与经验总结。
+---
+
+# Day.js 踩坑指南
+
+## 统一 dayjs 实例
+
+```js
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
+import localeData from 'dayjs/plugin/localeData';
+import 'dayjs/locale/zh-cn';
+
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+dayjs.locale('zh-cn');
+
+export default dayjs;
+```
+
+## 时区问题
+
+```ts
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault('Asia/Shanghai');
+```
+
+## 日期格式化问题
+
+```ts
+import dayjs from 'dayjs';
+dayjs().format('YYYY-MM-DD HH:mm:ss');
+```
+
+## 获取周几
+
+```ts
+import dayjs from 'dayjs';
+dayjs().weekday();
+```

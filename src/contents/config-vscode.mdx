@@ -2,9 +2,11 @@
 title: VS Code 配置
 category: ['Configuration']
 slug: config-vscode
-date: 2024-06-20
+date: 2025-11-11
 summary: 汇总 Visual Studio Code 的常用配置及插件推荐。
 ---
+
+import { Tabs, TabItem } from '@/components/tabs';
 
 # 资源嵌套
 
@@ -20,3 +22,55 @@ summary: 汇总 Visual Studio Code 的常用配置及插件推荐。
 }
 ```
 
+# 优化import
+
+移除未使用的import，以及自动排序import。
+
+prettier 需要安装相关依赖：
+
+``` bash
+yarn add @trivago/prettier-plugin-sort-imports -D
+yarn add prettier-plugin-tailwindcss -D
+```
+
+<Tabs>
+  <TabItem label=".vscode/setting.json">
+    ```json
+    {
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll.prettier": "explicit"
+      }
+    }
+    ```
+  </TabItem>
+    <TabItem label=".prettierrc">
+    ```json
+    {
+      "semi": true,
+      "trailingComma": "es5",
+      "printWidth": 120,
+      "tabWidth": 2,
+      "useTabs": true,
+      "endOfLine": "lf",
+      "plugins": [
+        "@trivago/prettier-plugin-sort-imports",
+        "prettier-plugin-tailwindcss"
+      ],
+      "importOrder": [
+        "^react$",
+        "^react-dom$",
+        "^react/(.*)$",
+        "^react-router(.*)$",
+        "^antd$",
+        "^antd/(.*)$",
+        "^@/(.*)$",
+        "^[./]"
+      ],
+      "importOrderSortSpecifiers": true,
+      "importOrderGroupNamespaceSpecifiers": true,
+      "importOrderCaseInsensitive": true
+    }
+    ```
+  </TabItem>
+</Tabs>
