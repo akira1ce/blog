@@ -25,14 +25,18 @@ function processPostFile(file) {
     const { data } = matter(content);
 
     // 验证必要字段
-    if (!data.slug || !data.title || !data.date) {
+    if (!data.slug || !data.title) {
       console.warn(`\n⚠️  Missing required fields in ${file}`);
       return null;
     }
 
-    const { slug, title, date, summary = '', category = 'uncategorized' } = data;
+    const { slug, title, summary = '', category = 'uncategorized' } = data;
 
-    return { slug, title, summary, category, date: dayjs(date).format('YYYY-MM-DD') };
+    // 使用文件修改时间作为日期
+    const stats = fs.statSync(filePath);
+    const date = dayjs(stats.mtime).format('YYYY-MM-DD');
+
+    return { slug, title, summary, category, date };
   } catch (error) {
     console.error(`\n❌ Error processing file ${file}:`, error.message);
     return null;
