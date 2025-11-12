@@ -2,6 +2,7 @@ import { getAllPosts, getPostBySlug } from '@/lib/posts';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { TableOfContents } from '@/components/table-of-contents';
+import { ArrowLeftRight, Split } from 'lucide-react';
 
 export interface Params {
   slug: string;
@@ -37,7 +38,11 @@ export default async function Page({ params }: Props) {
         <div className="text-fore mb-4 text-center text-3xl font-bold underline">
           {matter?.title}
         </div>
-        <div className="text-fore/50 mb-4 text-center text-sm">{matter?.date}</div>
+        <div className="text-fore/50 mb-4 flex items-center justify-center gap-2 text-sm">
+          <div>创建于：{matter?.createdDate}</div>
+          <div>|</div>
+          <div>更新于：{matter?.updatedDate}</div>
+        </div>
         <div className="flex justify-center gap-1">
           {matter?.category.map((item) => (
             <Link

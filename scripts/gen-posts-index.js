@@ -34,9 +34,11 @@ function processPostFile(file) {
 
     // 使用文件修改时间作为日期
     const stats = fs.statSync(filePath);
-    const date = dayjs(stats.mtime).format('YYYY-MM-DD');
 
-    return { slug, title, summary, category, date };
+    const updatedDate = dayjs(stats.mtime).format('YYYY-MM-DD HH:mm:ss');
+    const createdDate = dayjs(stats.birthtime).format('YYYY-MM-DD HH:mm:ss');
+
+    return { slug, title, summary, category, createdDate, updatedDate };
   } catch (error) {
     console.error(`\n❌ Error processing file ${file}:`, error.message);
     return null;
@@ -63,7 +65,7 @@ function generatePostsIndex() {
     const posts = files
       .map((file) => processPostFile(file))
       .filter(Boolean)
-      .sort((a, b) => b.date.localeCompare(a.date));
+      .sort((a, b) => b.updatedDate.localeCompare(a.createdDate));
 
     const outputDir = path.dirname(OUTPUT_FILE);
     if (!fs.existsSync(outputDir)) {

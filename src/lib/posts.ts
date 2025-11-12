@@ -7,7 +7,8 @@ export interface FrontMatter {
   title: string;
   category: string[];
   slug: string;
-  date: string;
+  createdDate: string;
+  updatedDate: string;
   summary: string;
 }
 
