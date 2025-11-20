@@ -1,0 +1,64 @@
+---
+title: Docker 常用命令
+category:
+  - Development
+slug: dev-docker-commands
+summary: 汇总 Docker 常用命令。
+createdTime: '2025-11-20 10:11:48'
+updatedTime: '2025-11-20 10:11:48'
+---
+
+# Docker 常用命令
+
+## 查看镜像架构
+
+```bash
+docker inspect 0efe22b9c206 --format '{{.Architecture}}'
+```
+
+## 构建不同架构的镜像
+
+查看 buildx 是否可用：
+
+```bash
+# 检查 buildx 是否可用
+docker buildx version
+
+# 创建新的 builder 实例（支持多架构）
+docker buildx create --name multiarch --use
+
+# 查看支持的平台
+docker buildx inspect --bootstrap
+```
+
+docker-compose.yml
+
+```bash
+version: '3.9'
+
+services:
+  next-app:
+    build:
+      context: .
+      dockerfile: dockerfile
+      platforms:
+        - linux/arm64  # 指定 ARM64 架构
+    platform: linux/arm64  # 运行时平台
+    container_name: next-app
+    restart: always
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: production
+```
+
+## 离线镜像
+
+### docker save：
+
+```bash
+# docker-save
+docker save client-ui-nextjs-next-app:latest -o next-app-image.tar
+# docker-load
+docker load < next-app-image.tar.gz
+```

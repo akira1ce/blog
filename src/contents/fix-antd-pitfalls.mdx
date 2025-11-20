@@ -5,7 +5,7 @@ category:
 slug: fix-antd-pitfalls
 summary: 记录使用 antd 过程中踩过的坑，以及对应的解决思路与经验总结。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2025-11-12 15:59:45'
+updatedTime: '2025-11-20 14:50:45'
 ---
 
 # Table 在 flex 容器下自适应宽度，导致宽度溢出
@@ -60,3 +60,19 @@ Tree 数据超大时，需要通过 height 开启虚拟滚动，优化性能。
 > Reference
 > 
 > [issues](https://github.com/ant-design/ant-design/issues/31226)
+
+# react-draggable 版本依赖问题
+
+![](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/202511201456836.png)
+
+react-draggable 版本依赖版本不一致，导致无法正常使用。
+
+通过 package.json 中的 resolutions 配置，指定 react-draggable 版本为 4.4.5 即可解决。
+
+```json
+{
+  "resolutions": {
+    "react-draggable": "4.4.5"
+  }
+}
+```

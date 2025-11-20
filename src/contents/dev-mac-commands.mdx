@@ -94,3 +94,17 @@ write http://com.apple.dock autohide-time-modifier -float 0.2
 defaults write http://com.apple.dock autohide-delay -float 0
 killall Dock
 ```
+
+## tar 相关命令
+
+| 功能 | 命令 |
+|------|------|
+| 压缩文件 | `tar -czvf filename.tar.gz directory/` |
+| 解压文件 | `tar -xzvf filename.tar.gz` |
+| 查看压缩文件内容 | `tar -tzvf filename.tar.gz` |
+
+> 涉及到大量文件压缩会很慢，可以考虑不压缩直接打包。
+>
+> 例如 node_modules，直接打包：
+>
+> `tar -cvf node_modules.tar node_modules`
