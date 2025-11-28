@@ -1,0 +1,52 @@
+---
+title: Next.js 踩坑指南
+category:
+  - Troubleshooting
+slug: fix-nextjs
+summary: 记录使用 nextjs 过程中踩过的坑，以及对应的解决思路与经验总结。
+createdTime: '2025-11-24 10:00:00'
+updatedTime: '2025-11-24 10:00:00'
+---
+
+# useSearchParams
+
+该 hook 只能在客户端组件中使用，且需要包裹在 Suspense 中，否则 build 会产生警告。
+
+# Middleware set coockie
+
+由于浏览器安全策略，middleware 中 cookie-set 操作，需要在 https、域名 下才能正常执行。
+
+`setCookie.options` 配置 `httpOnly、secure` 为 false，可以规避该问题，但是存在安全风险。
+
+> 除了本地开发环境，localhost 域被认作为安全域。
+
+```js
+/* 检查 sessionId 是否存在 并存储 cookie */
+const AuthCenterMiddleware = (req: NextRequest) => {
+  const { searchParams } = req.nextUrl;
+  const sessionId = searchParams.get(SESSION_KEY_IN_URL);
+
+  /* 如果 URL 带 sessionId，则存 Cookie */
+  if (sessionId) {
+    const url = req.nextUrl;
+
+    /* 删除 sessionId 参数 */
+    url.searchParams.delete(SESSION_KEY_IN_URL);
+
+    const res = NextResponse.redirect(url);
+
+    res.cookies.set(SESSION_KEY_IN_COOKIE, sessionId, {
+      httpOnly: false,
+      secure: false,
+      path: '/',
+      sameSite: 'lax',
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 6), // 6 hours
+      // expires: new Date(Date.now() + 1000 * 10),
+    });
+
+    return res;
+  }
+
+  return NextResponse.next();
+};
+```
