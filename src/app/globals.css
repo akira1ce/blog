@@ -13,12 +13,14 @@
       /* Light theme variables */
       --bg-main: #ffffff;
       --bg-fore: #030712;
+      --bg-card: #f9fafb;
     }
 
     &.dark {
       /* Dark theme variables */
       --bg-main: #030712;
       --bg-fore: #ffffff;
+      --bg-card: #10131e;
     }
 
     /* code-block dark-light mode */
@@ -43,38 +45,72 @@
 @theme inline {
   --color-main: var(--bg-main);
   --color-fore: var(--bg-fore);
+  --color-card: var(--bg-card);
 }
 
 /* Custom prose styles */
 .prose-custom {
   @apply prose prose-gray dark:prose-invert max-w-none;
-  @apply prose-headings:text-fore;
-  @apply prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-6;
-  @apply prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4;
-  @apply prose-h3:text-xl prose-h3:font-medium prose-h3:mt-6 prose-h3:mb-3;
-  @apply prose-h4:text-lg prose-h4:font-medium prose-h4:mt-4 prose-h4:mb-2;
-  @apply prose-p:text-fore prose-p:leading-relaxed;
+
+  /* 全局正文 */
+  @apply prose-p:my-4 prose-p:leading-relaxed prose-p:text-fore;
+
+  /* 标题体系（重点优化节奏） */
+  @apply prose-headings:text-fore scroll-mt-24;
+
+  @apply prose-h1:text-2xl prose-h1:font-bold prose-h1:mt-12 prose-h1:mb-6;
+  @apply prose-h2:text-xl prose-h2:font-semibold prose-h2:mt-10 prose-h2:mb-5;
+  @apply prose-h3:text-lg prose-h3:font-medium prose-h3:mt-8 prose-h3:mb-4;
+  @apply prose-h4:text-base prose-h4:font-medium prose-h4:mt-6 prose-h4:mb-3;
+
+  /* 链接 */
   @apply prose-a:text-blue-400 prose-a:no-underline prose-a:hover:underline;
+
+  /* 强调 */
   @apply prose-strong:text-fore prose-strong:font-semibold;
-  @apply prose-ul:text-fore prose-ol:text-fore;
-  @apply prose-li:my-1;
-  @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
-  @apply mx-auto max-w-4xl px-6 py-8;
 
-  /* Code block styles */
-  pre {
-    @apply bg-fore/5 overflow-x-auto rounded-xl p-4 shadow;
-    font-family: inherit;
-  }
+  /* 列表优化 */
+  @apply prose-ul:my-4 prose-ol:my-4;
+  @apply prose-li:my-2 prose-li:leading-relaxed;
 
-  code {
-    font-family: inherit;
+  /* 引用块优化 */
+  @apply prose-blockquote:my-6 prose-blockquote:border-l-4 prose-blockquote:border-l-blue-400 prose-blockquote:pl-4 prose-blockquote:text-fore prose-blockquote:not-italic;
+
+  /* 代码块 */
+  @apply prose-pre:my-6 prose-code:text-sm;
+
+  /* 分割线 */
+  @apply prose-hr:my-8;
+
+  /* 图片 */
+  @apply prose-img:my-8 prose-img:rounded-xl;
+
+  /* 布局容器 */
+  @apply mx-auto max-w-4xl p-6;
+
+  /* 代码块样式 */
+  figure {
+    @apply bg-card border-fore/5 relative rounded-xl p-0;
+    figcaption {
+      @apply m-0 mb-4;
+    }
+    /* 如果有 figcaption，则添加 padding */
+    &:has(figcaption) {
+      @apply border p-4;
+    }
+    /* Code block styles */
+    pre {
+      @apply bg-main border-fore/5 m-0 overflow-x-auto rounded-xl border;
+      font-family: inherit;
+      code {
+        font-family: inherit;
+      }
+    }
   }
 
   /* Inline code styles */
   :not(pre) > code {
-    @apply text-fore rounded-xl bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
-    @apply border border-gray-200 dark:border-gray-700;
+    @apply text-fore bg-card border-fore/5 rounded-xl border px-2 py-0.5 text-sm;
     font-family: inherit;
 
     &::before,
@@ -151,4 +187,9 @@
   to {
     mask-size: 350vmax;
   }
+}
+
+/* 隐藏 Tabs 内的代码块 title */
+[data-tabs-container] figcaption[data-rehype-pretty-code-title] {
+  display: none;
 }

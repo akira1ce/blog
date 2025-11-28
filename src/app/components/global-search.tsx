@@ -49,7 +49,7 @@ const GlobalSearch = () => {
   return (
     <>
       <div
-        className="text-fore/60 bg-fore/10 flex cursor-pointer items-center gap-2 rounded-xl px-2 py-1 text-sm"
+        className="text-fore/60 bg-card border-fore/5 flex cursor-pointer items-center gap-2 rounded-xl border px-2 py-1 text-sm"
         onClick={() => setOpen(true)}
       >
         <Search className="size-3" />
@@ -77,19 +77,6 @@ const GlobalSearch = () => {
               className="hover:bg-fore/10 py-2"
               onClick={() => handleLink(post.slug)}
             />
-            // <div
-            //   key={post.slug}
-            //   className="group hover:bg-fore/20 relative flex cursor-pointer items-center justify-between gap-2 rounded-xl px-4 py-2 transition-all"
-            //   onClick={() => handleLink(post.slug)}
-            // >
-            //   <div>
-            //     <div className="mb-1" key={post.slug}>
-            //       {post.title}
-            //     </div>
-            //     <div className="text-fore/60 line-clamp-1 text-sm">{post.summary}</div>
-            //   </div>
-            //   <ArrowRight className="mr-2 size-4 opacity-0 transition-all group-hover:translate-x-2 group-hover:opacity-100" />
-            // </div>
           ))}
           {filteredPosts.length === 0 && (
             <div className="text-fore/60 p-4 text-center text-sm">No posts found</div>

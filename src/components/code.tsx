@@ -24,14 +24,14 @@ const Code = ({ children, className, ...props }: CodeProps) => {
   };
 
   return (
-    <div className="group relative">
+    <div>
       <pre ref={preRef} className={className} {...props}>
         {children}
       </pre>
-      <div className="absolute top-2 right-2">
+      <div className="absolute top-4 right-4">
         <button
           onClick={handleCopy}
-          className="bg-fore/10 hover:bg-fore/20 cursor-pointer rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          className="cursor-pointer rounded-xl text-xs"
           aria-label="Copy code"
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}

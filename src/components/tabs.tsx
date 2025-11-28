@@ -23,7 +23,7 @@ export const Tabs = ({ children }: TabsProps) => {
   const uid = useId();
 
   return (
-    <div className="bg-fore/5 rounded-xl p-4 shadow">
+    <div className="bg-card border-fore/5 rounded-xl border p-4">
       <div className="flex items-center gap-2 overflow-auto">
         {tabs.map((child: any, index) => {
           const label = child.props.label;
@@ -32,15 +32,12 @@ export const Tabs = ({ children }: TabsProps) => {
             <div
               key={`${uid}-${index}`}
               onClick={() => setActiveTab(index)}
-              className={cn(
-                'hover:bg-fore/5 relative cursor-pointer rounded-xl px-2 py-1 transition-all',
-                isActive ? 'font-semibold' : 'font-normal',
-              )}
+              className="hover:bg-fore/2 relative cursor-pointer rounded-xl px-2 py-1 text-nowrap"
             >
               {label}
               {isActive && (
                 <motion.div
-                  className="bg-fore/10 absolute bottom-0 left-0 h-full w-full rounded-xl"
+                  className="bg-fore/5 absolute bottom-0 left-0 h-full w-full rounded-xl"
                   layoutId={`${uid}-tab-active`}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
@@ -50,7 +47,9 @@ export const Tabs = ({ children }: TabsProps) => {
         })}
       </div>
       <div className="-mt-4 -mb-8">
-        <FadeInUp>{tabs[activeTab]?.props.children}</FadeInUp>
+        <FadeInUp key={activeTab} duration={0.1}>
+          {tabs[activeTab]?.props.children}
+        </FadeInUp>
       </div>
     </div>
   );

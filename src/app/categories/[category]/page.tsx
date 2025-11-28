@@ -32,7 +32,10 @@ export default async function Page({ params }: Props) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {posts.map((post) => (
             <Link key={post.slug} href={`/posts/${post.slug}`}>
-              <PostCard post={post} className="bg-fore/5 hover:bg-fore/10 col-span-1" />
+              <PostCard
+                post={post}
+                className="bg-card border-fore/5 hover:bg-fore/10 col-span-1 border"
+              />
             </Link>
           ))}
         </div>
