@@ -41,7 +41,7 @@ blog/
 
 项目采用 **Shiki** 作为代码高亮引擎，通过 **rehype-pretty-code** 插件集成到 MDX 处理流程中。
 
-```json
+```json title="package.json"
 {
   "dependencies": {
     "rehype-pretty-code": "^0.14.1",
@@ -50,43 +50,38 @@ blog/
 }
 ```
 
-<Tabs>
-  <TabItem label="next.config.mjs">
-    ```javascript
-    import nextMDX from '@next/mdx';
-    import rehypePrettyCode from 'rehype-pretty-code';
-    import rehypeSlug from 'rehype-slug';
-    import remarkFrontmatter from 'remark-frontmatter';
-    import remarkGfm from 'remark-gfm';
+```javascript title="next.config.mjs"
+import nextMDX from '@next/mdx';
+import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
 
-    /** @type {import('rehype-pretty-code').Options} */
-    const options = {
-      /* 是否保留背景色 */
-      keepBackground: false,
-      defaultLang: 'typescript',
-      theme: {
-        light: 'github-light',
-        dark: 'github-dark',
-      },
-    };
+/** @type {import('rehype-pretty-code').Options} */
+const options = {
+  /* 是否保留背景色 */
+  keepBackground: false,
+  defaultLang: 'typescript',
+  theme: {
+    light: 'github-light',
+    dark: 'github-dark',
+  },
+};
 
-    const withMDX = nextMDX({
-      extension: /\.(md|mdx)$/,
-      options: {
-        remarkPlugins: [remarkFrontmatter, remarkGfm],
-        rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
-      },
-    });
+const withMDX = nextMDX({
+  extension: /\.(md|mdx)$/,
+  options: {
+    remarkPlugins: [remarkFrontmatter, remarkGfm],
+    rehypePlugins: [[rehypePrettyCode, options], [rehypeSlug]],
+  },
+});
 
-    export default withMDX(nextConfig);
-    ```
-  </TabItem>
-</Tabs>
+export default withMDX(nextConfig);
+```
 
 通过 CSS 变量实现主题适配的代码高亮：
 
-```css
-/* globals.css */
+```css title="globals.css"
 html {
   &.light {
     .shiki,
@@ -108,58 +103,54 @@ html {
 
 ## 复制功能
 
-<Tabs>
-  <TabItem label="code.tsx">
-    ```tsx
-    'use client';
+```tsx title="code.tsx"
+'use client';
 
-    import { Check, Copy } from 'lucide-react';
-    import { useRef, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
+import { useRef, useState } from 'react';
 
-    interface CodeProps {
-      children: string;
-      className?: string;
-      [key: string]: any;
+interface CodeProps {
+  children: string;
+  className?: string;
+  [key: string]: any;
+}
+
+const Code = ({ children, className, ...props }: CodeProps) => {
+  const [copied, setCopied] = useState(false);
+  const preRef = useRef<HTMLPreElement>(null);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(preRef.current?.innerText || '');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
     }
+  };
 
-    const Code = ({ children, className, ...props }: CodeProps) => {
-      const [copied, setCopied] = useState(false);
-      const preRef = useRef<HTMLPreElement>(null);
+  return (
+    <div className="group relative">
+      <pre ref={preRef} className={className} {...props}>
+        {children}
+      </pre>
+      <button
+        onClick={handleCopy}
+        className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        aria-label="Copy code"
+      >
+        {copied ? <Check size={16} /> : <Copy size={16} />}
+      </button>
+    </div>
+  );
+};
 
-      const handleCopy = async () => {
-        try {
-          await navigator.clipboard.writeText(preRef.current?.innerText || '');
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-          console.error('Failed to copy text: ', err);
-        }
-      };
-
-      return (
-        <div className="group relative">
-          <pre ref={preRef} className={className} {...props}>
-            {children}
-          </pre>
-          <button
-            onClick={handleCopy}
-            className="bg-fore/20 hover:bg-fore/10 absolute top-2 right-2 rounded-xl p-2 text-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-            aria-label="Copy code"
-          >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-          </button>
-        </div>
-      );
-    };
-
-    export default Code;
-    ```
-  </TabItem>
-</Tabs>
+export default Code;
+```
 
 通过 `mdx-components.tsx` 将自定义组件映射到 MDX：
 
-```tsx
+```tsx title="mdx-components.tsx"
 import type { MDXComponents } from 'mdx/types';
 import Code from './src/components/code';
 
@@ -267,7 +258,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
 使用 Tailwind CSS 4 的新特性实现主题变量：
 
-```css
+```css title="globals.css"
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
@@ -300,7 +291,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
 ## View Transition 动画
 
-```css
+```css title="globals.css"
 /* 主题切换动画 */
 ::view-transition-group(root) {
   animation-timing-function: var(--expo-out);
@@ -466,7 +457,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
 在 `package.json` 中集成索引生成：
 
-```json
+```json title="package.json"
 {
   "scripts": {
     "gen-posts-index": "node scripts/gen-posts-index.js",
@@ -480,7 +471,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
 项目使用 Next.js 官方的 MDX 解决方案：
 
-```json
+```json title="package.json"
 {
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -502,82 +493,78 @@ MDX 处理流程中集成了多个插件来增强功能：
 
 ## 动态路由实现
 
-<Tabs>
-  <TabItem label="[slug]/page.tsx">
-    ```tsx
-    import { getAllPosts, getPostBySlug } from '@/lib/posts';
-    import { notFound } from 'next/navigation';
-    import { TableOfContents } from '@/components/table-of-contents';
+```tsx title="[slug]/page.tsx"
+import { getAllPosts, getPostBySlug } from '@/lib/posts';
+import { notFound } from 'next/navigation';
+import { TableOfContents } from '@/components/table-of-contents';
 
-    export interface Params {
-      slug: string;
-    }
+export interface Params {
+  slug: string;
+}
 
-    interface Props {
-      params: Promise<Params>;
-    }
+interface Props {
+  params: Promise<Params>;
+}
 
-    // 静态生成所有文章路径
-    export async function generateStaticParams() {
-      const posts = await getAllPosts();
-      return posts.map((post) => ({ slug: post.slug }));
-    }
+// 静态生成所有文章路径
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
-    export const revalidate = 3600; // ISR 重新验证间隔
-    export const dynamicParams = true;
+export const revalidate = 3600; // ISR 重新验证间隔
+export const dynamicParams = true;
 
-    export default async function Page({ params }: Props) {
-      const { slug } = await params;
+export default async function Page({ params }: Props) {
+  const { slug } = await params;
 
-      let Post, matter;
+  let Post, matter;
 
-      try {
-        // 获取文章元数据
-        matter = await getPostBySlug(slug);
-        // 动态导入 MDX 组件
-        const mod = await import(`@/contents/${slug}.mdx`);
-        Post = mod.default;
-      } catch (e) {
-        return notFound();
-      }
+  try {
+    // 获取文章元数据
+    matter = await getPostBySlug(slug);
+    // 动态导入 MDX 组件
+    const mod = await import(`@/contents/${slug}.mdx`);
+    Post = mod.default;
+  } catch (e) {
+    return notFound();
+  }
 
-      return (
-        <>
-          {/* 文章头部信息 */}
-          <div className="my-10">
-            <div className="text-fore mb-4 text-center text-3xl font-bold underline">
-              {matter?.title}
-            </div>
-            <div className="text-fore/50 mb-4 text-center text-sm">{matter?.date}</div>
-            <div className="flex justify-center gap-1">
-              {matter?.category.map((item) => (
-                <Link
-                  key={item}
-                  className="text-fore/60 bg-fore/10 rounded-xl px-2 py-1 text-xs"
-                  href={`/categories/${item}`}
-                >
-                  #{item}
-                </Link>
-              ))}
-            </div>
-          </div>
+  return (
+    <>
+      {/* 文章头部信息 */}
+      <div className="my-10">
+        <div className="text-fore mb-4 text-center text-3xl font-bold underline">
+          {matter?.title}
+        </div>
+        <div className="text-fore/50 mb-4 text-center text-sm">{matter?.date}</div>
+        <div className="flex justify-center gap-1">
+          {matter?.category.map((item) => (
+            <Link
+              key={item}
+              className="text-fore/60 bg-fore/10 rounded-xl px-2 py-1 text-xs"
+              href={`/categories/${item}`}
+            >
+              #{item}
+            </Link>
+          ))}
+        </div>
+      </div>
 
-          {/* 文章内容和目录 */}
-          <div className="relative">
-            <article className="prose-custom shiki">
-              <Post />
-            </article>
-            <TableOfContents
-              className="fixed top-40 right-10 hidden max-h-[60vh] w-64 overflow-auto xl:block"
-              maxLevel={4}
-            />
-          </div>
-        </>
-      );
-    }
-    ```
-  </TabItem>
-</Tabs>
+      {/* 文章内容和目录 */}
+      <div className="relative">
+        <article className="prose-custom shiki">
+          <Post />
+        </article>
+        <TableOfContents
+          className="fixed top-40 right-10 hidden max-h-[60vh] w-64 overflow-auto xl:block"
+          maxLevel={4}
+        />
+      </div>
+    </>
+  );
+}
+```
 
 # Markdown 样式系统
 
@@ -585,57 +572,53 @@ MDX 处理流程中集成了多个插件来增强功能：
 
 项目使用 `@tailwindcss/typography` 插件提供基础的 Markdown 样式：
 
-```css
+```css title="globals.css"
 @plugin "@tailwindcss/typography";
 ```
 
 ## 自定义样式类
 
-<Tabs>
-  <TabItem label="prose-custom">
-    ```css
-    .prose-custom {
-      @apply prose prose-gray dark:prose-invert max-w-none;
-      @apply prose-headings:text-fore;
-      @apply prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-6;
-      @apply prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4;
-      @apply prose-h3:text-xl prose-h3:font-medium prose-h3:mt-6 prose-h3:mb-3;
-      @apply prose-h4:text-lg prose-h4:font-medium prose-h4:mt-4 prose-h4:mb-2;
-      @apply prose-p:text-fore prose-p:leading-relaxed;
-      @apply prose-a:text-blue-400 prose-a:no-underline prose-a:hover:underline;
-      @apply prose-strong:text-fore prose-strong:font-semibold;
-      @apply prose-ul:text-fore prose-ol:text-fore;
-      @apply prose-li:my-1;
-      @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
-      @apply mx-auto max-w-4xl px-6 py-8;
+```css title="prose-custom.css"
+.prose-custom {
+  @apply prose prose-gray dark:prose-invert max-w-none;
+  @apply prose-headings:text-fore;
+  @apply prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-6;
+  @apply prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4;
+  @apply prose-h3:text-xl prose-h3:font-medium prose-h3:mt-6 prose-h3:mb-3;
+  @apply prose-h4:text-lg prose-h4:font-medium prose-h4:mt-4 prose-h4:mb-2;
+  @apply prose-p:text-fore prose-p:leading-relaxed;
+  @apply prose-a:text-blue-400 prose-a:no-underline prose-a:hover:underline;
+  @apply prose-strong:text-fore prose-strong:font-semibold;
+  @apply prose-ul:text-fore prose-ol:text-fore;
+  @apply prose-li:my-1;
+  @apply prose-blockquote:border-l-blue-400 prose-blockquote:text-fore;
+  @apply mx-auto max-w-4xl px-6 py-8;
 
-      /* 图片样式 */
-      img {
-        @apply border-main/10 rounded-xl border object-cover dark:invert;
-      }
+  /* 图片样式 */
+  img {
+    @apply border-main/10 rounded-xl border object-cover dark:invert;
+  }
 
-      /* 代码块样式 */
-      pre {
-        @apply bg-fore/5 dark:bg-fore/5 overflow-x-auto rounded-xl p-4;
-        @apply border border-gray-200 dark:border-gray-700;
-        font-family: inherit;
-      }
+  /* 代码块样式 */
+  pre {
+    @apply bg-fore/5 dark:bg-fore/5 overflow-x-auto rounded-xl p-4;
+    @apply border border-gray-200 dark:border-gray-700;
+    font-family: inherit;
+  }
 
-      /* 内联代码样式 */
-      :not(pre) > code {
-        @apply text-fore rounded-xl bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
-        @apply border border-gray-200 dark:border-gray-700;
-        font-family: inherit;
+  /* 内联代码样式 */
+  :not(pre) > code {
+    @apply text-fore rounded-xl bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-700;
+    font-family: inherit;
 
-        &::before,
-        &::after {
-          content: none; /* 移除默认的引号 */
-        }
-      }
+    &::before,
+    &::after {
+      content: none; /* 移除默认的引号 */
     }
-    ```
-  </TabItem>
-</Tabs>
+  }
+}
+```
 
 # Toc
 

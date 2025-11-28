@@ -10,7 +10,7 @@ updatedTime: '2025-11-20 14:50:45'
 
 # Table 在 flex 容器下自适应宽度，导致宽度溢出
 
-```css
+```css title="index.css"
 .main .content .right{
   flex: auto;
   min-width: 0;
@@ -31,7 +31,7 @@ Tree 数据超大时，需要通过 height 开启虚拟滚动，优化性能。
 
 官方也明确表示开启虚拟滚动后会导致无法横向滚动，但我们可以通过 css 强制开启横向滚动。
 
-```less
+```less title="index.less"
 .ant-tree-list-holder {
   /* 滚动槽 */
   &::-webkit-scrollbar {
@@ -69,7 +69,7 @@ react-draggable 版本依赖版本不一致，导致无法正常使用。
 
 通过 package.json 中的 resolutions 配置，指定 react-draggable 版本为 4.4.5 即可解决。
 
-```json
+```json title="package.json"
 {
   "resolutions": {
     "react-draggable": "4.4.5"

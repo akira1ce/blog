@@ -32,8 +32,7 @@ demo 地址：
 
 `yarn add qiankun`
 
-```js
-// 主入口，例如：main.js、app.js
+```js title="main.js"
 import { registerMicroApps, start } from 'qiankun';
 
 registerMicroApps([
@@ -69,7 +68,7 @@ qiankun 默认不支持 vite， 需要使用 vite-plugin-qiankun 插件。
 
 其他 webpack 构建的项目，等同的方式去调整打包配置即可。
 
-```js
+```js title="App.tsx"
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './tailwind.css';

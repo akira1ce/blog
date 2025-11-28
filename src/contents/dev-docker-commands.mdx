@@ -12,7 +12,7 @@ updatedTime: '2025-11-20 10:11:48'
 
 ## 查看镜像架构
 
-```bash
+```bash title="docker-inspect.sh"
 docker inspect 0efe22b9c206 --format '{{.Architecture}}'
 ```
 
@@ -20,7 +20,7 @@ docker inspect 0efe22b9c206 --format '{{.Architecture}}'
 
 查看 buildx 是否可用：
 
-```bash
+```bash title="docker-buildx.sh"
 # 检查 buildx 是否可用
 docker buildx version
 
@@ -33,7 +33,7 @@ docker buildx inspect --bootstrap
 
 docker-compose.yml
 
-```bash
+```bash title="docker-compose.yml"
 version: '3.9'
 
 services:
@@ -56,7 +56,7 @@ services:
 
 ### docker save：
 
-```bash
+```bash title="docker-save.sh"
 # docker-save
 docker save client-ui-nextjs-next-app:latest -o next-app-image.tar
 # docker-load

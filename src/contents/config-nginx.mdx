@@ -11,11 +11,11 @@ updatedTime: '2025-11-12 15:59:45'
 
 # websocket转发
 
-```js
+```js title="websocket.js"
 new WebSocket('ws://1.1.0.0:8083/ws')
 ```
 
-```bash
+```bash title="nginx.conf"
 #必须添加的
 map $http_upgrade $connection_upgrade {
      default upgrade;
@@ -68,7 +68,7 @@ map $http_upgrade $connection_upgrade {
 
 2. index.html中路径需要调整为 `/path/`
 
-```bash
+```bash title="nginx.conf"
 location /path {
    alias "/usr/local/nginx/hsor_pad/";
    try_files $uri $uri/ /path/index.html;
@@ -80,7 +80,7 @@ location /path {
 
 存在 sse 流式接口的时候要做一些特殊的配置。
 
-```bash
+```bash title="nginx.conf"
 location /api-sse/ {
     proxy_pass http://10.200.41.241:8000/;
     proxy_set_header Host $host;

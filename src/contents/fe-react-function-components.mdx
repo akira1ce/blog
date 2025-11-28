@@ -13,7 +13,7 @@ updatedTime: '2025-11-12 15:59:45'
 
 > UI = f(state)
 
-```ts
+```ts title="Demo.tsx"
 function Demo() {
   const [count, setCount] = useState(0)
   ...
@@ -30,7 +30,7 @@ function Demo() {
 
 例如我们有这样一个函数
 
-```tsx
+```tsx title="Counter.tsx"
 function Counter({x}) {
   const [count, setCount] = useState(0)
   return (
@@ -41,7 +41,7 @@ function Counter({x}) {
 
 他可以等价于
 
-```tsx
+```tsx title="Counter.tsx"
 function Counter({x}, [count = 0, setCount]) {
   return (
     <div>{x + count}</div>

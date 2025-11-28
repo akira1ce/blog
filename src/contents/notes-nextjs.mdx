@@ -56,7 +56,7 @@ hydrate 触发的 diff 过程并不完全是一次 DOM 节点全部替换的过�
 
 React 底层源码中提供了如下几个方法用于判断对应的节点是否可以被注水，如果此时可以注水则表示可以复用。如下高亮显示的代码，就是核心的判断逻辑，如下：
 
-```js
+```js title="ReactDOM.js"
 export function canHydrateInstance(
   instance: HydratableInstance,
   type: string,
@@ -154,8 +154,7 @@ React Diff 三要素：state、props、context。
 
 🌰 如下：
 
-```tsx
-// Layout.tsx
+```tsx title="Layout.tsx"
 import './globals.css'
 import {ThemeProvider} from '@/components/switch-themes'
 
@@ -263,8 +262,7 @@ next 也是标准的基于文件系统的路由系统。
 
 这里缓存的是页面信息，而不是页面，页面缓存可通过 `staleTimes` 配置「next.config.js」。
 
-```js
-/** @type {import('next').NextConfig} */
+```js title="next.config.js"
 const nextConfig = {
   experimental: {
     staleTimes: {
@@ -353,7 +351,7 @@ next 中可通过 `[xxx]` 实现动态路由。
 
 我们可以在 layout page route generateMetadata 中获得动态路由段的参数。
 
-```tsx
+```tsx title="page.tsx"
 export async function generateStaticParams() {
   return [{ slug: 'article' }, { slug: 'demo' }];
 }
@@ -390,7 +388,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
 RSC Payload 是渲染 React Server Components 树的压缩格式，它完整的记录了代码在项目中的模块结构、渲染结果、props 传递内容。
 
-```
+```js title="article?_rsc=rxx9e"
 //article?_rsc=rxx9e
 
 1:"$Sreact.fragment"

@@ -16,7 +16,7 @@ updatedTime: '2025-11-12 15:59:45'
 
 代码大致如下：
 
-```css
+```css title="index.css"
 /* view-transition */
 ::view-transition-group(root) {
   animation-timing-function: var(--expo-out);
@@ -61,7 +61,7 @@ updatedTime: '2025-11-12 15:59:45'
 
 加上 `animation-fill-mode: forwards;`，避免动画结束后 mask 突然消失。
 
-```css
+```css title="index.css"
 ::view-transition-new(root) {
   animation: scale 1s forwards;
 }

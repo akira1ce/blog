@@ -10,7 +10,7 @@ updatedTime: '2025-11-12 15:59:45'
 
 **一个完整的函数执行是不可以中断的**
 
-```ts
+```ts title="index.ts"
 btn.onclick = () => {
   let i = 0
   for (; i < 100000; i++) {
@@ -23,7 +23,7 @@ btn.onclick = () => {
 
 通过将任务拆分，放到任务队列中，实现可中断。
 
-```ts
+```ts title="index.ts"
 function performWorkUnit() {
   // 任务执行完毕后结束递归
   if (taskQueue.length === 0) {

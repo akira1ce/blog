@@ -9,7 +9,7 @@ updatedTime: '2025-11-12 15:59:45'
 ---
 
 
-```ts
+```ts title="moz.ts"
 import { useState } from "react";
 
 interface StoreItem {
@@ -61,7 +61,7 @@ export function createStore<T>(key: string, state: T) {
 
 「用法」
 
-```ts
+```ts title="index.ts"
 export interface Counter {
   a: number;
   b: string;

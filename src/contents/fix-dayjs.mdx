@@ -12,7 +12,7 @@ updatedTime: '2025-11-12 16:00:02'
 
 ## 统一 dayjs 实例
 
-```js
+```js title="index.js"
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import localeData from 'dayjs/plugin/localeData';
@@ -27,7 +27,7 @@ export default dayjs;
 
 ## 时区问题
 
-```ts
+```ts title="index.ts"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -40,14 +40,14 @@ dayjs.tz.setDefault('Asia/Shanghai');
 
 ## 日期格式化问题
 
-```ts
+```ts title="index.ts"
 import dayjs from 'dayjs';
 dayjs().format('YYYY-MM-DD HH:mm:ss');
 ```
 
 ## 获取周几
 
-```ts
+```ts title="index.ts"
 import dayjs from 'dayjs';
 dayjs().weekday();
 ```

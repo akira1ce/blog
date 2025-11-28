@@ -20,7 +20,7 @@ updatedTime: '2025-11-24 10:00:00'
 
 > 除了本地开发环境，localhost 域被认作为安全域。
 
-```js
+```js title="AuthCenterMiddleware.ts"
 /* 检查 sessionId 是否存在 并存储 cookie */
 const AuthCenterMiddleware = (req: NextRequest) => {
   const { searchParams } = req.nextUrl;

@@ -24,7 +24,7 @@ yarn add -D tailwindcss@3 autoprefixer postcss@8
 
 在 `src/` 目录下创建 `tailwind.css` 文件：
 
-```css
+```css title="tailwind.css"
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,7 +34,7 @@ yarn add -D tailwindcss@3 autoprefixer postcss@8
 
 创建 `tailwind.config.js` 配置文件：
 
-```js
+```js title="tailwind.config.js"
 /** @type {import('tailwindcss').Config} */
 export default {
   mode: 'all',
@@ -50,7 +50,7 @@ export default {
 
 在 `.umirc` 文件中添加 PostCSS 插件：
 
-```js
+```js title="umi.config.js"
 export default {
   extraPostCSSPlugins: [require('tailwindcss'), require('autoprefixer')],
 };
@@ -72,7 +72,7 @@ export default {
 
 在 `package.json` 中添加以下脚本：
 
-```json
+```json title="package.json"
 {
   "scripts": {
     "tw": "tailwindcss -i ./src/tailwind.css -o ./public/output.css --watch",

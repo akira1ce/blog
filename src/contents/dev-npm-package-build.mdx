@@ -22,7 +22,7 @@ npm 包核心的几个配置文件：
 
 这里主要配置包的相关信息、以及各种出入口文件。
 
-```js
+```js title="package.json"
 {
   "name": "@akira1ce/r-hooks",
   "version": "1.0.6",
@@ -88,7 +88,7 @@ npm 包核心的几个配置文件：
 
 # tsconfig.json
 
-```js
+```js title="tsconfig.json"
 {
   "compilerOptions": {
     // 指定 ECMAScript 目标版本
@@ -125,7 +125,7 @@ npm 包核心的几个配置文件：
 
 这里根据不同的项目或有差异，主要是用于打包的配置，将源文件打包成产物。
 
-```js
+```js title="rollup.config.js"
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';

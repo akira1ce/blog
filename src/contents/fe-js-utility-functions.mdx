@@ -13,7 +13,7 @@ updatedTime: '2025-11-12 15:59:45'
 
 结合 clsx 和 twMerge。
 
-```ts
+```ts title="cn.ts"
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -28,7 +28,7 @@ export const cn = (...inputs: ClassValue[]) => {
 
 时间转换
 
-```ts
+```ts title="formatter.ts"
 export const formatTimeToChatTime = (time: Date) => {
   const now = dayjs();
   const target = dayjs(time);
@@ -67,7 +67,7 @@ export const formatTimeToChatTime = (time: Date) => {
 
 antd-table 列合并
 
-```ts
+```ts title="mergeTableCol.ts"
 /**
  * antd-table 合并列
  * @param {any[]} array
@@ -97,7 +97,7 @@ export function mergeTableCol(array = [], key) {
 
 片平数组构建树结构
 
-```ts
+```ts title="buildTree.ts"
 import { groupBy } from 'lodash';
 
 interface FlatItem {
@@ -138,7 +138,7 @@ export const buildTree = <T extends FlatItem>(list: T[], options: BuildTreeOptio
 
 常规防抖
 
-```ts
+```ts title="debounce.ts"
 function debounce( callback, delay = 300 ){
     let timer;
     return ( ...args ) => {
@@ -165,7 +165,7 @@ function debounce( callback, delay = 300 ){
 
 这种方式后续的操作都需要在回调中处理。
 
-```ts
+```ts title="debounce.ts"
 import { debounce } from "lodash-es";
 
 const test = (callback) => {
@@ -191,7 +191,7 @@ console.log(
 
 将含有返回值的函数当做异步函数对待，通过 promise 承接返回值。
 
-```ts
+```ts title="debounceWithReturn.ts"
 function debounceWithReturn( callback, delay ) {
   let timer;
 
@@ -236,7 +236,7 @@ a();
 
 将 params 转换为 query 参数，用于拼接在 url 上。
 
-```ts
+```ts title="transParams.ts"
 /**
  * 将参数转换为 query 字符串
  * @param params - 需要转换的参数对象
@@ -270,7 +270,7 @@ export function transParams(params: Record<string, any>): string {
 
 ## download
 
-```ts
+```ts title="download.ts"
 /**
  * 下载文件
  * @param url - 文件下载地址
@@ -314,7 +314,7 @@ export function downloadText(content: string, filename: string) {
 
 将拍平的数组转换为树状结构
 
-```js
+```js title="buildTree.ts"
 export function buildTree(data,key="children"){
   const result = []
   const map = {}
@@ -340,7 +340,7 @@ export function buildTree(data,key="children"){
 
 根据条件过滤树，子项包含符合条件的子项，则返回其以及其父级。
 
-```js
+```js title="filterTree.ts"
 export function filterTree(treeData, filter, childrenKey = "children") {
   const loop = (data) => {
     return data
