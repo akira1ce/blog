@@ -90,13 +90,14 @@
 
   /* 代码块样式 */
   figure {
-    @apply bg-card border-fore/5 relative rounded-xl p-0;
+    @apply bg-card border-fore/5 relative my-0 rounded-xl p-0;
+    /* 代码块标题 */
     figcaption {
-      @apply m-0 mb-4;
+      @apply m-0 mb-2;
     }
-    /* 如果有 figcaption，则添加 padding */
+    /* 如果有 figcaption */
     &:has(figcaption) {
-      @apply border p-4;
+      @apply my-4 border p-2;
     }
     /* Code block styles */
     pre {

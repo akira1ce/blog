@@ -23,8 +23,8 @@ export const Tabs = ({ children }: TabsProps) => {
   const uid = useId();
 
   return (
-    <div className="bg-card border-fore/5 rounded-xl border p-4">
-      <div className="flex items-center gap-2 overflow-auto">
+    <div className="bg-card border-fore/5 my-4 rounded-xl border p-2">
+      <div className="mb-2 flex items-center gap-2 overflow-auto">
         {tabs.map((child: any, index) => {
           const label = child.props.label;
           const isActive = activeTab === index;
@@ -46,7 +46,7 @@ export const Tabs = ({ children }: TabsProps) => {
           );
         })}
       </div>
-      <div className="-mt-4 -mb-8">
+      <div>
         <FadeInUp key={activeTab} duration={0.1}>
           {tabs[activeTab]?.props.children}
         </FadeInUp>

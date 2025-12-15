@@ -28,7 +28,7 @@ const Code = ({ children, className, ...props }: CodeProps) => {
       <pre ref={preRef} className={className} {...props}>
         {children}
       </pre>
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-2 right-4">
         <button
           onClick={handleCopy}
           className="cursor-pointer rounded-xl text-xs"
