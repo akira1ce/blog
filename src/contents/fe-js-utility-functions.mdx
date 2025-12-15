@@ -68,28 +68,34 @@ export const formatTimeToChatTime = (time: Date) => {
 antd-table 列合并
 
 ```ts title="mergeTableCol.ts"
-/**
- * antd-table 合并列
- * @param {any[]} array
- * @param {string} key
- * @returns
- */
-export function mergeTableCol(array = [], key) {
-  array = sortBy(array, key);
-  let count = 0;
-  let indexCount = 1;
-  while (indexCount < array.length) {
-    const item = array.slice(count, count + 1)[0];
-    if (!item.rowSpan) item.rowSpan = 1;
-    if (item[key] === array[indexCount][key]) {
-      item.rowSpan++;
-      array[indexCount].rowSpan = 0;
+export function mergeTableCol<T extends { rowSpan?: number }>(array: T[] = [], key: keyof T): T[] {
+  // 先按 key 排序，保证表格相邻
+  const sorted = sortBy(array, key);
+
+  // 按 key 分组
+  const grouped = groupBy(sorted, key);
+
+  const result: T[] = [];
+
+  Object.values(grouped).forEach((group) => {
+    // 只对“超过一项的分组”做合并
+    if (group.length > 1) {
+      group.forEach((item, index) => {
+        if (index === 0) {
+          item.rowSpan = group.length; // 第一条设置合并行数
+        } else {
+          item.rowSpan = 0; // 其余隐藏
+        }
+        result.push(item);
+      });
     } else {
-      count = indexCount;
+      // 只有一项，不合并，保持原样
+      group[0].rowSpan = 1;
+      result.push(group[0]);
     }
-    indexCount++;
-  }
-  return [...array];
+  });
+
+  return result;
 }
 ```
 

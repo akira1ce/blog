@@ -5,7 +5,7 @@ category:
 slug: dev-mac-commands
 summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升效率的小技巧合集。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2025-11-12 15:59:45'
+updatedTime: '2025-12-03 09:54:00'
 ---
 
 
@@ -107,3 +107,13 @@ killall Dock
 > 例如 node_modules，直接打包：
 >
 > `tar -cvf node_modules.tar node_modules`
+
+## 开启 sudo 的指纹认证
+
+```diff title="/etc/pam.d/sudo"
++auth       sufficient     pam_tid.so
+auth       required       pam_opendirectory.so
+account    required       pam_opendirectory.so
+password   required       pam_opendirectory.so
+session    required       pam_opendirectory.so
+```
