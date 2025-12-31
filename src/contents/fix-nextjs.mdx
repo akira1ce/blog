@@ -5,9 +5,8 @@ category:
 slug: fix-nextjs
 summary: 记录使用 nextjs 过程中踩过的坑，以及对应的解决思路与经验总结。
 createdTime: '2025-11-24 10:00:00'
-updatedTime: '2025-12-15 15:57:00'
+updatedTime: '2025-12-31 16:10:03'
 ---
-
 import { Tabs, TabItem } from '@/components/tabs';
 
 # useSearchParams
@@ -57,194 +56,103 @@ const AuthCenterMiddleware = (req: NextRequest) => {
 
 <Tabs>
   <TabItem label="fetcher.ts">
-    ```ts
-    // @ts-nocheck
-    
-    import { saveAs } from 'file-saver';
-    import qs from 'qs';
-    import { isBlobResponse, isBrowser, parseFilenameFromHeaders } from './utils';
-    
-    type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    
-    type RequestOptions = Omit<RequestInit, 'method' | 'body'>;
-    
-    interface RequestProps {
-      url: string;
-      method: Method;
-      params?: any;
-      options?: RequestOptions;
-    }
-    
-    interface DownloadPostOptions extends RequestOptions {
-      filename?: string;
-      method?: Method;
-    }
-    
-    /**
-     * 请求拦截器
-     */
-    function interceptorsRequest({ url, method, params, options }: RequestProps) {
-      let finalUrl = url;
-      let payload: BodyInit | undefined = undefined;
-    
-      const headers: HeadersInit = {
-        ...(options?.headers || {}),
-      };
-    
-      const isGetLike = method === 'GET' || method === 'DELETE';
-      const isFormData =
-        params &&
-        (Object.prototype.toString.call(params) === '[object FormData]' ||
-          Object.prototype.toString.call(params) === '[object URLSearchParams]');
-    
-      // 处理 GET/DELETE Query 拼接
-      if (isGetLike && params && Object.keys(params).length > 0) {
-        finalUrl +=
-          (finalUrl.includes('?') ? '&' : '?') + qs.stringify(params, { arrayFormat: 'indices' });
-      } else if (params !== undefined && params !== null) {
-        // 非 GET/DELETE，处理请求体
-        if (isFormData) {
-          payload = params;
-          // 不设置 Content-Type, 让浏览器自动推断，避免边界问题
-        } else {
-          headers['Content-Type'] = 'application/json';
-          payload = JSON.stringify(params);
-        }
-      }
-    
-      return {
-        url: finalUrl,
-        options: {
-          ...options,
-          method,
-          body: isGetLike ? undefined : payload,
-          headers,
-        } as RequestInit,
-      };
-    }
-    
-    /**
-     * 响应拦截器
-     */
-    async function interceptorsResponse<T>(res: Response): Promise<T> {
-      const requestUrl = res.url;
-    
-      // 判断返回是不是 blob
-      const contentType = res.headers.get('content-type') || '';
-      const isBlob = isBlobResponse(contentType);
-    
-      // 如果是 blob 类型，直接返回 blob，避免重复读取响应
-      if (isBlob) {
-        return (await res.blob()) as T;
-      }
-    
-      // 非 blob 类型，读取文本内容用于 JSON 解析或错误处理
+  ```ts
+  import {
+    DownloadPostOptions,
+    interceptorsRequest,
+    interceptorsResponse,
+    parseFilenameFromHeaders,
+    RequestOptions,
+    RequestProps,
+    isBrowser
+  } from './interceptor';
+  import { saveAs } from 'file-saver';
+
+  /**
+   * 主请求函数
+   */
+  export const request = async <T>({ url = '', params = {}, method, options }: RequestProps): Promise<T> => {
+    const req = interceptorsRequest({ url, method, params, options });
+    const res = await fetch(req.url, req.options);
+    return interceptorsResponse<T>(res);
+  };
+
+  export const get = <T>(url: string, params?: any, options?: RequestOptions) => {
+    return request<T>({ url, method: 'GET', params, options });
+  };
+
+  export const post = <T>(url: string, params?: any, options?: RequestOptions) => {
+    return request<T>({ url, method: 'POST', params, options });
+  };
+
+  export const put = <T>(url: string, params?: any, options?: RequestOptions) => {
+    return request<T>({ url, method: 'PUT', params, options });
+  };
+
+  export const del = <T>(url: string, params?: any, options?: RequestOptions) => {
+    return request<T>({ url, method: 'DELETE', params, options });
+  };
+
+  export const patch = <T>(url: string, params?: any, options?: RequestOptions) => {
+    return request<T>({ url, method: 'PATCH', params, options });
+  };
+
+  export const download = async (url: string, params?: any, options?: DownloadPostOptions): Promise<void> => {
+    if (!isBrowser) throw new Error('downloadPost 只能在浏览器环境中使用');
+
+    const { method = 'POST', filename: defaultFilename = 'download' } = options || {};
+
+    const req = interceptorsRequest({ url, method, params, options });
+    const res = await fetch(req.url, req.options);
+
+    // 检查响应状态
+    if (!res.ok) {
       const text = await res.text();
-    
-      if (res.ok) {
-        try {
-          const response = JSON.parse(text);
-    
-          if (response.code === 401) {
-            throw new Error('未授权，请先登录');
-          }
-    
-          return response as T;
-        } catch (err) {
-          console.error('akira.err', err);
-          // 如果不是有效的 JSON，返回原始文本
-          return text as T;
-        }
-      }
-    
-      // 处理错误响应
       try {
         const errorData = JSON.parse(text);
-        throw {
-          message: errorData?.message || errorData || '接口错误',
-          url: requestUrl,
-          status: res.status,
-        };
+        throw new Error(errorData?.message || errorData || '下载失败');
       } catch {
-        throw { message: text || '接口错误', url: requestUrl, status: res.status };
+        throw new Error(text || '下载失败');
       }
     }
-    
-    /**
-     * 主请求函数
-     */
-    export async function request<T>({
-      url = '',
-      params = {},
-      method,
-      options,
-    }: RequestProps): Promise<T> {
-      const req = interceptorsRequest({ url, method, params, options });
-      const res = await fetch(req.url, req.options);
-      return interceptorsResponse<T>(res);
-    }
-    
-    export function get<T>(url: string, params?: any, options?: RequestOptions) {
-      return request<T>({ url, method: 'GET', params, options });
-    }
-    
-    export function post<T>(url: string, params?: any, options?: RequestOptions) {
-      return request<T>({ url, method: 'POST', params, options });
-    }
-    
-    export function put<T>(url: string, params?: any, options?: RequestOptions) {
-      return request<T>({ url, method: 'PUT', params, options });
-    }
-    
-    export function del<T>(url: string, params?: any, options?: RequestOptions) {
-      return request<T>({ url, method: 'DELETE', params, options });
-    }
-    
-    export function patch<T>(url: string, params?: any, options?: RequestOptions) {
-      return request<T>({ url, method: 'PATCH', params, options });
-    }
-    
-    export async function download(
-      url: string,
-      params?: any,
-      options?: DownloadPostOptions,
-    ): Promise<void> {
-      if (!isBrowser) throw new Error('downloadPost 只能在浏览器环境中使用');
-    
-      const { method = 'POST', filename: defaultFilename = 'download' } = options || {};
-    
-      const req = interceptorsRequest({ url, method, params, options });
-      const res = await fetch(req.url, req.options);
-    
-      // 检查响应状态
-      if (!res.ok) {
-        const text = await res.text();
-        try {
-          const errorData = JSON.parse(text);
-          throw new Error(errorData?.message || errorData || '下载失败');
-        } catch {
-          throw new Error(text || '下载失败');
-        }
-      }
-      // 获取 blob
-      const blob = await res.blob();
-      // 解析文件名
-      const filename = parseFilenameFromHeaders(res.headers, defaultFilename);
-      // 使用 file-saver 下载文件
-      saveAs(blob, filename);
-    }
-    
-    ```
+    // 获取 blob
+    const blob = await res.blob();
+    // 解析文件名
+    const filename = parseFilenameFromHeaders(res.headers, defaultFilename);
+    // 使用 file-saver 下载文件
+    saveAs(blob, filename);
+  };
+  ```
   </TabItem>
-  <TabItem label="utils.ts">
+  <TabItem label="interceptor.ts">
   ```ts
+  import { isBrowser } from '.';
+  import { redirect } from 'next/navigation';
+  import qs from 'qs';
+
+  export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+  export type RequestOptions = Omit<RequestInit, 'method' | 'body'>;
+
+  export interface RequestProps {
+    url: string;
+    method: Method;
+    params?: any;
+    options?: RequestOptions;
+  }
+
+  export interface DownloadPostOptions extends RequestOptions {
+    filename?: string;
+    method?: Method;
+  }
+
   /* 判断是否为浏览器环境 */
   export const isBrowser = !!(
     typeof window !== 'undefined' &&
     window.document &&
     window.document.createElement
   );
-  
+
   /**
    * 判断响应是否为 blob 类型
    */
@@ -261,7 +169,7 @@ const AuthCenterMiddleware = (req: NextRequest) => {
       (contentType.startsWith('application/') && !contentType.includes('json'))
     );
   };
-  
+
   /**
    * 从响应头中解析文件名
    */
@@ -281,7 +189,285 @@ const AuthCenterMiddleware = (req: NextRequest) => {
     }
     return defaultFilename || 'download';
   };
-  
+
+  /**
+   * 请求拦截器
+   */
+  export const interceptorsRequest = ({ url, method, params, options }: RequestProps) => {
+    let finalUrl = url;
+    let payload: BodyInit | undefined = undefined;
+
+    const headers: HeadersInit = {
+      ...(options?.headers || {}),
+    };
+
+    const isGetLike = method === 'GET' || method === 'DELETE';
+    const isFormData =
+      params &&
+      (Object.prototype.toString.call(params) === '[object FormData]' ||
+        Object.prototype.toString.call(params) === '[object URLSearchParams]');
+
+    // 处理 GET/DELETE Query 拼接
+    if (isGetLike && params && Object.keys(params).length > 0) {
+      finalUrl += (finalUrl.includes('?') ? '&' : '?') + qs.stringify(params, { arrayFormat: 'indices' });
+    } else if (params !== undefined && params !== null) {
+      // 非 GET/DELETE，处理请求体
+      if (isFormData) {
+        payload = params;
+        // 不设置 Content-Type, 让浏览器自动推断，避免边界问题
+      } else {
+        headers['Content-Type'] = 'application/json';
+        payload = JSON.stringify(params);
+      }
+    }
+
+    return {
+      url: finalUrl,
+      options: {
+        ...options,
+        method,
+        body: isGetLike ? undefined : payload,
+        headers,
+      } as RequestInit,
+    };
+  };
+
+  /**
+   * 响应拦截器
+   */
+  export const interceptorsResponse = async <T>(res: Response): Promise<T> => {
+    const requestUrl = res.url;
+
+    // 判断返回是不是 blob
+    const contentType = res.headers.get('content-type') || '';
+    const isBlob = isBlobResponse(contentType);
+
+    // 如果是 blob 类型，直接返回 blob，避免重复读取响应
+    if (isBlob) {
+      return (await res.blob()) as T;
+    }
+
+    // 非 blob 类型，读取文本内容用于 JSON 解析或错误处理
+    const text = await res.text();
+
+    if (res.ok) {
+      const response = JSON.parse(text);
+      // 后端统一处理：HTTP 200 但 code: 401
+      if (response.code === 401) {
+        if (isBrowser) {
+          /* 浏览器环境：自动跳转 */
+          const currentPath = window.location.pathname;
+          const currentSearch = window.location.search;
+          if (currentPath !== '/auth-center') {
+            window.location.href = `${window.location.origin}/auth-center?redirect=${currentPath}${currentSearch}`;
+          }
+        } else {
+          /* server components 环境：重定向到认证中心 */
+          redirect('/auth-center');
+        }
+      }
+      return response as T;
+    }
+
+    // 处理错误响应
+    try {
+      const errorData = JSON.parse(text);
+      throw { message: errorData?.message || errorData || '接口错误', url: requestUrl, status: res.status };
+    } catch {
+      throw { message: text || '接口错误', url: requestUrl, status: res.status };
+    }
+  };
+  ```
+  </TabItem>
+</Tabs>
+
+# zustand localstorage 持久化
+
+'use client' 不会阻止 SSR，Next.js 仍会在服务端渲染一次。
+
+当状态依赖 localStorage、sessionStorage 或浏览器 API 时，服务端和客户端初始状态可能不同。
+
+使用 persist 中间件，会自动处理 ssr 与 hydration 问题。
+
+```ts title="useApp.ts"
+import { UserInfo } from '@/services/type';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export interface AppStore {
+  user: UserInfo | null;
+}
+
+export const useApp = create<AppStore>()(
+  persist(
+    (set) => ({
+      user: null,
+    }),
+    {
+      name: 'app-storage', // localStorage key
+      // persist 会自动处理 SSR，只在客户端读取
+    }
+  )
+);
+
+const set = useApp.setState;
+
+export const appActions = {
+  setUser: (user: UserInfo) => {
+    set({ user });
+  },
+  clearUser: () => {
+    set({ user: null });
+  },
+};
+```
+
+服务端渲染（SSR）阶段：
+
+```
+1. Next.js 服务端开始渲染页面
+   ↓
+2. 解析 layout.tsx，发现需要渲染 <Header />
+   ↓
+3. 加载 header.tsx 模块
+   ↓
+4. header.tsx 导入 useApp: import { useApp } from '@/stores/useApp'
+   ↓
+5. 首次加载 useApp.ts 模块
+   ↓
+6. 执行 create() → store 在服务端创建
+   ↓
+7. persist middleware 执行 hydrate()
+   ↓
+8. 检查 storage → typeof window === 'undefined' → 提前返回
+   ↓
+9. hasHydrated = false, user = null
+   ↓
+10. 渲染 HTML，发送到客户端
+```
+
+客户端 Hydration 阶段：
+
+```
+1. 浏览器接收 HTML，开始 hydration
+   ↓
+2. React 加载客户端 bundle
+   ↓
+3. 再次加载 header.tsx 模块（客户端版本）
+   ↓
+4. 再次导入 useApp（客户端模块）
+   ↓
+5. 再次执行 create() → store 在客户端创建（新的实例）
+   ↓
+6. persist middleware 执行 hydrate()
+   ↓
+7. 检查 storage → window 存在 → 继续执行
+   ↓
+8. 异步从 localStorage 读取数据
+   ↓
+9. 首次渲染时：hasHydrated = false, user = null
+   ↓
+10. Hydration 完成后：hasHydrated = true, user = {...}
+   ↓
+11. 触发组件重新渲染
+```
+
+# remove cookie
+
+```ts title="@/utils/cookie.ts"
+/* session key in cookie */
+export const SESSION_KEY_IN_COOKIE = 'SESSIONID';
+export const SESSION_KEY_IN_URL = 'sessionId';
+
+/**
+ * 删除 session cookie
+ * 确保使用与设置时相同的属性
+ */
+export const deleteSessionCookie = (): void => {
+  if (typeof document === 'undefined') return;
+
+  // 获取当前域名
+  const domain = window.location.hostname;
+
+  // 删除 cookie 的多种方式，确保兼容性
+  const deleteOptions = [
+    `${SESSION_KEY_IN_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; sameSite=Lax;`,
+    `${SESSION_KEY_IN_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}; sameSite=Lax;`,
+    `${SESSION_KEY_IN_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`, // 备用
+  ];
+
+  deleteOptions.forEach(option => {
+    document.cookie = option;
+  });
+};
+```
+
+# docker 部署脚本
+
+<Tabs>
+  <TabItem label="dockerfile">
+  ```bash
+  # ============================
+  # 1. Builder Stage
+  # ============================
+  FROM node:22-alpine AS builder
+
+  WORKDIR /app
+
+  # 先复制依赖文件，利用缓存机制
+  COPY package.json package-lock.json* ./
+
+  # 安装依赖（包含 devDependencies）
+  RUN npm install --registry=https://registry.npmmirror.com
+
+  # 复制所有源代码
+  COPY . .
+
+  # 构建 Next.js（生成 .next）
+  RUN npm run build
+
+
+  # ============================
+  # 2. Runner Stage（生产镜像）
+  # ============================
+  FROM node:22-alpine AS runner
+
+  WORKDIR /app
+
+  ENV NODE_ENV=production
+  ENV PORT=4000
+
+  # 拷贝依赖（dev 不需要，节省空间）
+  COPY --from=builder /app/package.json ./
+  COPY --from=builder /app/node_modules ./node_modules
+
+  # 拷贝 Next.js 编译后的产物
+  COPY --from=builder /app/.next ./.next
+  COPY --from=builder /app/public ./public
+  COPY --from=builder /app/next.config.js ./next.config.js
+
+  EXPOSE 4000
+
+  # Next.js 官方生产启动命令
+  CMD ["npm", "start"]
+  ```
+  </TabItem>
+  <TabItem label="docker-compose.yml">
+  ```yml
+  version: '3.9'
+
+  services:
+    next-app:
+      build:
+        context: .
+        dockerfile: dockerfile
+      image: next-app:latest
+      container_name: next-app
+      restart: always
+      ports:
+        - '8000:4000'
+      environment:
+        NODE_ENV: production
   ```
   </TabItem>
 </Tabs>

@@ -1,0 +1,94 @@
+---
+title: CSS 笔记
+category:
+  - Notes
+slug: notes-css
+summary: 记录 CSS 的核心概念与开发实战。
+createdTime: '2025-12-29 13:06:11'
+updatedTime: '2025-12-31 16:10:22'
+---
+# 定位
+1. static、relative：最近的块级容器
+2. absolute：最近 position 不为 static 的容器
+3. fixed：视口
+4. sticky：最近**可滚动**的容器
+
+# 百分比
+1. 内外边距：参照的是容器的宽
+2. 定位属性（left、top）：参照的是容器的宽高
+3. 字体大小：参照父元素的 font-size
+4. transform.translate()： 参照元素自身尺寸
+
+垂直方向上`margin`外边距存在折叠情况
+
+# 行内元素特性
+1. width 和 height 属性无效
+2. 通过 line-height 属性来设置行内元素的行高
+3. 内外边距均只能在水平方向生效
+
+`vertical-align` 作用于行内元素、行内块元素
+
+`BFC` 的特性是不与外部元素产生交集
+
+# BFC 的实现方式
+
+文档的根元素 html
+- 浮动元素：float: left | right
+- display: flow-root
+- overflow 值不为 visible 与 clip 的块元素：overflow: hidden | auto | scroll
+- 定位元素：position: absolute ｜ fixed
+- 行内块元素：display: inline-block
+- 表格单元格：display: table-cell
+- 表格标题：display: table-caption
+- 匿名表格单元格元素：display: table, table-row, table-row-group 等
+- contain 值为 layout、paint 或 content 的元素
+- 弹性元素的直接子元素：如果他们不充当弹性、网格、表格的容器元素
+- 网格元素的直接子元素：如果他们不充当弹性、网格、表格的容器元素
+
+常用的方式：
+- display: flow-root
+- overflow: hidden
+
+# sticky
+
+其包含块：最近的具有**滚动机制**的祖先元素的内容区域 + **padding** 区域。
+
+注意：机制会随着包含块一同出现消失，也就是说如果包含块离开视口，随之粘性元素也会离开
+
+# 渲染
+
+ render-tree = dom-tree + cssom-tree
+
+所以理论上，css 和 js 都会阻塞 html 渲染。
+
+只不过 超过一定时间 render-tree 就不等 cssom-tree 了。
+
+# 重绘
+1. crud dom 节点
+2. 显示隐藏元素 display
+3. 读取几何属性
+   1. offsetX
+   2. scrollX
+   3. clientX
+   4. getComputedStyle()
+4. 视口操作
+
+# 优化重排
+1. 变化频繁的元素脱离文档流
+2. 利用浏览器内置批处理
+3. 减少布局抖动
+4. 离线 dom 操作
+5. 使用 transform 和 opacity
+
+# 白屏优化
+1. cdn 优化
+2. js/css
+   1. 本地构建时压缩代码
+   2. 本地构建时, 使用 tree shaking 减少无用代码的体积
+   3. 本地构建时, 使用**按需加载**的方式, 减少首次加载的主包体积
+   4. 拆包, 并延后加载地图模块等大体积的包, 确保页面先出现内容, 在第二次渲染时再渲染地图
+   5. 拆包, 并延后加载非首屏内容, 主要体现为懒加载
+   6. 三方模块使用按需引入的方式进行打包, 例如 antd、element-ui、lodash 等
+   7. 网络传输时使用 gzip 压缩代码
+3. 请求过多
+4. 耗时 js 任务

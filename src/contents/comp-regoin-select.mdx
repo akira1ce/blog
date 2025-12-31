@@ -1,0 +1,249 @@
+---
+title: 区域选择组件
+category:
+  - Components
+slug: comp-regoin-select
+summary: 实现一个支持区域选择的下拉组件
+createdTime: '2025-12-31 15:06:11'
+updatedTime: '2025-12-31 17:15:51'
+---
+# RegionSelect
+
+```tsx title="region-select.tsx"
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { Input, Select, Space } from 'antd';
+import { PCA_DATA } from '@/constants/pca';
+
+const { Option } = Select;
+const { TextArea } = Input;
+
+const regionData = PCA_DATA;
+
+/**
+ * 地区层级类型
+ */
+export type RegionLevel = 'province' | 'city' | 'district';
+
+/**
+ * 地区选择器的值类型
+ */
+export interface RegionValue {
+  /** 省份 */
+  province?: string;
+  /** 城市 */
+  city?: string;
+  /** 区县 */
+  district?: string;
+  /** 详细地址 */
+  detail?: string;
+}
+
+/**
+ * 地区选择器组件的属性
+ */
+interface RegionSelectProps {
+  /** 当前值 */
+  value?: RegionValue;
+  /** 值变化回调 */
+  onChange?: (value: RegionValue) => void;
+  /** 是否禁用 */
+  disabled?: boolean;
+  /** 显示的层级，默认 ['province', 'city', 'district'] */
+  levels?: RegionLevel[];
+  /** 是否显示详细地址输入框 */
+  showDetail?: boolean;
+  /** 详细地址输入框类型 */
+  detailType?: 'input' | 'textarea';
+  /** 详细地址占位符 */
+  detailPlaceholder?: string;
+  /** 详细地址输入框行数（仅 textarea 类型有效） */
+  detailRows?: number;
+}
+
+/**
+ * 地区选择器组件
+ *
+ * 支持省市区三级联动，可配置显示层级和详细地址输入
+ * 适配 Ant Design Form 的受控组件规范
+ */
+export const RegionSelect: React.FC<RegionSelectProps> = ({
+  value,
+  onChange,
+  disabled,
+  levels = ['province', 'city', 'district'],
+  showDetail = false,
+  detailType = 'input',
+  detailPlaceholder = '请输入详细地址',
+  detailRows = 2,
+}) => {
+  const [province, setProvince] = useState<string | undefined>(value?.province);
+  const [city, setCity] = useState<string | undefined>(value?.city);
+  const [district, setDistrict] = useState<string | undefined>(value?.district);
+  const [detail, setDetail] = useState<string | undefined>(value?.detail);
+
+  const [cities, setCities] = useState<string[]>([]);
+  const [districts, setDistricts] = useState<string[]>([]);
+
+  // 检查是否显示某个层级
+  const shouldShowProvince = levels.includes('province');
+  const shouldShowCity = levels.includes('city');
+  const shouldShowDistrict = levels.includes('district');
+
+  // 初始化时根据已有值设置下级选项
+  useEffect(() => {
+    if (value?.province) {
+      setProvince(value.province);
+      setCities(Object.keys(regionData[value.province] || {}));
+    }
+    if (value?.city) {
+      setCity(value.city);
+    }
+    if (value?.province && value?.city) {
+      setDistricts(regionData[value.province]?.[value.city] || []);
+    }
+    if (value?.district) {
+      setDistrict(value.district);
+    }
+    if (value?.detail) {
+      setDetail(value.detail);
+    }
+  }, [value]);
+
+  const triggerChange = (changedValue: Partial<RegionValue>) => {
+    const newValue = {
+      ...(shouldShowProvince && { province }),
+      ...(shouldShowCity && { city }),
+      ...(shouldShowDistrict && { district }),
+      ...(showDetail && { detail }),
+      ...changedValue,
+    };
+    onChange?.(newValue);
+  };
+
+  const handleProvinceChange = (p: string) => {
+    setProvince(p);
+    setCity(undefined);
+    setDistrict(undefined);
+
+    const nextCities = Object.keys(regionData[p] || {});
+    setCities(nextCities);
+    setDistricts([]);
+
+    triggerChange({
+      province: p,
+      ...(shouldShowCity && { city: undefined }),
+      ...(shouldShowDistrict && { district: undefined }),
+    });
+  };
+
+  const handleCityChange = (c: string) => {
+    setCity(c);
+    setDistrict(undefined);
+
+    const nextDistricts = regionData[province || '']?.[c] || [];
+    setDistricts(nextDistricts);
+
+    triggerChange({
+      city: c,
+      ...(shouldShowDistrict && { district: undefined }),
+    });
+  };
+
+  const handleDistrictChange = (d: string) => {
+    setDistrict(d);
+    triggerChange({ district: d });
+  };
+
+  const handleDetailChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const newDetail = e.target.value;
+    setDetail(newDetail);
+    triggerChange({ detail: newDetail });
+  };
+
+  return (
+    <Space direction="vertical" style={{ width: '100%' }} size="middle">
+      <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+        {/* 省份选择 */}
+        {shouldShowProvince && (
+          <Select
+            placeholder="请选择省份"
+            value={province}
+            style={{ flex: 1, minWidth: 0 }}
+            onChange={handleProvinceChange}
+            disabled={disabled}
+            allowClear
+          >
+            {Object.keys(regionData).map(p => (
+              <Option key={p} value={p}>
+                {p}
+              </Option>
+            ))}
+          </Select>
+        )}
+
+        {/* 城市选择 */}
+        {shouldShowCity && (
+          <Select
+            placeholder="请选择城市"
+            value={city}
+            style={{ flex: 1, minWidth: 0 }}
+            onChange={handleCityChange}
+            disabled={disabled || !cities.length}
+            allowClear
+          >
+            {cities.map(c => (
+              <Option key={c} value={c}>
+                {c}
+              </Option>
+            ))}
+          </Select>
+        )}
+
+        {/* 区县选择 */}
+        {shouldShowDistrict && (
+          <Select
+            placeholder="请选择区县"
+            value={district}
+            style={{ flex: 1, minWidth: 0 }}
+            onChange={handleDistrictChange}
+            disabled={disabled || !districts.length}
+            allowClear
+          >
+            {districts.map(d => (
+              <Option key={d} value={d}>
+                {d}
+              </Option>
+            ))}
+          </Select>
+        )}
+      </div>
+
+      {/* 详细地址输入 */}
+      {showDetail && (
+        <>
+          {detailType === 'textarea' ? (
+            <TextArea
+              value={detail}
+              onChange={handleDetailChange}
+              placeholder={detailPlaceholder}
+              rows={detailRows}
+              disabled={disabled}
+            />
+          ) : (
+            <Input
+              value={detail}
+              onChange={handleDetailChange}
+              placeholder={detailPlaceholder}
+              disabled={disabled}
+            />
+          )}
+        </>
+      )}
+    </Space>
+  );
+};
+```
