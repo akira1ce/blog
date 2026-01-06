@@ -5,7 +5,7 @@ category:
 slug: fix-nextjs
 summary: 记录使用 nextjs 过程中踩过的坑，以及对应的解决思路与经验总结。
 createdTime: '2025-11-24 10:00:00'
-updatedTime: '2025-12-31 16:10:03'
+updatedTime: '2026-01-06 16:53:06'
 ---
 import { Tabs, TabItem } from '@/components/tabs';
 
@@ -372,6 +372,8 @@ export const appActions = {
 11. 触发组件重新渲染
 ```
 
+> 简单来说，读取 localStorage 是在水合之后执行的，这也就能保证服务端与客户端的数据一致性，也就不会导致水合失败的问题。
+
 # remove cookie
 
 ```ts title="@/utils/cookie.ts"
@@ -471,3 +473,57 @@ export const deleteSessionCookie = (): void => {
   ```
   </TabItem>
 </Tabs>
+
+# use client 下无法获取 window 对象
+
+## app 路由的渲染机制
+
+默认情况，所有组件都会在服务端执行一次。
+
+1. server-component 直接在服务端执行，不发送到客户端
+2. client-component 会经历两次执行：
+  - 服务端渲染（SSR）：生成初始 HTML
+  - 客户端水合（Hydration）：在浏览器中重新执行并接管交互
+
+所以很多时候可能子组件顶层用了 `use client`，但还是无法获取到 window 对象。
+
+> 注意：边界考虑都建在`模块树`层面，而不是组件层面。
+
+## 解决方案
+
+1. 服务端组件传递
+2. 纯客户端组件
+3. `useEffect` 中获取 window 对象，`suppressHydrationWarning` 避免水合不匹配
+4. 使用 dynamic import, 禁用服务端渲染
+
+### useEffect
+
+```tsx title="layout.tsx"
+const [origin, setOrigin] = useState<string>('');
+
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    setOrigin(window.location.origin);
+  }
+}, []);
+
+// ... existing code ...
+
+<a 
+  href={origin ? `/oauth2-login?redirectUrl=${origin}/user-center` : '/oauth2-login'}
+  {/* 避免水合不匹配 */}
+  suppressHydrationWarning
+>
+  登录
+</a>
+```
+
+### dynamic import
+
+```tsx title="layout.tsx"
+import dynamic from 'next/dynamic';
+
+const Header = dynamic(() => import('./components/header'), {
+  ssr: false,
+});
+```

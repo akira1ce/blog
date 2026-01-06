@@ -5,9 +5,8 @@ category:
 slug: fix-antd-pitfalls
 summary: 记录使用 antd 过程中踩过的坑，以及对应的解决思路与经验总结。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2025-11-20 14:50:45'
+updatedTime: '2026-01-06 15:23:41'
 ---
-
 # Table 在 flex 容器下自适应宽度，导致宽度溢出
 
 ```css title="index.css"
@@ -75,4 +74,51 @@ react-draggable 版本依赖版本不一致，导致无法正常使用。
     "react-draggable": "4.4.5"
   }
 }
+```
+
+# antd-tools
+
+1. `getUploadPropsInFormItem` 获取 Antd Form.Item 下用于 Upload 组件的数据适配 props
+
+```tsx title="antd-tools.ts"
+/**
+ * 获取 Antd Form.Item 下用于 Upload 组件的数据适配 props
+ * 用于 valuePropName、getValueProps、getValueFromEvent
+ * 统一处理 form 与 Upload 组件的数据流格式
+ */
+export const getUploadPropsInFormItem = () => ({
+  valuePropName: 'fileList',
+  /**
+   * 处理 Form 初始值 → Upload 组件 props.value (fileList)
+   *
+   * 始终返回 { fileList: [] } 格式
+   */
+  getValueProps: (value: any) => {
+    if (!value) {
+      return { fileList: [] };
+    }
+    // 如果是对象且有 fileList
+    if (typeof value === 'object' && 'fileList' in value) {
+      return {
+        fileList: Array.isArray(value.fileList) ? value.fileList : [],
+      };
+    }
+    // 兼容场景：直接传递 file 数组
+    if (Array.isArray(value)) {
+      return { fileList: value };
+    }
+    return { fileList: [] };
+  },
+  /**
+   * 处理 Upload 组件 onChange 事件 → Form 字段值
+   *
+   * 始终返回 { fileList: [...] } 格式
+   */
+  getValueFromEvent: (e: any) => {
+    if (!e) return { fileList: [] };
+    if (Array.isArray(e)) return { fileList: e };
+    const fileList = Array.isArray(e?.fileList) ? e.fileList : [];
+    return { fileList };
+  },
+});
 ```
