@@ -5,9 +5,8 @@ category:
 slug: fe-js-utility-functions
 summary: 汇总平时开发中收集的实用 JavaScript 工具函数。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2025-11-12 15:59:45'
+updatedTime: '2026-01-16 11:12:48'
 ---
-
 
 # clsx & twMerge
 
@@ -368,4 +367,49 @@ export function filterTree(treeData, filter, childrenKey = "children") {
   };
   return loop(treeData);
 }
+```
+
+## isEmptyObject
+
+判断对象是否为空，包括嵌套对象。
+
+```ts title="isEmptyObject.ts"
+/** 判断对象是否为空 */
+export const isEmptyObject = (obj: any): boolean => {
+  // 处理 null 和 undefined
+  if (obj === null || obj === undefined) {
+    return true;
+  }
+
+  // 处理非对象类型（字符串、数字、布尔值等）
+  if (typeof obj !== 'object' || Array.isArray(obj)) {
+    return false;
+  }
+
+  // 获取对象的所有键
+  const keys = Object.keys(obj);
+
+  // 空对象视为空
+  if (keys.length === 0) {
+    return true;
+  }
+
+  // 递归检查每个属性
+  return keys.every(key => {
+    const value = obj[key];
+
+    // null 或 undefined 视为空
+    if (value === null || value === undefined) {
+      return true;
+    }
+
+    // 如果是对象，递归检查
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      return isEmptyObject(value);
+    }
+
+    // 其他类型（字符串、数字、布尔值、数组等）视为非空
+    return false;
+  });
+};
 ```

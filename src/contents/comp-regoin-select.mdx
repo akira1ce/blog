@@ -5,245 +5,296 @@ category:
 slug: comp-regoin-select
 summary: 实现一个支持区域选择的下拉组件
 createdTime: '2025-12-31 15:06:11'
-updatedTime: '2025-12-31 17:15:51'
+updatedTime: '2026-01-20 17:58:04'
 ---
 # RegionSelect
 
-```tsx title="region-select.tsx"
-'use client';
+import RegionSelect from "@/demos/region-select"
+import Preview from '@/components/preview';
+import { Tabs, TabItem } from '@/components/tabs';
 
-import React, { useEffect, useState } from 'react';
-import { Input, Select, Space } from 'antd';
-import { PCA_DATA } from '@/constants/pca';
+<Preview>
+  <RegionSelect />
+</Preview>
 
-const { Option } = Select;
-const { TextArea } = Input;
-
-const regionData = PCA_DATA;
-
-/**
- * 地区层级类型
- */
-export type RegionLevel = 'province' | 'city' | 'district';
-
-/**
- * 地区选择器的值类型
- */
-export interface RegionValue {
-  /** 省份 */
-  province?: string;
-  /** 城市 */
-  city?: string;
-  /** 区县 */
-  district?: string;
-  /** 详细地址 */
-  detail?: string;
-}
-
-/**
- * 地区选择器组件的属性
- */
-interface RegionSelectProps {
-  /** 当前值 */
-  value?: RegionValue;
-  /** 值变化回调 */
-  onChange?: (value: RegionValue) => void;
-  /** 是否禁用 */
-  disabled?: boolean;
-  /** 显示的层级，默认 ['province', 'city', 'district'] */
-  levels?: RegionLevel[];
-  /** 是否显示详细地址输入框 */
-  showDetail?: boolean;
-  /** 详细地址输入框类型 */
-  detailType?: 'input' | 'textarea';
-  /** 详细地址占位符 */
-  detailPlaceholder?: string;
-  /** 详细地址输入框行数（仅 textarea 类型有效） */
-  detailRows?: number;
-}
-
-/**
- * 地区选择器组件
- *
- * 支持省市区三级联动，可配置显示层级和详细地址输入
- * 适配 Ant Design Form 的受控组件规范
- */
-export const RegionSelect: React.FC<RegionSelectProps> = ({
-  value,
-  onChange,
-  disabled,
-  levels = ['province', 'city', 'district'],
-  showDetail = false,
-  detailType = 'input',
-  detailPlaceholder = '请输入详细地址',
-  detailRows = 2,
-}) => {
-  const [province, setProvince] = useState<string | undefined>(value?.province);
-  const [city, setCity] = useState<string | undefined>(value?.city);
-  const [district, setDistrict] = useState<string | undefined>(value?.district);
-  const [detail, setDetail] = useState<string | undefined>(value?.detail);
-
-  const [cities, setCities] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-
-  // 检查是否显示某个层级
-  const shouldShowProvince = levels.includes('province');
-  const shouldShowCity = levels.includes('city');
-  const shouldShowDistrict = levels.includes('district');
-
-  // 初始化时根据已有值设置下级选项
-  useEffect(() => {
-    if (value?.province) {
-      setProvince(value.province);
-      setCities(Object.keys(regionData[value.province] || {}));
+<Tabs>
+  <TabItem label="util/region.ts">
+    ```ts
+    import PCA_CODE from '../constant/pca-code.json';
+    
+    /**
+     * 根据行政区划代码获取省市区信息
+     * @param code 6位行政区划代码，如 110101
+     * @returns 省市区信息对象，未找到返回 null
+     */
+    export function getRegionByCode(code: string) {
+      if (!code || code.length !== 6) {
+        return null;
+      }
+    
+      const provinceCode = code.substring(0, 2);
+      const cityCode = code.substring(0, 4);
+      const districtCode = code;
+    
+      return {
+        province: PCA_CODE[provinceCode as keyof typeof PCA_CODE],
+        city: PCA_CODE[cityCode as keyof typeof PCA_CODE],
+        district: PCA_CODE[districtCode as keyof typeof PCA_CODE],
+      };
     }
-    if (value?.city) {
-      setCity(value.city);
+    
+    /**
+     * 根据行政区划代码获取完整路径字符串
+     * @param code 6位行政区划代码
+     * @param separator 分隔符，默认为 ' '
+     */
+    export function getRegionPath(code: string, separator: string = ' ') {
+      const region = getRegionByCode(code);
+      if (!region) return '';
+    
+      return [region.province, region.city, region.district].filter(Boolean).join(separator);
     }
-    if (value?.province && value?.city) {
-      setDistricts(regionData[value.province]?.[value.city] || []);
+    
+    ```
+  </TabItem>
+  <TabItem label="index.tsx">
+    ```tsx
+    import { RegionSelect } from "./components/region-select"
+    
+    const Index = () => {
+      return <RegionSelect />
     }
-    if (value?.district) {
-      setDistrict(value.district);
+    
+    export default Index
+    ```
+  </TabItem>
+  <TabItem label="constant/pca.json">
+    ```json
+    {
+      "北京市": {
+        "市辖区": [
+          "东城区",
+          "西城区",
+          "朝阳区",
+          "丰台区",
+          "石景山区",
+          "海淀区",
+          "门头沟区",
+          "房山区",
+          "通州区",
+          "顺义区",
+          "昌平区",
+          "大兴区",
+          "怀柔区",
+          "平谷区",
+          "密云区",
+          "延庆区"
+        ]
+      },
+      "天津市": {
+        "市辖区": [
+          "和平区",
+          "河东区",
+          "河西区",
+          "南开区",
+          "河北区",
+          "红桥区",
+          "东丽区",
+          "西青区",
+          "津南区",
+          "北辰区",
+          "武清区",
+          "宝坻区",
+          "滨海新区",
+          "宁河区",
+          "静海区",
+          "蓟州区"
+        ]
+      }
     }
-    if (value?.detail) {
-      setDetail(value.detail);
+    
+    ```
+  </TabItem>
+  <TabItem label="constant/pca-code.json">
+    ```json
+    {
+      "11": "北京市",
+      "1101": "市辖区",
+      "110101": "东城区",
+      "110102": "西城区",
+      "110105": "朝阳区",
+      "110106": "丰台区",
+      "110107": "石景山区",
+      "110108": "海淀区",
+      "110109": "门头沟区",
+      "110111": "房山区",
+      "110112": "通州区",
+      "110113": "顺义区",
+      "110114": "昌平区",
+      "110115": "大兴区",
+      "110116": "怀柔区",
+      "110117": "平谷区",
+      "110118": "密云区",
+      "110119": "延庆区"
     }
-  }, [value]);
-
-  const triggerChange = (changedValue: Partial<RegionValue>) => {
-    const newValue = {
-      ...(shouldShowProvince && { province }),
-      ...(shouldShowCity && { city }),
-      ...(shouldShowDistrict && { district }),
-      ...(showDetail && { detail }),
-      ...changedValue,
-    };
-    onChange?.(newValue);
-  };
-
-  const handleProvinceChange = (p: string) => {
-    setProvince(p);
-    setCity(undefined);
-    setDistrict(undefined);
-
-    const nextCities = Object.keys(regionData[p] || {});
-    setCities(nextCities);
-    setDistricts([]);
-
-    triggerChange({
-      province: p,
-      ...(shouldShowCity && { city: undefined }),
-      ...(shouldShowDistrict && { district: undefined }),
-    });
-  };
-
-  const handleCityChange = (c: string) => {
-    setCity(c);
-    setDistrict(undefined);
-
-    const nextDistricts = regionData[province || '']?.[c] || [];
-    setDistricts(nextDistricts);
-
-    triggerChange({
-      city: c,
-      ...(shouldShowDistrict && { district: undefined }),
-    });
-  };
-
-  const handleDistrictChange = (d: string) => {
-    setDistrict(d);
-    triggerChange({ district: d });
-  };
-
-  const handleDetailChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const newDetail = e.target.value;
-    setDetail(newDetail);
-    triggerChange({ detail: newDetail });
-  };
-
-  return (
-    <Space direction="vertical" style={{ width: '100%' }} size="middle">
-      <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-        {/* 省份选择 */}
-        {shouldShowProvince && (
-          <Select
-            placeholder="请选择省份"
-            value={province}
-            style={{ flex: 1, minWidth: 0 }}
-            onChange={handleProvinceChange}
-            disabled={disabled}
-            allowClear
-          >
-            {Object.keys(regionData).map(p => (
-              <Option key={p} value={p}>
-                {p}
-              </Option>
-            ))}
-          </Select>
-        )}
-
-        {/* 城市选择 */}
-        {shouldShowCity && (
-          <Select
-            placeholder="请选择城市"
-            value={city}
-            style={{ flex: 1, minWidth: 0 }}
-            onChange={handleCityChange}
-            disabled={disabled || !cities.length}
-            allowClear
-          >
-            {cities.map(c => (
-              <Option key={c} value={c}>
-                {c}
-              </Option>
-            ))}
-          </Select>
-        )}
-
-        {/* 区县选择 */}
-        {shouldShowDistrict && (
-          <Select
-            placeholder="请选择区县"
-            value={district}
-            style={{ flex: 1, minWidth: 0 }}
-            onChange={handleDistrictChange}
-            disabled={disabled || !districts.length}
-            allowClear
-          >
-            {districts.map(d => (
-              <Option key={d} value={d}>
-                {d}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </div>
-
-      {/* 详细地址输入 */}
-      {showDetail && (
-        <>
-          {detailType === 'textarea' ? (
-            <TextArea
-              value={detail}
-              onChange={handleDetailChange}
-              placeholder={detailPlaceholder}
-              rows={detailRows}
-              disabled={disabled}
-            />
-          ) : (
+    
+    ```
+  </TabItem>
+  <TabItem label="components/region-select.tsx">
+    ```tsx
+    'use client';
+    
+    import PCA from '../constant/pca.json';
+    import { useControl } from '@akira1ce/r-hooks';
+    import {
+      Select,
+      SelectContent,
+      SelectItem,
+      SelectTrigger,
+      SelectValue,
+    } from '@/components/ui/select';
+    import { Input } from '@/components/ui/input';
+    import React, { useMemo } from 'react';
+    
+    export interface RegionValue {
+      /** 省 */
+      province?: string;
+      /** 市 */
+      city?: string;
+      /** 区 */
+      district?: string;
+      /** 详细地址 */
+      detail?: string;
+    }
+    
+    /**
+     * 地区选择器组件的属性
+     */
+    interface RegionSelectProps {
+      /** 当前值 */
+      value?: RegionValue;
+      /** 值变化回调 */
+      onChange?: (value: RegionValue) => void;
+      /** 是否禁用 */
+      disabled?: boolean;
+      /** 显示的层级，默认 3 */
+      level?: number;
+      /** 是否显示详细地址输入框 */
+      showDetail?: boolean;
+    }
+    
+    /**
+     * 地区选择器组件
+     * 支持省市区三级联动，可配置显示层级和详细地址输入
+     * 适配 Form 的受控组件规范
+     */
+    export const RegionSelect: React.FC<RegionSelectProps> = props => {
+      const { disabled, level = 3, showDetail = false } = props;
+    
+      const [value, setValue] = useControl(props);
+    
+      const { province, city, district, detail } = value || {};
+    
+      const handleChangeValue = (val: Partial<RegionValue>) => {
+        setValue(prev => ({ ...prev, ...val }));
+      };
+    
+      /* 省列表 */
+      const provinces = useMemo(() => {
+        return Object.keys(PCA);
+      }, []);
+    
+      /* 市列表 */
+      const cities = useMemo(() => {
+        if (!province) return [];
+        return Object.keys(PCA[province] || {});
+      }, [province]);
+    
+      /* 区列表 */
+      const districts = useMemo(() => {
+        if (!province || !city) return [];
+        return PCA[province]?.[city] || [];
+      }, [province, city]);
+    
+      return (
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex gap-2 w-full">
+            {/* 省份选择 */}
+            {level >= 1 && (
+              <Select
+                value={province}
+                onValueChange={val =>
+                  handleChangeValue({ province: val, city: undefined, district: undefined })
+                }
+                disabled={disabled}
+              >
+                <SelectTrigger className="flex-1 min-w-0">
+                  <SelectValue placeholder="请选择省份" />
+                </SelectTrigger>
+                <SelectContent>
+                  {provinces.map(p => (
+                    <SelectItem key={p} value={p}>
+                      {p}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+    
+            {/* 城市选择 */}
+            {level >= 2 && (
+              <Select
+                value={city}
+                onValueChange={val => handleChangeValue({ city: val, district: undefined })}
+                disabled={disabled || !cities.length}
+              >
+                <SelectTrigger className="flex-1 min-w-0">
+                  <SelectValue placeholder="请选择城市" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map(c => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+    
+            {/* 区县选择 */}
+            {level >= 3 && (
+              <Select
+                value={district}
+                onValueChange={val => handleChangeValue({ district: val })}
+                disabled={disabled || !districts.length}
+              >
+                <SelectTrigger className="flex-1 min-w-0">
+                  <SelectValue placeholder="请选择区县" />
+                </SelectTrigger>
+                <SelectContent>
+                  {districts.map(d => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+    
+          {/* 详细地址输入 */}
+          {showDetail && (
             <Input
               value={detail}
-              onChange={handleDetailChange}
-              placeholder={detailPlaceholder}
+              onChange={e => handleChangeValue({ detail: e.target.value })}
+              placeholder="请输入详细地址"
               disabled={disabled}
             />
           )}
-        </>
-      )}
-    </Space>
-  );
-};
-```
+        </div>
+      );
+    };
+    
+    ```
+  </TabItem>
+</Tabs>
