@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
 
 /* dark-mode -> class: dark */
@@ -139,7 +139,7 @@
     }
     /* Code block styles */
     pre {
-      @apply bg-main border-fore/5 m-0 overflow-x-auto rounded-xl border;
+      @apply bg-main border-fore/5 m-0 max-h-screen overflow-auto overflow-x-auto rounded-xl border;
       font-family: inherit;
       code {
         font-family: inherit;
@@ -166,6 +166,11 @@
       }
     }
   }
+}
+
+/* 隐藏 Tabs 内的代码块 title */
+[data-tabs-container] figcaption[data-rehype-pretty-code-title] {
+  display: none;
 }
 
 /* scrollbar */
@@ -226,11 +231,6 @@
   to {
     mask-size: 350vmax;
   }
-}
-
-/* 隐藏 Tabs 内的代码块 title */
-[data-tabs-container] figcaption[data-rehype-pretty-code-title] {
-  display: none;
 }
 
 :root {
