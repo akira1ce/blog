@@ -5,8 +5,15 @@ category:
 slug: notes-css
 summary: 记录 CSS 的核心概念与开发实战。
 createdTime: '2025-12-29 13:06:11'
-updatedTime: '2025-12-31 16:10:22'
+updatedTime: '2026-02-26 09:52:57'
 ---
+# 像素
+
+1. 物理像素（pt）：跟随设备不变例如 2k 屏幕即为 2560 x 1440
+2. 设备独立像素（px）：跟随电脑设置中的分辨率变化，`1px = dpr x 1pt`，dpr 为 设备分辨率缩放比。
+3. 设备分辨率缩放比（dpr）：物理宽度 / 逻辑分辨率宽度，比如说 5k 屏幕设置分辨率为 2560 x 1440，此时 dpr 为 2。
+4. 浏览器缩放：`dpr = _dpr x n`
+
 # 定位
 1. static、relative：最近的块级容器
 2. absolute：最近 position 不为 static 的容器
@@ -55,6 +62,36 @@ updatedTime: '2025-12-31 16:10:22'
 
 注意：机制会随着包含块一同出现消失，也就是说如果包含块离开视口，随之粘性元素也会离开
 
+# 层叠上下文
+
+有些元素并不是在基础图层的，而是在其之外的，此时浏览器会进行硬件加速进行优化，这类图片的渲染，并且这些图层上的图形操作不会影响基础图层，也就不会触发重绘、回流。
+
+但一定要是合理的创建这些图层，否则将本末倒置。
+
+通常是那些需要浮动起来的元素需要进行创建新的图层。
+
+创建方式：
+
+1. 文档根元素 html
+2. position 为 absolute 或 relative 且 z-index 不为 auto 的元素
+3. position 为 fixed 或者 sticky 的元素
+4. flex 容器的子元素, 且 z-index 不为 auto
+4. grid 容器的子元素, 且 z-index 不为 auto
+5. opacity 属性小于 1 的元素
+6. mix-blend-mode 属性不为 normal 的元素
+7. 以下属性中, 值不为 none 的元素
+   - transform
+   - filter
+   - backdrop-filter
+   - perspective
+   - clip-path
+   - mask
+   - mask-image
+   - mask-border
+8. isolation 属性被设置为 isolate 的元素
+9. will-change 属性被设置为 transform、opacity、filter、clip-path、mask 的元素
+10. contain 属性被设置为 paint、layout、content 的元素
+
 # 渲染
 
  render-tree = dom-tree + cssom-tree
@@ -64,6 +101,7 @@ updatedTime: '2025-12-31 16:10:22'
 只不过 超过一定时间 render-tree 就不等 cssom-tree 了。
 
 # 重绘
+
 1. crud dom 节点
 2. 显示隐藏元素 display
 3. 读取几何属性
