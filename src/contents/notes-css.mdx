@@ -5,7 +5,7 @@ category:
 slug: notes-css
 summary: 记录 CSS 的核心概念与开发实战。
 createdTime: '2025-12-29 13:06:11'
-updatedTime: '2026-02-26 09:52:57'
+updatedTime: '2026-02-26 16:41:05'
 ---
 # 像素
 
@@ -64,6 +64,8 @@ updatedTime: '2026-02-26 09:52:57'
 
 # 层叠上下文
 
+**分层是浏览器优化渲染性能的重要手段之一。**
+
 有些元素并不是在基础图层的，而是在其之外的，此时浏览器会进行硬件加速进行优化，这类图片的渲染，并且这些图层上的图形操作不会影响基础图层，也就不会触发重绘、回流。
 
 但一定要是合理的创建这些图层，否则将本末倒置。
@@ -92,9 +94,39 @@ updatedTime: '2026-02-26 09:52:57'
 9. will-change 属性被设置为 transform、opacity、filter、clip-path、mask 的元素
 10. contain 属性被设置为 paint、layout、content 的元素
 
-# 渲染
+# 渲染原理
 
- render-tree = dom-tree + cssom-tree
+## 解析顺序
+
+**html 解析：**
+
+核心：深度优先遍历、栈结构。
+
+**js 解析：**
+
+```html
+<script src='' />
+<script src='' async />
+<script src='' defer />
+```
+
+三种不同的加载和解析顺序的区别在于：加载时机和执行时机。
+
+![](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/202602261013961.png)
+
+**css 解析：**
+
+其解析和 script.defer 类似。
+
+![](https://cdn.jsdelivr.net/gh/akira1ce/blog-images@main/202602261016344.png)
+
+> 对于重要的 css 资源，可以考虑使用 link.rel="preload" 进行预加载。
+
+## render-tree
+
+`render-tree = dom-tree + cssom-tree`
+
+**Render Tree 并非是 DOM Tree 与 CSSOM 的简单合并. 他至少会经历样式计算、布局计算两个阶段。**
 
 所以理论上，css 和 js 都会阻塞 html 渲染。
 
@@ -130,3 +162,8 @@ updatedTime: '2026-02-26 09:52:57'
    7. 网络传输时使用 gzip 压缩代码
 3. 请求过多
 4. 耗时 js 任务
+
+# flex
+
+1. justify-x：主轴对齐方式
+2. align-x: 辅轴对齐方式（content作用于整体, items作用于单个元素）
