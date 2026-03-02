@@ -1,0 +1,63 @@
+'use client';
+
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
+
+const cards = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const len = cards.length;
+const mid = (len - 1) / 2;
+
+// 根据位置计算样式
+const getVars = (position: number) => {
+  const rattling = len - Math.abs(position - mid) - mid;
+  return {
+    '--o': (rattling / (mid + 1)).toFixed(2),
+    '--s': (rattling * (1 / (mid + 1))).toFixed(2),
+    '--x': `${-40 * mid + position * 40}%`,
+    '--z': rattling,
+  };
+};
+
+const Index = () => {
+  const [offset, setOffset] = useState(0);
+
+  const handleNext = () => {
+    setOffset((pre) => pre + 1);
+  };
+
+  const handlePrev = () => {
+    setOffset((pre) => pre - 1);
+  };
+
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center">
+      <div className="relative mb-2 h-20 w-40 translate-x-1/4">
+        {cards.map((item, index) => {
+          // 根据 offset 计算当前位置，使用取模保证循环
+          const position = (((index - offset) % len) + len) % len;
+          return (
+            <div
+              key={item}
+              style={{ ...getVars(position) }}
+              className={cn(
+                'flex-center absolute top-0 left-0 z-[var(--z)] flex size-20 translate-x-[var(--x)] scale-[var(--s)] items-center justify-center rounded-sm border border-gray-400 bg-slate-300 opacity-[var(--o)] transition-all',
+              )}
+            >
+              {item}
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex cursor-pointer justify-center gap-2">
+        <div className="rounded p-2 shadow" onClick={handlePrev}>
+          pre
+        </div>
+        <div className="rounded p-2 shadow" onClick={handleNext}>
+          next
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Index;
