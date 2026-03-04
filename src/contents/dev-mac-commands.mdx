@@ -5,10 +5,8 @@ category:
 slug: dev-mac-commands
 summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升效率的小技巧合集。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2025-12-03 09:54:00'
+updatedTime: '2026-03-04 16:07:59'
 ---
-
-
 本文收集mac常用文章。
 
 ## 网络相关命令
@@ -85,6 +83,18 @@ Port 443
 ```
 
 ## 系统设置
+
+### crontab
+
+crontab 是 Linux 系统下的定时任务管理工具，macOS 系统下也有类似的功能。
+
+crontab 文件位于： `/var/at/tabs`
+
+```bash
+crontab -e # 编辑定时任务
+crontab -l # 查看定时任务
+crontab -r # 删除定时任务
+```
 
 ### 减少 dock-hover 延迟
 
