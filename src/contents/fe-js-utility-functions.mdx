@@ -5,7 +5,7 @@ category:
 slug: fe-js-utility-functions
 summary: 汇总平时开发中收集的实用 JavaScript 工具函数。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2026-03-02 14:19:05'
+updatedTime: '2026-03-04 16:18:03'
 ---
 # http2
 
@@ -644,7 +644,7 @@ export function downloadText(content: string, filename: string) {
 }
 ```
 
-# tree
+# tree utils
 
 ## buildTree
 
@@ -674,6 +674,71 @@ export function buildTree(data,key="children"){
 
 ## filterTree
 
+## flattenTree
+
+将树结构拍平为扁平数组。
+
+```ts
+interface FlatNode {
+  id: string;
+  parentId: string | null;
+  childIds: string[];
+}
+
+function flattenTree(tree: DataNode[], parentId: string | null = null): FlatNode[] {
+  const result: FlatNode[] = [];
+  for (const node of tree) {
+    const id = String(node.key);
+    const children = (node.children ?? []) as DataNode[];
+    const childIds = children.map((c) => String(c.key));
+    result.push({ id, parentId, childIds });
+    result.push(...flattenTree(children, id));
+  }
+  return result;
+}
+```
+
+## getAllDescendantIds
+
+根据节点 ID 获取所有子节点 ID。
+
+```ts
+interface FlatNode {
+  id: string;
+  parentId: string | null;
+  childIds: string[];
+}
+
+function getAllDescendantIds(nodeId: string, flatMap: Map<string, FlatNode>): string[] {
+  const node = flatMap.get(nodeId);
+  if (!node || node.childIds.length === 0) return [];
+  const descendants: string[] = [];
+  for (const childId of node.childIds) {
+    descendants.push(childId);
+    descendants.push(...getAllDescendantIds(childId, flatMap));
+  }
+  return descendants;
+}
+```
+
+## getAllAncestorIds
+
+根据节点 ID 获取所有子节点 ID。
+
+```ts
+interface FlatNode {
+  id: string;
+  parentId: string | null;
+  childIds: string[];
+}
+
+function getAllAncestorIds(nodeId: string, flatMap: Map<string, FlatNode>): string[] {
+  const node = flatMap.get(nodeId);
+  if (!node || !node.parentId) return [];
+  return [node.parentId, ...getAllAncestorIds(node.parentId, flatMap)];
+}
+```
+
 根据条件过滤树，子项包含符合条件的子项，则返回其以及其父级。
 
 ```js title="filterTree.ts"
@@ -699,6 +764,10 @@ export function filterTree(treeData, filter, childrenKey = "children") {
   return loop(treeData);
 }
 ```
+
+
+
+# Object Utils
 
 ## isEmptyObject
 
