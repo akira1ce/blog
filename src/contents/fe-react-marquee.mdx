@@ -1,0 +1,322 @@
+---
+title: React Marquee
+category:
+  - Frontend
+slug: fe-react-marquee
+summary: 使用 React 实现跑马灯效果。
+createdTime: '2025-09-26 17:18:11'
+updatedTime: '2026-03-10 10:23:20'
+---
+import ReactMarquee from "@/demos/react-marquee"
+import Preview from '@/components/preview';
+import { Tabs, TabItem } from '@/components/tabs';
+
+<Preview>
+  <ReactMarquee />
+</Preview>
+
+<Tabs>
+  <TabItem label="index.tsx">
+    ```tsx
+    'use client';
+    
+    import { useMarquee } from './hooks/use-marquee';
+    
+    const btnCls = 'bg-fore/3 cursor-pointer rounded-md px-2 py-1';
+    
+    const items = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    
+    const Index = () => {
+      const { trackRef, next, prev, pause, resume } = useMarquee({
+        autoPlay: true,
+        autoPlayStep: 0.3,
+      });
+    
+      return (
+        <div className="w-full overflow-hidden">
+          <div ref={trackRef} className="mb-2 flex whitespace-nowrap">
+            <div className="flex">
+              {items.map((item) => (
+                <span key={item} className="px-4">
+                  Item {item}
+                </span>
+              ))}
+            </div>
+            <div className="flex">
+              {items.map((item) => (
+                <span key={item} className="px-4">
+                  Item {item}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <div className={btnCls} onClick={() => prev(100)}>
+              Prev
+            </div>
+            <div className={btnCls} onClick={() => next(100)}>
+              Next
+            </div>
+            <div className={btnCls} onClick={pause}>
+              Pause
+            </div>
+            <div className={btnCls} onClick={resume}>
+              Resume
+            </div>
+          </div>
+        </div>
+      );
+    };
+    
+    export default Index;
+    
+    ```
+  </TabItem>
+  <TabItem label="hooks/use-marquee.ts">
+    ```ts
+    import { useCallback, useEffect, useRef } from "react";
+    
+    export interface UseMarqueeOptions {
+    	deps?: any[];
+    	/** 是否自动播放 */
+    	autoPlay?: boolean;
+    	/** 自动播放步长 */
+    	autoPlayStep?: number;
+    }
+    
+    /**
+     * useMarquee
+     * @notice trackRef 指向滚动轨道容器，其内部需要包裹一个列表容器。「trackRef -> list -> items」
+     */
+    export function useMarquee(options: UseMarqueeOptions = {}) {
+    	const { deps = [], autoPlay = false, autoPlayStep = 0.3 } = options;
+    
+    	/** 轨道引用 */
+    	const trackRef = useRef<HTMLDivElement>(null);
+    
+    	/** 当前位置 */
+    	const position = useRef(0);
+    	/** 目标位置 */
+    	const target = useRef(0);
+    	/** 列表宽度 */
+    	const listWidth = useRef(0);
+    	/** 动画帧 ID */
+    	const rafId = useRef<number>(0);
+    	/** 是否暂停 */
+    	const paused = useRef(false);
+    
+    	/** 动画函数 */
+    	const animate = useCallback(() => {
+    		const track = trackRef.current;
+    		if (!track) return;
+    
+    		if (autoPlay && !paused.current) {
+    			target.current += autoPlayStep;
+    		}
+    
+    		const diff = target.current - position.current;
+    
+    		position.current += diff * 0.08;
+    
+    		if (Math.abs(diff) < 0.1) {
+    			position.current = target.current;
+    		}
+    
+    		if (position.current >= listWidth.current) {
+    			position.current -= listWidth.current;
+    			target.current -= listWidth.current;
+    		}
+    
+    		if (position.current < 0) {
+    			position.current += listWidth.current;
+    			target.current += listWidth.current;
+    		}
+    
+    		track.style.transform = `translate3d(-${position.current}px,0,0)`;
+    
+    		rafId.current = requestAnimationFrame(animate);
+    	}, []);
+    
+    	/** 测量列表宽度 */
+    	const measure = useCallback(() => {
+    		if (!trackRef.current) return;
+    
+    		const track = trackRef.current;
+    		const list = track.children[0] as HTMLDivElement;
+    
+    		if (!list) {
+    			console.error("has no list element in track element");
+    			listWidth.current = 0;
+    			return;
+    		}
+    
+    		listWidth.current = list.offsetWidth;
+    	}, []);
+    
+    	useEffect(() => {
+    		if (!trackRef.current) return;
+    
+    		const track = trackRef.current;
+    
+    		const resizeObserver = new ResizeObserver(measure);
+    		resizeObserver.observe(track);
+    
+    		measure();
+    		animate();
+    
+    		return () => {
+    			resizeObserver.disconnect();
+    			cancelAnimationFrame(rafId.current);
+    		};
+    	}, deps);
+    
+    	/** 下一项 */
+    	const next = useCallback((step: number) => {
+    		target.current += step;
+    	}, []);
+    
+    	/** 上一项 */
+    	const prev = useCallback((step: number) => {
+    		target.current -= step;
+    	}, []);
+    
+    	/** 暂停 */
+    	const pause = useCallback(() => {
+    		paused.current = true;
+    	}, []);
+    
+    	/** 恢复 */
+    	const resume = useCallback(() => {
+    		paused.current = false;
+    	}, []);
+    
+    	return { trackRef, next, prev, pause, resume };
+    }
+    
+    ```
+  </TabItem>
+</Tabs>
+
+## DOM 结构约定
+
+这个 Hook 对 DOM 结构有一个简单约定：
+
+    trackRef
+     └─ list
+         ├─ item
+         ├─ item
+         └─ item
+
+-   **trackRef**：滚动轨道（通过 `transform` 控制位移）
+-   **list**：实际内容容器
+-   **item**：列表项
+
+通常为了实现 **无缝循环滚动**，会在 DOM 中复制多份 `list`。
+
+## 为什么使用 `useRef` 而不是 `useState`
+
+Hook 内部使用了 `useRef` 来保存动画状态：
+
+``` ts
+const position = useRef(0)
+const target = useRef(0)
+const listWidth = useRef(0)
+```
+
+原因是动画需要 **每一帧更新位置**，如果使用 `useState`，每一帧都会触发 React 重新渲染，性能开销会非常大。
+
+`useRef` 的值变化不会触发组件更新，因此非常适合保存动画状态。
+
+## 动画核心：Lerp 平滑滚动
+
+动画通过 `requestAnimationFrame` 持续执行：
+
+``` ts
+const diff = target.current - position.current
+position.current += diff * 0.08
+```
+
+这是一个经典的 **Lerp（线性插值）** 动画公式：`position += (target - position) * easing`
+
+这样当 `target` 改变时，`position` 会逐渐逼近目标位置，从而形成**平滑滚动效果**。
+
+当差值非常小时，会直接对齐目标值：
+
+``` ts
+if (Math.abs(diff) < 0.1) {
+  position.current = target.current
+}
+```
+
+避免出现无限接近但不结束的问题。
+
+## 无限循环的实现
+
+无限滚动的关键在于 **位置回绕**。
+
+当滚动位置超过一整个列表宽度时：
+
+``` ts
+if (position.current >= listWidth.current) {
+  position.current -= listWidth.current
+  target.current -= listWidth.current
+}
+```
+
+同理也需要处理反向滚动：
+
+``` ts
+if (position.current < 0) {
+  position.current += listWidth.current
+  target.current += listWidth.current
+}
+```
+
+通过这种方式，可以让滚动在视觉上形成 **无缝循环**。
+
+## 自动播放机制
+
+自动播放只需要在每一帧增加 `target`：
+
+``` ts
+if (autoPlay && !paused.current) {
+  target.current += autoPlayStep
+}
+```
+
+`autoPlayStep` 控制滚动速度。
+
+由于动画使用 `requestAnimationFrame` 驱动，因此滚动会保持**稳定的帧率**。
+
+## Resize 自适应
+
+列表宽度可能因为以下原因改变：
+
+-   浏览器窗口 resize
+-   图片加载
+-   字体加载
+
+因此 Hook 使用 `ResizeObserver` 监听尺寸变化：
+
+``` ts
+const resizeObserver = new ResizeObserver(measure)
+resizeObserver.observe(track)
+```
+
+当尺寸变化时重新计算：
+
+``` ts
+listWidth.current = list.offsetWidth
+```
+
+这样可以保证循环逻辑始终正确。
+
+## 性能特点
+
+这个实现的性能开销非常小，原因是整个动画只修改了元素的 `transform`：
+
+``` ts
+track.style.transform = `translate3d(-${position.current}px,0,0)`
+```
+
+`translate3d` 会触发 **GPU 合成层**，不会导致 layout 或 reflow，因此滚动非常流畅。
