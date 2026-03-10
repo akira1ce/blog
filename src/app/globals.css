@@ -139,7 +139,7 @@
     }
     /* Code block styles */
     pre {
-      @apply bg-main border-fore/5 m-0 max-h-screen overflow-auto overflow-x-auto rounded-xl border;
+      @apply bg-main border-fore/5 m-0 max-h-screen overflow-auto overflow-x-auto rounded-xl border shadow-sm;
       font-family: inherit;
       code {
         font-family: inherit;

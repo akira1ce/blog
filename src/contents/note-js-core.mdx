@@ -1,0 +1,315 @@
+---
+title: JavaScript 核心原理
+category:
+  - Notes
+slug: note-js-core
+summary: 深入理解 JavaScript 值传递、作用域、执行上下文与闭包的核心原理。
+createdTime: '2026-03-10 20:00:00'
+updatedTime: '2026-03-10 16:31:13'
+---
+# 值传递
+
+JS 中只有值传递，没有引用传递。
+
+基本数据类型传递的是值的副本，引用数据类型传递的是引用地址的副本。
+
+```js
+// 基本类型：传递值的副本
+let a = 1
+let b = a
+b = 2
+console.log(a) // 1，a 不受影响
+
+// 引用类型：传递引用地址的副本
+let obj1 = { name: 'akira' }
+let obj2 = obj1
+obj2.name = 'ice'
+console.log(obj1.name) // 'ice'，obj1 和 obj2 指向同一块内存
+
+// 但重新赋值不会影响原变量，因为传递的是地址的副本
+function change(o) {
+  o = { name: 'new' } // 重新赋值，只是修改了副本的指向
+}
+change(obj1)
+console.log(obj1.name) // 'ice'，obj1 不受影响
+```
+
+关键区别：引用传递意味着函数内部可以改变外部变量的指向，但 JS 做不到这一点。JS 传递的始终是值，只不过引用类型的"值"是一个内存地址。
+
+# 基本数据类型的不可变性
+
+基本数据类型（`string`、`number`、`boolean`、`null`、`undefined`、`symbol`、`bigint`）是不可变的。
+
+```js
+let str = 'hello'
+str[0] = 'H'
+console.log(str) // 'hello'，字符串不可变
+
+// 看似修改，实际是创建了新值
+let num = 1
+num = num + 1 // 创建了新的数值 2，变量 num 指向新值
+```
+
+对基本数据类型的任何操作都会返回一个新值，而不是修改原值。变量只是对值的引用，重新赋值只是改变了变量的指向。
+
+# 作用域
+
+作用域的本质是**隔离**，限制变量的可访问范围，避免命名冲突。
+
+```js
+// 1. 全局作用域
+var globalVar = 'global' // 全局可访问
+
+// 2. 函数作用域
+function foo() {
+  var functionVar = 'function' // 仅函数内部可访问
+}
+
+// 3. 块级作用域（ES6+）
+{
+  let blockVar = 'block' // 仅代码块内部可访问
+  const PI = 3.14
+}
+```
+
+`var` 没有块级作用域，只有函数作用域；`let` 和 `const` 拥有块级作用域。
+
+# 作用域链
+
+作用域链决定了变量的查找规则：从内到外，逐层查找。
+
+在 Chrome DevTools 中可以观察到四种作用域层级：
+
+| 作用域 | 说明 | 确定时机 |
+| --- | --- | --- |
+| **Global** | 全局对象（`window` / `globalThis`） | 声明时确定 |
+| **Script** | `let` / `const` 声明的顶层变量 | 声明时确定 |
+| **Closure** | 闭包捕获的外层变量 | 声明时确定 |
+| **Local** | 当前函数的局部变量 | 执行时创建 |
+
+除了 Local，其他作用域层级都是在声明时确定的（词法作用域 / 静态作用域）。
+
+- **Local** 也被称为**活动对象**（Activation Object），每次函数执行时动态创建。
+- Global、Script、Closure 属于**变量对象**（Variable Object），在代码声明阶段就已确定。
+
+```js
+let x = 'Script 作用域'
+
+function outer() {
+  let y = 'outer 的 Local'
+
+  function inner() {
+    let z = 'inner 的 Local'
+    // 作用域链：Local(inner) → Closure(outer) → Script → Global
+    console.log(z, y, x)
+  }
+
+  return inner
+}
+
+const fn = outer()
+fn() // inner 执行时，依然可以沿作用域链访问到 y 和 x
+```
+
+# 执行上下文
+
+函数体实际上也是数据，是一个对象，被存储在堆内存中。程序执行过程中，函数体始终存在。
+
+## 执行流程
+
+```
+声明函数 → 执行函数 → 创建执行上下文 → 压入调用栈
+```
+
+每次函数调用都会创建一个**全新的执行上下文**，即使是同一个函数被多次调用。
+
+```js
+function counter() {
+  let count = 0 // 每次调用 counter()，都会创建一个全新的 count
+  return ++count
+}
+
+counter() // 1，创建上下文 A
+counter() // 1，创建上下文 B（与 A 完全独立）
+```
+
+## 调用栈
+
+调用栈（Call Stack）管理执行上下文的生命周期，遵循后进先出（LIFO）原则：
+
+```js
+function a() {
+  b()
+}
+function b() {
+  c()
+}
+function c() {
+  console.log('done')
+}
+
+a()
+
+// 调用栈变化：
+// [Global]
+// [Global, a]
+// [Global, a, b]
+// [Global, a, b, c]  ← 栈顶
+// [Global, a, b]      ← c 执行完毕，出栈
+// [Global, a]
+// [Global]
+```
+
+# 闭包
+
+闭包的本质：**局部数据共享**，也是一种特殊的对象。
+
+闭包是为了在作用域隔离的基础上，实现局部数据的共享。当内部函数引用了外部函数的变量时，即使外部函数已经执行完毕，这些变量依然不会被回收——因为它们被闭包所持有。
+
+```js
+function createCounter() {
+  let count = 0 // 被闭包捕获，不会随 createCounter 执行完毕而销毁
+
+  return {
+    increment() { return ++count },
+    decrement() { return --count },
+    getCount() { return count },
+  }
+}
+
+const counter = createCounter()
+counter.increment() // 1
+counter.increment() // 2
+counter.getCount()  // 2
+
+// increment、decrement、getCount 共享同一个 count
+// 这就是「局部数据共享」
+```
+
+## 闭包的应用
+
+### 模块化
+
+利用闭包实现私有变量和方法，对外暴露公共接口：
+
+```js
+const UserModule = (function () {
+  // 私有数据，外部无法直接访问
+  let users = []
+
+  // 私有方法
+  function generateId() {
+    return Math.random().toString(36).slice(2, 9)
+  }
+
+  // 公共接口
+  return {
+    add(name) {
+      const user = { id: generateId(), name }
+      users.push(user)
+      return user
+    },
+    list() {
+      return [...users] // 返回副本，防止外部修改
+    },
+    count() {
+      return users.length
+    },
+  }
+})()
+
+UserModule.add('akira')
+UserModule.add('ice')
+UserModule.list()  // [{ id: 'xxx', name: 'akira' }, { id: 'xxx', name: 'ice' }]
+UserModule.count() // 2
+// UserModule.users → undefined，私有数据无法直接访问
+```
+
+### 单例模式
+
+利用闭包确保一个类只有一个实例：
+
+```js
+const createSingleton = (function () {
+  let instance = null
+
+  return function (options) {
+    if (!instance) {
+      instance = { ...options, createdAt: Date.now() }
+    }
+    return instance
+  }
+})()
+
+const a = createSingleton({ name: 'app' })
+const b = createSingleton({ name: 'other' })
+console.log(a === b) // true，始终返回同一个实例
+```
+
+# Event Loop
+
+```
+Event Loop
+
+macro task
+  |
+  |-- script
+  |-- setTimeout
+  |-- setInterval
+  |-- I/O
+  |
+  ↓
+
+sync code
+
+  ↓
+
+microtasks
+  |
+  |-- Promise.then
+  |-- queueMicrotask
+  |-- MutationObserver
+  |
+  ↓
+
+render
+
+  ↓
+
+next macro task
+```
+
+> 执行一个宏任务 → 清空所有微任务 → 渲染 → 执行下一个宏任务
+
+```
+1 取一个宏任务 (macrotask)
+
+2 执行宏任务中的同步代码
+
+3 宏任务结束
+
+4 清空所有微任务 (microtask queue)
+
+5 浏览器可能进行渲染
+
+6 进入下一个宏任务
+```
+
+**宏任务：**
+
+•	script（整个 JS 文件）
+•	setTimeout
+•	setInterval
+•	setImmediate（Node）
+•	I/O
+•	MessageChannel
+•	postMessage
+
+**微任务：**
+
+•	Promise.then
+•	Promise.catch
+•	Promise.finally
+•	queueMicrotask
+•	MutationObserver
+•	process.nextTick（Node）
