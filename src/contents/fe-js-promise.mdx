@@ -1,0 +1,159 @@
+---
+title: 手写 Promise
+category:
+  - Frontend
+slug: fe-js-promise
+summary: 手写 Promise 实现。
+createdTime: '2026-03-10 13:50:11'
+updatedTime: '2026-03-10 16:13:35'
+---
+```ts title="promise.ts"
+type State = "pending" | "fulfilled" | "rejected"
+
+const isFunction = (v: any) => typeof v === "function"
+
+export default class XPromise<T = any> {
+  private state: State = "pending"
+  private value: any
+  private fulfillReactions: Function[] = []
+  private rejectReactions: Function[] = []
+
+  constructor(
+    executor: (
+      resolve: (value?: any) => void,
+      reject: (reason?: any) => void
+    ) => void
+  ) {
+    const resolve = (value: any) => {
+      this.resolvePromise(value)
+    }
+
+    const reject = (reason: any) => {
+      this.transition("rejected", reason)
+    }
+
+    try {
+      executor(resolve, reject)
+    } catch (err) {
+      reject(err)
+    }
+  }
+
+  private transition(state: State, value: any) {
+    if (this.state !== "pending") return
+
+    this.state = state
+    this.value = value
+
+    queueMicrotask(() => {
+      const reactions =
+        state === "fulfilled"
+          ? this.fulfillReactions
+          : this.rejectReactions
+
+      reactions.forEach(fn => fn())
+      this.fulfillReactions = []
+      this.rejectReactions = []
+    })
+  }
+
+  private resolvePromise(x: any) {
+    if (x === this) {
+      return this.transition(
+        "rejected",
+        new TypeError("Promise cycle")
+      )
+    }
+
+    if (x instanceof XPromise) {
+      return x.then(
+        v => this.resolvePromise(v),
+        r => this.transition("rejected", r)
+      )
+    }
+
+    if (x && (typeof x === "object" || typeof x === "function")) {
+      let then
+
+      try {
+        then = (x as any).then
+      } catch (err) {
+        return this.transition("rejected", err)
+      }
+
+      if (isFunction(then)) {
+        let called = false
+
+        try {
+          then.call(
+            x,
+            (y: any) => {
+              if (called) return
+              called = true
+              this.resolvePromise(y)
+            },
+            (r: any) => {
+              if (called) return
+              called = true
+              this.transition("rejected", r)
+            }
+          )
+        } catch (err) {
+          if (!called) {
+            this.transition("rejected", err)
+          }
+        }
+
+        return
+      }
+    }
+
+    this.transition("fulfilled", x)
+  }
+
+  then(onFulfilled?: Function, onRejected?: Function) {
+    return new XPromise((resolve, reject) => {
+      const fulfilledTask = () => {
+        try {
+          if (!isFunction(onFulfilled)) {
+            resolve(this.value)
+          } else {
+            resolve(onFulfilled(this.value))
+          }
+        } catch (err) {
+          reject(err)
+        }
+      }
+
+      const rejectedTask = () => {
+        try {
+          if (!isFunction(onRejected)) {
+            reject(this.value)
+          } else {
+            resolve(onRejected(this.value))
+          }
+        } catch (err) {
+          reject(err)
+        }
+      }
+
+      if (this.state === "pending") {
+        this.fulfillReactions.push(fulfilledTask)
+        this.rejectReactions.push(rejectedTask)
+      }
+
+      if (this.state === "fulfilled") {
+        queueMicrotask(fulfilledTask)
+      }
+
+      if (this.state === "rejected") {
+        queueMicrotask(rejectedTask)
+      }
+    })
+  }
+
+  catch(onRejected: Function) {
+    return this.then(undefined, onRejected)
+  }
+}
+```
