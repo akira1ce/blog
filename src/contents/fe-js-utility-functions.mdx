@@ -5,7 +5,7 @@ category:
 slug: fe-js-utility-functions
 summary: 汇总平时开发中收集的实用 JavaScript 工具函数。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2026-03-04 16:20:59'
+updatedTime: '2026-03-10 13:49:47'
 ---
 # http2
 
@@ -736,3 +736,62 @@ export const isEmptyObject = (obj: any): boolean => {
 };
 ```
 
+# vaildate
+
+## file-type
+
+```ts title="validate-file-type.ts"
+/**
+ * 支持的文件类型枚举
+ */
+export type SupportedFileType = 'pdf' | 'word' | 'excel' | 'image' | 'zip' | 'ppt';
+
+/**
+ * 文件类型到MIME类型的映射
+ */
+const FILE_TYPE_MIME_MAP: Record<SupportedFileType, string[]> = {
+  pdf: ['application/pdf'],
+  word: ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+  excel: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+  image: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
+  zip: ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed'],
+  ppt: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+};
+
+/**
+ * 验证文件类型是否符合要求
+ * @param file 要验证的文件对象
+ * @param allowedTypes 允许的文件类型数组，例如 ['pdf'] 或 ['pdf', 'word', 'excel']
+ * @returns 如果文件类型符合要求返回 true，否则返回 false
+ *
+ * @example
+ * ```ts
+ * const file = event.target.files[0];
+ * if (!validateFileType(file, ['pdf'])) {
+ *   message.error('只支持PDF格式的文件！');
+ *   return false;
+ * }
+ * ```
+ */
+export function validateFileType(file: File, allowedTypes: SupportedFileType[]): boolean {
+  if (!file) {
+    return false;
+  }
+
+  if (!allowedTypes || allowedTypes.length === 0) {
+    return false;
+  }
+
+  // 收集所有允许的MIME类型
+  const allowedMimeTypes: string[] = [];
+  allowedTypes.forEach(type => {
+    const mimeTypes = FILE_TYPE_MIME_MAP[type];
+    if (mimeTypes) {
+      allowedMimeTypes.push(...mimeTypes);
+    }
+  });
+
+  // 检查文件类型是否在允许的列表中
+  return allowedMimeTypes.includes(file.type);
+}
+```
