@@ -1,0 +1,198 @@
+---
+title: Some thoughts of react
+category:
+  - Notes
+slug: notes-react-thoughts
+summary: 记录对于 React 的一些思考。
+updatedTime: '2026-03-16 14:34:32'
+createdTime: '2026-03-16 14:25:31'
+---
+# react-scheduler
+
+结论：React 的调度可以理解为 **Scheduler 调度 root render 任务，render 过程在 workLoop 中被拆成 fiber work unit 执行，通过时间片控制实现可中断**。
+
+整体结构可以按三层理解。
+
+## 第一层：更新产生  
+
+```
+setState
+ → enqueueUpdate (加入 fiber.updateQueue)
+ → scheduleUpdateOnFiber
+ → ensureRootIsScheduled
+ → Scheduler.scheduleCallback
+```
+
+这一步不会立即 diff，只是：
+
+1）记录 update  
+2）确保 root 被调度
+
+Scheduler 队列（小顶堆）里的任务其实是：
+
+```
+performConcurrentWorkOnRoot(root)
+```
+
+也就是 **root render 任务**。
+
+## 第二层：root render 调度  
+
+Scheduler 通过宏任务触发执行：
+
+```
+performWorkUntilDeadline
+ → flushWork
+ → performConcurrentWorkOnRoot(root)
+```
+
+进入 render：
+
+```
+renderRootConcurrent
+ → workLoopConcurrent
+```
+
+此时才真正开始 diff。
+
+## 第三层：fiber work 拆分  
+
+`workLoopConcurrent` 会把 root diff 拆成一个个 fiber 单元：
+
+```
+while (workInProgress !== null && !shouldYield()) {
+  performUnitOfWork(fiber)
+}
+```
+
+每一次循环就是一个 **fiber work unit**：
+
+```
+beginWork
+reconcileChildren
+completeWork
+```
+
+执行顺序类似 DFS：
+
+```
+A → B → D → E → C
+```
+
+通过指针推进：
+
+```
+workInProgress
+```
+
+## 时间切片机制  
+
+React 每执行一段时间就判断：
+
+```
+shouldYield()
+```
+
+如果时间片耗尽：
+
+```
+break
+```
+
+此时会保存：
+
+```
+workInProgress
+workInProgressRoot
+```
+
+下一轮调度继续执行：
+
+```
+resume workLoop
+```
+
+因此 render 可以：
+
+```
+暂停 → 恢复
+```
+
+而不是重新从 root 开始 diff。
+
+## Scheduler 与 Fiber 的职责分工  
+
+Scheduler：
+
+```
+taskQueue (min heap)
+  root render tasks
+```
+
+作用：
+
+```
+决定哪个 root render 先执行
+```
+
+Fiber：
+
+```
+workLoop
+  fiber unit work
+```
+
+作用：
+
+```
+把 render 拆成可中断的执行单元
+```
+
+## 中断粒度  
+
+可中断：
+
+```
+fiber 之间
+```
+
+不可中断：
+
+```
+单个 fiber work unit
+```
+
+以及：
+
+```
+commit phase
+```
+
+React 结构是：
+
+```
+render phase  (可中断)
+commit phase  (同步)
+```
+
+DOM mutation 一定是一次性完成。
+
+## 总结
+
+最终可以把整个流程压缩成一条链路：
+
+```
+setState
+ → enqueueUpdate
+ → scheduleUpdateOnFiber
+ → Scheduler.scheduleCallback
+ → performConcurrentWorkOnRoot
+ → renderRootConcurrent
+ → workLoop
+ → performUnitOfWork (fiber)
+ → commit
+```
+
+一句话总结：
+
+**Scheduler 用小顶堆调度 root render；Fiber 把 render 拆成 unit work；workLoop + shouldYield + 指针保存实现可中断恢复。**
