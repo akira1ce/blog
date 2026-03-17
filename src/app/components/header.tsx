@@ -9,7 +9,7 @@ const Header = () => {
     { label: 'Categories', href: '/categories' },
   ];
   return (
-    <div className="bg-main sticky top-0 z-10 flex h-20 items-center justify-around">
+    <div className="bg-main/50 sticky top-0 z-10 flex h-20 items-center justify-around backdrop-blur-sm">
       <div className="m-auto flex w-3/4 items-center justify-between">
         <div className="flex items-center gap-4">
           {/* logo */}
