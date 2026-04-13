@@ -5,7 +5,7 @@ category:
 slug: fe-js-utility-functions
 summary: 汇总平时开发中收集的实用 JavaScript 工具函数。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2026-03-10 13:49:47'
+updatedTime: '2026-04-13 12:07:13'
 ---
 # http2
 
@@ -397,6 +397,8 @@ export const formatTimeToChatTime = (time: Date) => {
 
 antd-table 列合并
 
+单列合并：
+
 ```ts title="mergeTableCol.ts"
 export function mergeTableCol<T extends { rowSpan?: number }>(array: T[] = [], key: keyof T): T[] {
   // 先按 key 排序，保证表格相邻
@@ -425,6 +427,53 @@ export function mergeTableCol<T extends { rowSpan?: number }>(array: T[] = [], k
     }
   });
 
+  return result;
+}
+```
+
+多列合并：
+
+```ts title="mergeTableCol.ts"
+function mergeTableCol<T extends Record<string, any>>(
+  array: T[] = [],
+  config: {
+    [K in keyof T]?: boolean;  // 哪些列需要合并
+  }
+): T[] {
+  const mergeKeys = Object.keys(config).filter(key => config[key as keyof T]) as (keyof T)[];
+  
+  if (mergeKeys.length === 0) return [...array];
+  
+  const result: T[] = array.map(item => ({
+    ...item,
+    rowSpanMap: {}
+  }));
+  
+  // 为每个需要合并的字段独立计算 rowSpan
+  mergeKeys.forEach(key => {
+    let i = 0;
+    while (i < result.length) {
+      let j = i;
+      // 找连续相同的行
+      while (j + 1 < result.length && result[j][key] === result[j + 1][key]) {
+        j++;
+      }
+      
+      const groupLength = j - i + 1;
+      
+      // 设置该列的 rowSpan
+      for (let k = i; k <= j; k++) {
+        if (k === i) {
+          result[k].rowSpanMap![key] = groupLength;
+        } else {
+          result[k].rowSpanMap![key] = 0;
+        }
+      }
+      
+      i = j + 1;
+    }
+  });
+  
   return result;
 }
 ```
