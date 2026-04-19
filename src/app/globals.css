@@ -101,7 +101,7 @@
 
   /* 代码块样式 */
   figure {
-    @apply bg-card relative rounded-xl border p-4;
+    @apply bg-card relative my-4 rounded-xl border p-4;
     /* 代码块标题 */
     figcaption {
       @apply m-0 mb-2;
