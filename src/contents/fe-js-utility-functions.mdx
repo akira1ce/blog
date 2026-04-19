@@ -5,42 +5,48 @@ category:
 slug: fe-js-utility-functions
 summary: 汇总平时开发中收集的实用 JavaScript 工具函数。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2026-04-13 12:07:13'
+updatedTime: '2026-04-19 15:52:49'
 ---
 # http2
 
 ```ts title="http2.ts"
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { getToken } from "./auth";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
+import { getToken } from './auth';
 
 // 扩展 AxiosRequestConfig 以支持自定义属性
 export interface RequestOptions {
-	retry?: number; // 重试次数
-	retryDelay?: number; // 重试延迟(ms)
-	cache?: boolean; // 是否开启缓存
-	cacheTime?: number; // 缓存时间(ms)
-	cancelPrevious?: boolean; // 是否取消上一次同名请求
-	keys?: string[]; // 自定义 key 计算参数，传入后根据数组内容计算 key
-	debounce?: number; // 防抖延迟时间(ms)，在指定时间内重复请求只执行最后一次
-	debounceKey?: string; // 自定义防抖 key，不传则根据请求参数自动生成
+  retry?: number; // 重试次数
+  retryDelay?: number; // 重试延迟(ms)
+  cache?: boolean; // 是否开启缓存
+  cacheTime?: number; // 缓存时间(ms)
+  cancelPrevious?: boolean; // 是否取消上一次同名请求
+  keys?: string[]; // 自定义 key 计算参数，传入后根据数组内容计算 key
+  debounce?: number; // 防抖延迟时间(ms)，在指定时间内重复请求只执行最后一次
+  debounceKey?: string; // 自定义防抖 key，不传则根据请求参数自动生成
 }
 
 // 内部使用的 Config 类型（包含 Axios 内部属性 + 自定义属性 + 内部状态）
 interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig, RequestOptions {
-	__retryCount?: number; // 内部记录当前重试次数
-	__requestId?: number; // 内部记录请求 ID，用于避免竞态条件
+  __retryCount?: number; // 内部记录当前重试次数
+  __requestId?: number; // 内部记录请求 ID，用于避免竞态条件
 }
 
 // 缓存数据结构
 interface CacheItem {
-	data: any;
-	expire: number;
+  data: any;
+  expire: number;
 }
 
 // 存储取消函数和请求 ID
 interface PendingItem {
-	cancel: (reason?: string) => void;
-	requestId: number;
+  cancel: (reason?: string) => void;
+  requestId: number;
 }
 
 const pendingMap = new Map<string, PendingItem>(); // 存储取消函数
@@ -48,8 +54,8 @@ const cacheMap = new Map<string, CacheItem>(); // 存储缓存数据
 
 // 防抖相关数据结构
 interface DebounceItem {
-	timer: ReturnType<typeof setTimeout>;
-	resolvers: Array<{ resolve: (value: any) => void; reject: (reason: any) => void }>;
+  timer: ReturnType<typeof setTimeout>;
+  resolvers: Array<{ resolve: (value: any) => void; reject: (reason: any) => void }>;
 }
 const debounceMap = new Map<string, DebounceItem>(); // 存储防抖定时器
 
@@ -57,190 +63,196 @@ const debounceMap = new Map<string, DebounceItem>(); // 存储防抖定时器
 let requestIdCounter = 0;
 
 // 生成唯一的 Request Key
-const generateReqKey = (config: InternalAxiosRequestConfig | AxiosRequestConfig, keys?: string[]): string => {
-	// 如果传入了自定义 keys，根据数组内容计算 key
-	if (keys && keys.length > 0) {
-		const { method, url, params, data } = config;
-		const keyParts: string[] = [method || "", url || ""];
+const generateReqKey = (
+  config: InternalAxiosRequestConfig | AxiosRequestConfig,
+  keys?: string[],
+): string => {
+  // 如果传入了自定义 keys，根据数组内容计算 key
+  if (keys && keys.length > 0) {
+    const { method, url, params, data } = config;
+    const keyParts: string[] = [method || '', url || ''];
 
-		keys.forEach((key) => {
-			// 优先从 params 中取值，再从 data 中取值
-			const paramValue = params?.[key];
-			const dataValue = data?.[key];
-			const value = paramValue !== undefined ? paramValue : dataValue;
-			keyParts.push(`${key}:${JSON.stringify(value)}`);
-		});
+    keys.forEach((key) => {
+      // 优先从 params 中取值，再从 data 中取值
+      const paramValue = params?.[key];
+      const dataValue = data?.[key];
+      const value = paramValue !== undefined ? paramValue : dataValue;
+      keyParts.push(`${key}:${JSON.stringify(value)}`);
+    });
 
-		return keyParts.join("&");
-	}
+    return keyParts.join('&');
+  }
 
-	// 默认计算方式
-	const { method, url, params, data } = config;
-	return [method, url, JSON.stringify(params), JSON.stringify(data)].join("&");
+  // 默认计算方式
+  const { method, url, params, data } = config;
+  return [method, url, JSON.stringify(params), JSON.stringify(data)].join('&');
 };
 
 const service: AxiosInstance = axios.create({
-	// baseURL: '/api',
-	timeout: 10000,
+  // baseURL: '/api',
+  timeout: 10000,
 });
 
 /**
  * 请求拦截器
  */
 service.interceptors.request.use(
-	(config: InternalAxiosRequestConfig) => {
-		// 强制转换为我们自定义的 Config 类型以便访问自定义属性
-		const customConfig = config as CustomInternalAxiosRequestConfig;
-		const requestKey = generateReqKey(customConfig, customConfig.keys);
+  (config: InternalAxiosRequestConfig) => {
+    // 强制转换为我们自定义的 Config 类型以便访问自定义属性
+    const customConfig = config as CustomInternalAxiosRequestConfig;
+    const requestKey = generateReqKey(customConfig, customConfig.keys);
 
-		// === A. 先处理缓存 (仅 GET) ===
-		// 缓存检查应该在取消逻辑之前，避免不必要的取消
-		if (customConfig.cache && customConfig.method === "get") {
-			const cachedItem = cacheMap.get(requestKey);
+    // === A. 先处理缓存 (仅 GET) ===
+    // 缓存检查应该在取消逻辑之前，避免不必要的取消
+    if (customConfig.cache && customConfig.method === 'get') {
+      const cachedItem = cacheMap.get(requestKey);
 
-			if (cachedItem) {
-				const { data, expire } = cachedItem;
-				if (expire > Date.now()) {
-					// 缓存命中，清除可能存在的 pending 状态
-					pendingMap.delete(requestKey);
+      if (cachedItem) {
+        const { data, expire } = cachedItem;
+        if (expire > Date.now()) {
+          // 缓存命中，清除可能存在的 pending 状态
+          pendingMap.delete(requestKey);
 
-					// 使用 adapter 模拟响应，阻断实际网络请求
-					customConfig.adapter = (): Promise<AxiosResponse> => {
-						return Promise.resolve({
-							data,
-							status: 200,
-							statusText: "OK",
-							headers: {},
-							config: config,
-							request: {},
-						});
-					};
+          // 使用 adapter 模拟响应，阻断实际网络请求
+          customConfig.adapter = (): Promise<AxiosResponse> => {
+            return Promise.resolve({
+              data,
+              status: 200,
+              statusText: 'OK',
+              headers: {},
+              config: config,
+              request: {},
+            });
+          };
 
-					return customConfig;
-				}
-			}
-		}
+          return customConfig;
+        }
+      }
+    }
 
-		// === B. 处理竞态和取消 ===
-		// 默认为 false，需要取消时主动传入 true（避免不同组件实例调用相同 API 时互相取消）
-		const shouldCancelPrevious = customConfig.cancelPrevious ?? false;
+    // === B. 处理竞态和取消 ===
+    // 默认为 false，需要取消时主动传入 true（避免不同组件实例调用相同 API 时互相取消）
+    const shouldCancelPrevious = customConfig.cancelPrevious ?? false;
 
-		// 生成当前请求的唯一 ID
-		const currentRequestId = ++requestIdCounter;
-		customConfig.__requestId = currentRequestId;
+    // 生成当前请求的唯一 ID
+    const currentRequestId = ++requestIdCounter;
+    customConfig.__requestId = currentRequestId;
 
-		// 检查是否有正在发送的相同请求
-		const existingPending = pendingMap.get(requestKey);
+    // 检查是否有正在发送的相同请求
+    const existingPending = pendingMap.get(requestKey);
 
-		if (shouldCancelPrevious && existingPending) {
-			if (existingPending.requestId < currentRequestId) {
-				// 存在更旧的请求，取消它
-				existingPending.cancel("Canceled due to newer request");
-			} else if (existingPending.requestId > currentRequestId) {
-				// 存在更新的请求，当前请求（旧请求）应该自己取消
-				// 直接抛出取消错误，阻止发送请求
-				return Promise.reject({ isCanceled: true, message: "Canceled because newer request exists" }) as any;
-			}
-		}
+    if (shouldCancelPrevious && existingPending) {
+      if (existingPending.requestId < currentRequestId) {
+        // 存在更旧的请求，取消它
+        existingPending.cancel('Canceled due to newer request');
+      } else if (existingPending.requestId > currentRequestId) {
+        // 存在更新的请求，当前请求（旧请求）应该自己取消
+        // 直接抛出取消错误，阻止发送请求
+        return Promise.reject({
+          isCanceled: true,
+          message: 'Canceled because newer request exists',
+        }) as any;
+      }
+    }
 
-		// 创建新的 AbortController
-		const controller = new AbortController();
-		customConfig.signal = controller.signal;
+    // 创建新的 AbortController
+    const controller = new AbortController();
+    customConfig.signal = controller.signal;
 
-		// 更新 pendingMap（只有当前请求是最新的时候）
-		if (!existingPending || existingPending.requestId < currentRequestId) {
-			pendingMap.set(requestKey, {
-				cancel: (msg) => controller.abort(msg),
-				requestId: currentRequestId,
-			});
-		}
+    // 更新 pendingMap（只有当前请求是最新的时候）
+    if (!existingPending || existingPending.requestId < currentRequestId) {
+      pendingMap.set(requestKey, {
+        cancel: (msg) => controller.abort(msg),
+        requestId: currentRequestId,
+      });
+    }
 
-		/* 添加 Authorization 头部 */
-		const token = getToken();
-		if (token) {
-			customConfig.headers.Authorization = `Bearer ${token}`;
-		}
+    /* 添加 Authorization 头部 */
+    const token = getToken();
+    if (token) {
+      customConfig.headers.Authorization = `Bearer ${token}`;
+    }
 
-		/* akira：额外的处理...（如添加自定义头部等） */
+    /* akira：额外的处理...（如添加自定义头部等） */
 
-		return customConfig;
-	},
-	(error: AxiosError) => Promise.reject(error)
+    return customConfig;
+  },
+  (error: AxiosError) => Promise.reject(error),
 );
 
 // --- 响应拦截器 ---
 service.interceptors.response.use(
-	(response: AxiosResponse) => {
-		const config = response.config as CustomInternalAxiosRequestConfig;
-		const requestKey = generateReqKey(config, config.keys);
+  (response: AxiosResponse) => {
+    const config = response.config as CustomInternalAxiosRequestConfig;
+    const requestKey = generateReqKey(config, config.keys);
 
-		// 只有当 requestId 匹配时才移除，避免删除新请求的取消函数
-		const pending = pendingMap.get(requestKey);
-		if (pending && pending.requestId === config.__requestId) {
-			pendingMap.delete(requestKey);
-		}
+    // 只有当 requestId 匹配时才移除，避免删除新请求的取消函数
+    const pending = pendingMap.get(requestKey);
+    if (pending && pending.requestId === config.__requestId) {
+      pendingMap.delete(requestKey);
+    }
 
-		// === C. 写入缓存 (仅 GET) ===
-		if (config.cache && config.method === "get") {
-			cacheMap.set(requestKey, {
-				data: response.data,
-				expire: Date.now() + (config.cacheTime || 60000), // 默认 60秒
-			});
-		}
+    // === C. 写入缓存 (仅 GET) ===
+    if (config.cache && config.method === 'get') {
+      cacheMap.set(requestKey, {
+        data: response.data,
+        expire: Date.now() + (config.cacheTime || 60000), // 默认 60秒
+      });
+    }
 
-		/* akira：额外的处理...（如处理业务错误码等） */
+    /* akira：额外的处理...（如处理业务错误码等） */
 
-		// 注意：这里直接返回 response.data，意味着 request 返回的类型不再是 AxiosResponse
-		return response.data;
-	},
-	async (error: AxiosError) => {
-		const config = error.config as CustomInternalAxiosRequestConfig | undefined;
+    // 注意：这里直接返回 response.data，意味着 request 返回的类型不再是 AxiosResponse
+    return response.data;
+  },
+  async (error: AxiosError) => {
+    const config = error.config as CustomInternalAxiosRequestConfig | undefined;
 
-		// 如果没有 config (极少见)，直接抛出
-		if (!config) return Promise.reject(error);
+    // 如果没有 config (极少见)，直接抛出
+    if (!config) return Promise.reject(error);
 
-		const requestKey = generateReqKey(config, config.keys);
+    const requestKey = generateReqKey(config, config.keys);
 
-		// 只有当 requestId 匹配时才移除，避免删除新请求的取消函数
-		const pending = pendingMap.get(requestKey);
-		if (pending && pending.requestId === config.__requestId) {
-			pendingMap.delete(requestKey);
-		}
+    // 只有当 requestId 匹配时才移除，避免删除新请求的取消函数
+    const pending = pendingMap.get(requestKey);
+    if (pending && pending.requestId === config.__requestId) {
+      pendingMap.delete(requestKey);
+    }
 
-		// 如果是取消请求，直接抛出，不重试
-		if (axios.isCancel(error)) {
-			// console.log('Request canceled:', error.message);
-			// 抛出特定的对象以便下游识别
-			return Promise.reject({ isCanceled: true, message: error.message });
-		}
+    // 如果是取消请求，直接抛出，不重试
+    if (axios.isCancel(error)) {
+      // console.log('Request canceled:', error.message);
+      // 抛出特定的对象以便下游识别
+      return Promise.reject({ isCanceled: true, message: error.message });
+    }
 
-		// === D. 处理重试 ===
-		const retryCount = config.retry || 0;
+    // === D. 处理重试 ===
+    const retryCount = config.retry || 0;
 
-		// 初始化内部重试计数器
-		config.__retryCount = config.__retryCount || 0;
+    // 初始化内部重试计数器
+    config.__retryCount = config.__retryCount || 0;
 
-		// 检查是否超过重试次数
-		if (config.__retryCount >= retryCount) {
-			return Promise.reject(error);
-		}
+    // 检查是否超过重试次数
+    if (config.__retryCount >= retryCount) {
+      return Promise.reject(error);
+    }
 
-		// 增加重试计数
-		config.__retryCount += 1;
+    // 增加重试计数
+    config.__retryCount += 1;
 
-		// 创建延时 Promise
-		const backoff = new Promise<void>((resolve) => {
-			setTimeout(() => {
-				resolve();
-			}, config.retryDelay || 1000);
-		});
+    // 创建延时 Promise
+    const backoff = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, config.retryDelay || 1000);
+    });
 
-		console.log(`Retrying request... (${config.__retryCount}/${retryCount})`);
+    console.log(`Retrying request... (${config.__retryCount}/${retryCount})`);
 
-		// 延时后重新发起请求
-		await backoff;
-		return service(config);
-	}
+    // 延时后重新发起请求
+    await backoff;
+    return service(config);
+  },
 );
 
 // 联合类型：AxiosRequestConfig 加上我们的自定义属性
@@ -252,72 +264,72 @@ export type RequestConfig = AxiosRequestConfig & RequestOptions;
  * @param config 配置项
  */
 export function request<T = any>(url: string, config: RequestConfig = {}): Promise<T> {
-	// 1. 构造完整的配置对象
-	const finalConfig = {
-		url,
-		...config,
-		// 默认不取消上一次同名请求，需要时主动传入 true
-		cancelPrevious: config.cancelPrevious ?? false,
-	};
+  // 1. 构造完整的配置对象
+  const finalConfig = {
+    url,
+    ...config,
+    // 默认不取消上一次同名请求，需要时主动传入 true
+    cancelPrevious: config.cancelPrevious ?? false,
+  };
 
-	// 2. 如果配置了防抖，则使用防抖逻辑
-	if (config.debounce && config.debounce > 0) {
-		// 优先使用自定义 debounceKey，否则根据 url + method 生成（忽略变化的参数）
-		const debounceKey = config.debounceKey || `${finalConfig.method || "get"}&${url}`;
+  // 2. 如果配置了防抖，则使用防抖逻辑
+  if (config.debounce && config.debounce > 0) {
+    // 优先使用自定义 debounceKey，否则根据 url + method 生成（忽略变化的参数）
+    const debounceKey = config.debounceKey || `${finalConfig.method || 'get'}&${url}`;
 
-		return new Promise<T>((resolve, reject) => {
-			const existing = debounceMap.get(debounceKey);
+    return new Promise<T>((resolve, reject) => {
+      const existing = debounceMap.get(debounceKey);
 
-			if (existing) {
-				// 清除之前的定时器，但保留之前的 resolvers
-				clearTimeout(existing.timer);
-				// 把当前请求的 resolve/reject 加入等待队列
-				existing.resolvers.push({ resolve, reject });
-			} else {
-				// 首次请求，创建新的 resolvers 数组
-				debounceMap.set(debounceKey, {
-					timer: null as any,
-					resolvers: [{ resolve, reject }],
-				});
-			}
+      if (existing) {
+        // 清除之前的定时器，但保留之前的 resolvers
+        clearTimeout(existing.timer);
+        // 把当前请求的 resolve/reject 加入等待队列
+        existing.resolvers.push({ resolve, reject });
+      } else {
+        // 首次请求，创建新的 resolvers 数组
+        debounceMap.set(debounceKey, {
+          timer: null as any,
+          resolvers: [{ resolve, reject }],
+        });
+      }
 
-			// 获取最新的 item（可能是刚创建的，也可能是已存在的）
-			const item = debounceMap.get(debounceKey)!;
+      // 获取最新的 item（可能是刚创建的，也可能是已存在的）
+      const item = debounceMap.get(debounceKey)!;
 
-			// 设置新的定时器，使用最新的 finalConfig
-			item.timer = setTimeout(() => {
-				const resolvers = item.resolvers;
-				debounceMap.delete(debounceKey);
+      // 设置新的定时器，使用最新的 finalConfig
+      item.timer = setTimeout(() => {
+        const resolvers = item.resolvers;
+        debounceMap.delete(debounceKey);
 
-				// 发起请求，结果分发给所有等待者
-				service(finalConfig as AxiosRequestConfig)
-					.then((data) => {
-						resolvers.forEach((r) => r.resolve(data));
-					})
-					.catch((err) => {
-						resolvers.forEach((r) => r.reject(err));
-					});
-			}, config.debounce);
-		});
-	}
+        // 发起请求，结果分发给所有等待者
+        service(finalConfig as AxiosRequestConfig)
+          .then((data) => {
+            resolvers.forEach((r) => r.resolve(data));
+          })
+          .catch((err) => {
+            resolvers.forEach((r) => r.reject(err));
+          });
+      }, config.debounce);
+    });
+  }
 
-	return service(finalConfig as AxiosRequestConfig) as Promise<T>;
+  return service(finalConfig as AxiosRequestConfig) as Promise<T>;
 }
 
 export function get<T = any>(url: string, config: RequestConfig = {}): Promise<T> {
-	return request<T>(url, { ...config, method: "get" });
+  return request<T>(url, { ...config, method: 'get' });
 }
 
 export function del<T = any>(url: string, config: RequestConfig = {}): Promise<T> {
-	return request<T>(url, { ...config, method: "delete" });
+  return request<T>(url, { ...config, method: 'delete' });
 }
 
 export function post<T = any>(url: string, data: any, config: RequestConfig = {}): Promise<T> {
-	return request<T>(url, { ...config, method: "post", data });
+  return request<T>(url, { ...config, method: 'post', data });
 }
 
 export function put<T = any>(url: string, data: any, config: RequestConfig = {}): Promise<T> {
-	return request<T>(url, { ...config, method: "put", data });
+  return request<T>(url, { ...config, method: 'put', data });
 }
 
 /**
@@ -326,17 +338,16 @@ export function put<T = any>(url: string, data: any, config: RequestConfig = {})
  * @param config 配置项 (需要包含 method, params 等以生成正确的 key)
  */
 export function cancelRequest(url: string, config: RequestConfig = {}): void {
-	// 构造一个临时的 config 对象用于生成 Key
-	const tempConfig = { url, ...config };
-	const key = generateReqKey(tempConfig as AxiosRequestConfig, config.keys);
+  // 构造一个临时的 config 对象用于生成 Key
+  const tempConfig = { url, ...config };
+  const key = generateReqKey(tempConfig as AxiosRequestConfig, config.keys);
 
-	const pending = pendingMap.get(key);
-	if (pending) {
-		pending.cancel("Manual cancel");
-		pendingMap.delete(key);
-	}
+  const pending = pendingMap.get(key);
+  if (pending) {
+    pending.cancel('Manual cancel');
+    pendingMap.delete(key);
+  }
 }
-
 ```
 
 # clsx & twMerge
@@ -344,8 +355,8 @@ export function cancelRequest(url: string, config: RequestConfig = {}): void {
 结合 clsx 和 twMerge。
 
 ```ts title="cn.ts"
-import { ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(...inputs));
@@ -437,20 +448,20 @@ export function mergeTableCol<T extends { rowSpan?: number }>(array: T[] = [], k
 function mergeTableCol<T extends Record<string, any>>(
   array: T[] = [],
   config: {
-    [K in keyof T]?: boolean;  // 哪些列需要合并
-  }
+    [K in keyof T]?: boolean; // 哪些列需要合并
+  },
 ): T[] {
-  const mergeKeys = Object.keys(config).filter(key => config[key as keyof T]) as (keyof T)[];
-  
+  const mergeKeys = Object.keys(config).filter((key) => config[key as keyof T]) as (keyof T)[];
+
   if (mergeKeys.length === 0) return [...array];
-  
-  const result: T[] = array.map(item => ({
+
+  const result: T[] = array.map((item) => ({
     ...item,
-    rowSpanMap: {}
+    rowSpanMap: {},
   }));
-  
+
   // 为每个需要合并的字段独立计算 rowSpan
-  mergeKeys.forEach(key => {
+  mergeKeys.forEach((key) => {
     let i = 0;
     while (i < result.length) {
       let j = i;
@@ -458,9 +469,9 @@ function mergeTableCol<T extends Record<string, any>>(
       while (j + 1 < result.length && result[j][key] === result[j + 1][key]) {
         j++;
       }
-      
+
       const groupLength = j - i + 1;
-      
+
       // 设置该列的 rowSpan
       for (let k = i; k <= j; k++) {
         if (k === i) {
@@ -469,11 +480,11 @@ function mergeTableCol<T extends Record<string, any>>(
           result[k].rowSpanMap![key] = 0;
         }
       }
-      
+
       i = j + 1;
     }
   });
-  
+
   return result;
 }
 ```
@@ -502,7 +513,12 @@ interface BuildTreeOptions {
 
 /* 构建树 */
 export const buildTree = <T extends FlatItem>(list: T[], options: BuildTreeOptions = {}): T[] => {
-  const { idKey = 'id', parentIdKey = 'parentId', childrenKey = 'children', rootParentId = null } = options;
+  const {
+    idKey = 'id',
+    parentIdKey = 'parentId',
+    childrenKey = 'children',
+    rootParentId = null,
+  } = options;
 
   const grouped = groupBy(list, parentIdKey);
 
@@ -524,14 +540,14 @@ export const buildTree = <T extends FlatItem>(list: T[], options: BuildTreeOptio
 常规防抖
 
 ```ts title="debounce.ts"
-function debounce( callback, delay = 300 ){
-    let timer;
-    return ( ...args ) => {
-      clearTimeout( timer );
-      timer = setTimeout( () => {
-        callback( ...args );
-      }, delay );
-    }
+function debounce(callback, delay = 300) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
 }
 ```
 
@@ -551,24 +567,24 @@ function debounce( callback, delay = 300 ){
 这种方式后续的操作都需要在回调中处理。
 
 ```ts title="debounce.ts"
-import { debounce } from "lodash-es";
+import { debounce } from 'lodash-es';
 
 const test = (callback) => {
-  console.log("test");
-  
-  let returnValue = 100
+  console.log('test');
+
+  let returnValue = 100;
   callback && callback(returnValue);
-  
-  return returnValue
+
+  return returnValue;
 };
 
 const debouncedTest = debounce(test, 100);
 
 console.log(
-  "return",
+  'return',
   debouncedTest((value) => {
     console.log(value);
-  })
+  }),
 );
 ```
 
@@ -577,39 +593,41 @@ console.log(
 将含有返回值的函数当做异步函数对待，通过 promise 承接返回值。
 
 ```ts title="debounceWithReturn.ts"
-function debounceWithReturn( callback, delay ) {
+function debounceWithReturn(callback, delay) {
   let timer;
 
-  return( ...args ) => {
-    return new Promise( ( resolve, reject ) => {
+  return (...args) => {
+    return new Promise((resolve, reject) => {
       clearTimeout(timer);
-      timer = setTimeout( () => {
-          try {
-            let output = callback(...args);
-            resolve( output );
-          } catch ( err ) {
-            reject( err );
-          }
-      }, delay );
-    })
-
-  }
+      timer = setTimeout(() => {
+        try {
+          let output = callback(...args);
+          resolve(output);
+        } catch (err) {
+          reject(err);
+        }
+      }, delay);
+    });
+  };
 }
 
 // demo
-const func =  val => {
-  console.log(val)
-  return val
+const func = (val) => {
+  console.log(val);
+  return val;
 };
 
 const func1 = debounce(func, 1000);
 
 const a = () => {
   let t;
-  t =  func1(1);
-  t =  func1(2);
-  t =  func1(3);
-  console.log('akira', t.then(res => console.log('then', res)));
+  t = func1(1);
+  t = func1(2);
+  t = func1(3);
+  console.log(
+    'akira',
+    t.then((res) => console.log('then', res)),
+  );
 };
 
 a();
@@ -622,28 +640,54 @@ a();
 将拍平的数组转换为树状结构
 
 ```js title="buildTree.ts"
-export function buildTree(data,key="children"){
-  const result = []
-  const map = {}
-  data.forEach((value,index)=>{
-    map[value.id] = value
-  })
-  data.forEach((value,index)=>{
-    if(value.pid){
+export function buildTree(data, key = 'children') {
+  const result = [];
+  const map = {};
+  data.forEach((value, index) => {
+    map[value.id] = value;
+  });
+  data.forEach((value, index) => {
+    if (value.pid) {
       const parent = map[value.pid];
-      if(!parent.hasOwnProperty(key)){
-        parent[key] = []
+      if (!parent.hasOwnProperty(key)) {
+        parent[key] = [];
       }
-      parent[key].push(value)
-    }else{
-      result.push(value)
+      parent[key].push(value);
+    } else {
+      result.push(value);
     }
-  })
+  });
   return result;
 }
 ```
 
 ## filterTree
+
+根据条件过滤树，子项包含符合条件的子项，则返回其以及其父级。
+
+```js title="filterTree.ts"
+export function filterTree(treeData, filter, childrenKey = 'children') {
+  const loop = (data) => {
+    return data
+      .map((item) => {
+        const children = item[childrenKey];
+        const hasMatched = filter(item);
+        const hasMatchingChildren = children && children.some((child) => loop([child])?.length > 0);
+
+        if (hasMatched || hasMatchingChildren) {
+          return {
+            ...item,
+            [childrenKey]: children ? loop(children) : undefined,
+          };
+        }
+
+        return null;
+      })
+      .filter((item) => item !== null);
+  };
+  return loop(treeData);
+}
+```
 
 ## flattenTree
 
@@ -710,34 +754,6 @@ function getAllAncestorIds(nodeId: string, flatMap: Map<string, FlatNode>): stri
 }
 ```
 
-根据条件过滤树，子项包含符合条件的子项，则返回其以及其父级。
-
-```js title="filterTree.ts"
-export function filterTree(treeData, filter, childrenKey = "children") {
-  const loop = (data) => {
-    return data
-      .map((item) => {
-        const children = item[childrenKey];
-        const hasMatched = filter(item);
-        const hasMatchingChildren = children && children.some((child) => loop([child])?.length > 0);
-
-        if (hasMatched || hasMatchingChildren) {
-          return {
-            ...item,
-            [childrenKey]: children ? loop(children) : undefined,
-          };
-        }
-
-        return null;
-      })
-      .filter((item) => item !== null);
-  };
-  return loop(treeData);
-}
-```
-
-
-
 # Object Utils
 
 ## isEmptyObject
@@ -766,7 +782,7 @@ export const isEmptyObject = (obj: any): boolean => {
   }
 
   // 递归检查每个属性
-  return keys.every(key => {
+  return keys.every((key) => {
     const value = obj[key];
 
     // null 或 undefined 视为空
@@ -789,7 +805,7 @@ export const isEmptyObject = (obj: any): boolean => {
 
 ## file-type
 
-```ts title="validate-file-type.ts"
+````ts title="validate-file-type.ts"
 /**
  * 支持的文件类型枚举
  */
@@ -800,11 +816,20 @@ export type SupportedFileType = 'pdf' | 'word' | 'excel' | 'image' | 'zip' | 'pp
  */
 const FILE_TYPE_MIME_MAP: Record<SupportedFileType, string[]> = {
   pdf: ['application/pdf'],
-  word: ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-  excel: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+  word: [
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ],
+  excel: [
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ],
   image: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
   zip: ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed'],
-  ppt: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+  ppt: [
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  ],
 };
 
 /**
@@ -833,7 +858,7 @@ export function validateFileType(file: File, allowedTypes: SupportedFileType[]):
 
   // 收集所有允许的MIME类型
   const allowedMimeTypes: string[] = [];
-  allowedTypes.forEach(type => {
+  allowedTypes.forEach((type) => {
     const mimeTypes = FILE_TYPE_MIME_MAP[type];
     if (mimeTypes) {
       allowedMimeTypes.push(...mimeTypes);
@@ -843,4 +868,4 @@ export function validateFileType(file: File, allowedTypes: SupportedFileType[]):
   // 检查文件类型是否在允许的列表中
   return allowedMimeTypes.includes(file.type);
 }
-```
+````

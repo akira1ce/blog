@@ -1,0 +1,64 @@
+---
+title: 懒加载图片组件
+category:
+  - Components
+slug: comp-lazy-img
+summary: 实现一个懒加载图片组件，支持自定义 placeholder 和 rootMargin。
+createdTime: '2026-04-18 12:00:00'
+updatedTime: '2026-04-18 16:20:32'
+---
+# 懒加载图片组件
+
+支持自定义 placeholder 和 rootMargin。
+
+```tsx title="lazy-img.tsx"
+import { useEffect, useRef, useState } from 'react';
+
+export default function LazyImage({
+  src,
+  alt = '',
+  placeholder,
+  rootMargin = '100px',
+  ...rest
+}) {
+  const imgRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el) return;
+
+    // 降级：不支持 IO
+    if (!('IntersectionObserver' in window)) {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin }
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [rootMargin]);
+
+  return (
+    <img
+      ref={imgRef}
+      src={visible && !error ? src : placeholder}
+      alt={alt}
+      onError={() => setError(true)}
+      loading="lazy" // 原生兜底
+      {...rest}
+    />
+  );
+}
+```
