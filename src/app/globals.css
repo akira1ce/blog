@@ -91,10 +91,10 @@
   @apply prose prose-gray dark:prose-invert mx-auto max-w-4xl p-6;
 
   /* 标题样式 */
-  @apply prose-h1:text-2xl;
-  @apply prose-h2:text-xl;
-  @apply prose-h3:text-lg;
-  @apply prose-h4:text-base;
+  @apply prose-h1:text-2xl prose-h1:my-5;
+  @apply prose-h2:text-xl prose-h2:my-4;
+  @apply prose-h3:text-lg prose-h3:my-3;
+  @apply prose-h4:text-base prose-h4:my-2;
 
   /* 引用块优化 */
   @apply prose-blockquote:border-l-4 prose-blockquote:border-l-blue-400;
