@@ -5,7 +5,7 @@ category:
 slug: dev-mac-commands
 summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升效率的小技巧合集。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2026-03-04 16:07:59'
+updatedTime: '2026-05-26 10:08:00'
 ---
 本文收集mac常用文章。
 
@@ -19,8 +19,13 @@ updatedTime: '2026-03-04 16:07:59'
 | 重启网络服务 | `sudo ifconfig en0 down && sudo ifconfig en0 up` |
 | 查询网络端口对应的设备名称 | `networksetup -listallhardwareports` |
 | 网路连通性测试（telnet平替） | `nc -vz github.com 22` |
+| 强制关闭 DNS 服务进程 | `sudo killall -9 mDNSResponder` |
 
-> open-connect 无法连接、卡住大概率：dns 缓存问题，清空所有的 dns 或者 将 dns 设置为 8.8.8.8 即可。
+> open-connect 无法连接、卡住大概率，dns 缓存问题，解决方案：
+>
+> 1. 清空所有的 dns 或者 将 dns 设置为 8.8.8.8 即可
+>
+> 2. `sudo killall -9 mDNSResponder` 强制重启 DNS
 
 ## Shell相关命令
 
