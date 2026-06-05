@@ -35,7 +35,7 @@ export const PostCard = ({ post, variant = 'card', className, ...restProps }: Po
       className={cn(
         'bg-card hover:bg-card-hover border-border-color group relative flex flex-col gap-2 rounded-xl border p-5 transition-all duration-300',
         getAccentBorderClass(accent),
-        'border-t-2 border-r border-b border-l',
+        'border-t border-r border-b border-l',
         className,
       )}
       {...restProps}

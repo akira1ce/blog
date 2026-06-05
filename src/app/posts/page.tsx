@@ -7,7 +7,7 @@ const Page = async () => {
   const posts = await getAllPosts();
   return (
     <>
-      <div className="mb-2 text-center text-3xl font-bold tracking-tight">Posts</div>
+      <div className="mt-4 mb-2 text-center text-3xl font-bold tracking-tight">Posts</div>
       <div className="bg-accent-amber mx-auto mb-12 h-0.5 w-16" />
       {/* posts */}
       <FadeInUp>
