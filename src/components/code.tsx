@@ -31,7 +31,7 @@ const Code = ({ children, className, ...props }: CodeProps) => {
       <div className="absolute top-2 right-4">
         <button
           onClick={handleCopy}
-          className="cursor-pointer rounded-xl text-xs"
+          className="cursor-pointer rounded-xl text-xs text-fore/40 transition-colors hover:text-accent-violet"
           aria-label="Copy code"
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}

@@ -22,7 +22,7 @@ const Page = () => {
             />
 
             <h1 className="text-fore text-4xl font-bold">
-              👋 Hi, I'm <span className="text-blue-500">Akira1ce</span>
+              👋 Hi, I'm <span className="text-accent-sky font-semibold">Akira1ce</span>
             </h1>
             <p className="text-fore/80 text-xl">a web developer 🧑‍💻</p>
           </div>

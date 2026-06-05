@@ -87,7 +87,7 @@ export const TableOfContents = ({
   }
 
   return (
-    <nav className={`border-fore/10 border-l p-4 ${className}`} aria-label="Table of contents">
+    <nav className={`border-border-color border-l p-4 ${className}`} aria-label="Table of contents">
       <div className="text-fore/70 mb-3 text-sm font-semibold tracking-wide uppercase">目录</div>
       <div className="space-y-1">
         {headings.map((heading) => {
@@ -115,7 +115,7 @@ export const TableOfContents = ({
               </div>
               {isActive && (
                 <motion.div
-                  className="bg-fore absolute top-0 -left-4 h-full w-0.5"
+                  className="bg-accent-amber absolute top-0 -left-4 h-full w-0.5"
                   layoutId="toc-active-indicator"
                 ></motion.div>
               )}

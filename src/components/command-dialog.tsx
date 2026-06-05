@@ -93,7 +93,7 @@ export const CommandDialog = (props: CommandDialogProps) => {
         >
           {/* Backdrop */}
           <motion.div
-            className="bg-main/50 absolute inset-0 backdrop-blur-sm"
+            className="bg-main/60 absolute inset-0 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -104,7 +104,7 @@ export const CommandDialog = (props: CommandDialogProps) => {
           <motion.div
             ref={dialogRef}
             className={cn(
-              'bg-main/60 border-fore/10 shadow-fore/10 relative overflow-y-auto rounded-xl border p-4 shadow-2xl',
+              'bg-card/95 border-border-color shadow-fore/10 relative overflow-y-auto rounded-xl border p-4 shadow-2xl backdrop-blur-xl',
             )}
             role="dialog"
             aria-modal="true"

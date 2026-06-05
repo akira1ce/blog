@@ -35,7 +35,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <div className="my-20">
-        <div className="text-fore mb-4 text-center text-3xl font-bold underline">
+        <div className="text-fore mb-4 text-center text-3xl font-bold tracking-tight">
           {matter?.title}
         </div>
         <div className="text-fore/50 mb-4 flex items-center justify-center gap-2 text-sm">
@@ -47,7 +47,7 @@ export default async function Page({ params }: Props) {
           {matter?.category.map((item) => (
             <Link
               key={item}
-              className="text-fore/60 bg-card border-fore/5 rounded-xl border px-2 py-1 text-xs"
+              className="text-fore/60 bg-card border-border-color rounded-xl border px-2 py-1 text-xs transition-colors hover:bg-card-hover"
               href={`/categories/${item}`}
             >
               #{item}
