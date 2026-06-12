@@ -133,3 +133,18 @@ account    required       pam_opendirectory.so
 password   required       pam_opendirectory.so
 session    required       pam_opendirectory.so
 ```
+
+## npm 相关命令
+
+| 功能 | 命令 |
+|------|------|
+| 发布公开 npm 包 | `npm publish --access public` |
+| 登录 npm 账号 | `npm login` |
+| 查看全局 `node_modules` 安装目录 | `npm root -g` |
+| 查看当前登录的 npm 用户 | `npm whoami` |
+| 查看当前项目已安装依赖 | `npm list` |
+| 查看全局安装的包 | `npm list -g --depth=0` |
+| 查看包信息 | `npm view <package>` |
+| 设置 npm 源 | `npm config set registry <registry-url>` |
+| 查看 npm 缓存目录 | `npm config get cache` |
+| 清理 npm 缓存 | `npm cache clean --force` |
