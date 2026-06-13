@@ -52,7 +52,7 @@ export const PostCard = ({ post, variant = 'card', className, ...restProps }: Po
               </span>
             ))
           : null}
-        <span className="ml-auto">{post.createdDate?.slice(0, 10)}</span>
+        <span className="ml-auto">{post.updatedDate?.slice(0, 10)}</span>
       </div>
     </div>
   );
