@@ -1,0 +1,187 @@
+---
+title: Zustand 最佳实践
+category:
+  - Frontend
+slug: fe-zustand
+summary: Zustand 轻量状态管理：state 与 action 解耦、Immer 中间件、useShallow 避免额外 rerender 的最佳实践。
+createdTime: '2026-06-17 15:06:11'
+updatedTime: '2026-06-17 15:06:11'
+---
+# Zustand 最佳实践（v5）
+
+## State 与 Action 解耦
+
+**不要**把 action 写在 `create()` 里面，用 `store.setState` 在外部定义。
+
+```ts
+// ❌ 差：action 和 state 耦合在 store 内部
+const useStore = create((set) => ({
+  count: 0,
+  increment: () => set((s) => ({ count: s.count + 1 })),
+}));
+```
+
+```ts
+// ✅ 好：action 外部定义，零依赖，可 tree-shake
+import { createWithImmer } from "@/utils/zustand";
+
+const useStore = createWithImmer(() => ({ count: 0 }));
+const set = useStore.setState;
+
+export const storeActions = {
+  increment: () =>
+    set((draft) => {
+      draft.count += 1;
+    }),
+  decrement: () =>
+    set((draft) => {
+      draft.count -= 1;
+    }),
+};
+```
+
+**好处：**
+
+- Action 是纯函数，不依赖 React hook，可在组件外、测试、Node 环境直接调用
+- Store 文件只关心 state shape，关注点分离
+- 天然支持 code-splitting 和 tree-shaking
+
+## Immer 中间件 — 可变写法，不可变结果
+
+复杂嵌套 state 用 Immer 中间件，避免展开地狱：
+
+```ts
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+
+const createWithImmer = <T>(fn: () => T) => create(immer(fn));
+
+// 直接 mutate draft，Immer 负责生成不可变拷贝
+set((draft) => {
+  draft.user.profile.name = "new name";
+  draft.items[0].count += 1;
+});
+```
+
+## 避免额外 Rerender — 两种武器
+
+### 自动 selector 工厂
+
+为 store 的每个字段自动生成 selector，按需订阅单个字段：
+
+```ts
+import { create, StoreApi, UseBoundStore } from "zustand";
+
+type WithSelectors<S> = S extends { getState: () => infer T }
+  ? S & { use: { [K in keyof T]: () => T[K] } }
+  : never;
+
+const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(_store: S) => {
+  const store = _store as WithSelectors<typeof _store>;
+  store.use = {} as any;
+
+  for (const k of Object.keys(store.getState())) {
+    store.use[k] = () => store((s) => s[k as keyof typeof s]);
+  }
+
+  return store;
+};
+```
+
+**使用：**
+
+```ts
+const store = createSelectors(createWithImmer(() => ({ count: 0, name: "" })));
+
+// 单字段订阅 — 只在该字段变化时 rerender
+const count = store.use.count();
+const name = store.use.name();
+
+// Action 不受影响
+store.setState((d) => { d.count += 1; });
+```
+
+### `useShallow` — 多字段订阅
+
+当你需要**同时取多个字段**时，默认 selector 每次返回新对象会导致 rerender。用 `useShallow` 做浅比较：
+
+```ts
+import { useShallow } from "zustand/react/shallow";
+
+// ❌ 每次 render 都产生新对象 { count, name }，必 rerender
+const { count, name } = useStore((s) => ({ count: s.count, name: s.name }));
+
+// ✅ 浅比较：只有 count 或 name 实际变化才 rerender
+const { count, name } = useStore(
+  useShallow((s) => ({ count: s.count, name: s.name }))
+);
+```
+
+**场景对比：**
+
+| 场景          | 方案                                                |
+| ------------- | --------------------------------------------------- |
+| 只取 1 个字段 | `store.use.field()`                                 |
+| 取 2-3 个字段 | `useShallow((s) => ({ a: s.a, b: s.b }))`           |
+| Action 调用   | 直接用外部 `storeActions.xxx()`，**不触发任何订阅** |
+| 取全部 state  | `useShallow(useStore, s => s)`                      |
+
+## 完整示例
+
+```ts
+// stores/use-counter.ts
+import { createSelectors, createWithImmer } from "@/utils/zustand";
+
+export const useCounter = createSelectors(
+  createWithImmer(() => ({ count: 0, step: 1 }))
+);
+
+const set = useCounter.setState;
+
+export const counterActions = {
+  increment: () => set((d) => { d.count += d.step; }),
+  decrement: () => set((d) => { d.count -= d.step; }),
+  reset:    () => set({ count: 0, step: 1 }),
+};
+```
+
+```tsx
+// 组件中
+import { useShallow } from "zustand/react/shallow";
+import { useCounter, counterActions } from "@/stores/use-counter";
+
+function CounterDisplay() {
+  // 单字段 — 用 selector
+  const count = useCounter.use.count();
+
+  return <span>{count}</span>;
+}
+
+function CounterControls() {
+  // 多字段 — 用 useShallow
+  const { count, step } = useCounter(
+    useShallow((s) => ({ count: s.count, step: s.step }))
+  );
+
+  // Action 外部调用，无订阅开销
+  return (
+    <div>
+      <span>{count} / step: {step}</span>
+      <button onClick={counterActions.increment}>+</button>
+      <button onClick={counterActions.decrement}>-</button>
+    </div>
+  );
+}
+```
+
+## 总结
+
+| 实践              | 要点                                                                |
+| ----------------- | ------------------------------------------------------------------- |
+| **Action 外置**   | 用 `store.setState` 外部定义，解耦、可 tree-shake、可在任何环境调用 |
+| **Immer 中间件**  | 嵌套 state 用 mutable 写法，代码清晰                                |
+| **自动 selector** | 单字段订阅，最细粒度的 rerender 控制                                |
+| **useShallow**    | 多字段订阅时做浅比较，避免对象引用导致的无意义 rerender             |
+| **Action 不订阅** | Action 不经过 hook，调用 action 本身不触发任何组件订阅              |
+
+核心原则：**组件只订阅它需要的，action 不参与渲染。**

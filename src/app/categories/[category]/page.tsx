@@ -27,7 +27,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <h1 className="mb-2 text-center text-3xl font-bold tracking-tight">{category}</h1>
+      <h1 className="mt-4 mb-2 text-center text-3xl font-bold tracking-tight">{category}</h1>
       <div className="bg-accent-sky mx-auto mb-12 h-0.5 w-16" />
       <FadeInUp>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
