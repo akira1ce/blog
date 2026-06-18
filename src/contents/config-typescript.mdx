@@ -5,10 +5,8 @@ category:
 slug: config-typescript
 summary: TypeScript 配置文件 tsconfig.json 的常用选项及最佳实践。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2025-11-12 15:59:45'
+updatedTime: '2026-06-18 17:31:20'
 ---
-
-
 
 | 配置项            | 说明                                                   |
 | ----------------- | ------------------------------------------------------ |
@@ -46,6 +44,43 @@ updatedTime: '2025-11-12 15:59:45'
     "paths": {
       "@/*": ["src/*"]
     }
+  }
+}
+```
+
+# global.d.ts
+
+```ts title="global.d.ts"
+// 图片类型声明
+declare module "*.png";
+declare module "*.jpg";
+declare module "*.jpeg";
+declare module "*.gif";
+declare module "*.svg";
+declare module "*.webp";
+
+// 库类型声明 (有些垃圾库没有类型声明)
+declare module "cn-lib";
+
+// react css
+import type * as CSS from 'csstype';
+ 
+declare module 'csstype' {
+  interface Properties {
+    // Add a missing property
+    WebkitRocketLauncher?: string;
+ 
+    // Add a CSS Custom Property
+    '--theme-color'?: 'black' | 'white';
+ 
+    // Allow namespaced CSS Custom Properties
+    [index: `--theme-${string}`]: any;
+ 
+    // Allow any CSS Custom Properties
+    [index: `--${string}`]: any;
+ 
+    // ...or allow any other property
+    [index: string]: any;
   }
 }
 ```
