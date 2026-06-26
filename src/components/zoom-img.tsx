@@ -19,26 +19,29 @@ const ZoomImg = (props: ZoomImgProps) => {
 
   useEventListener('scroll', () => open && setOpen(false));
 
+  const isBrowser = typeof document !== 'undefined';
+
   return (
     <>
-      {createPortal(
-        <>
-          {open && (
-            <div
-              className="bg-main/90 fixed inset-0 z-20 flex h-screen w-screen items-center justify-center overflow-hidden"
-              onClick={() => setOpen(false)}
-            >
-              <motion.img
-                {...props}
-                className={cn(imgCls, 'w-2/3 cursor-zoom-out')}
-                layoutId={id}
+      {isBrowser &&
+        createPortal(
+          <>
+            {open && (
+              <div
+                className="bg-main/90 fixed inset-0 z-20 flex h-screen w-screen items-center justify-center overflow-hidden"
                 onClick={() => setOpen(false)}
-              />
-            </div>
-          )}
-        </>,
-        document.body,
-      )}
+              >
+                <motion.img
+                  {...props}
+                  className={cn(imgCls, 'w-2/3 cursor-zoom-out')}
+                  layoutId={id}
+                  onClick={() => setOpen(false)}
+                />
+              </div>
+            )}
+          </>,
+          document.body,
+        )}
       <motion.img
         {...props}
         className={cn(imgCls, 'cursor-zoom-in')}
