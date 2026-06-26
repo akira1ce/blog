@@ -21,12 +21,8 @@ updatedTime: '2026-05-26 10:08:00'
 | 网路连通性测试（telnet平替） | `nc -vz github.com 22` |
 | 强制关闭 DNS 服务进程 | `sudo killall -9 mDNSResponder` |
 | 强制将指定的网络接口（en0）设置为通过 DHCP 自动获取 IP 地址 | `sudo ipconfig set en0 DHCP` |
-
-> open-connect 无法连接、卡住大概率，dns 缓存问题，解决方案：
->
-> 1. 清空所有的 dns 或者 将 dns 设置为 8.8.8.8 即可
->
-> 2. `sudo killall -9 mDNSResponder` 强制重启 DNS
+| 重置 DNS 为自动获取 | `sudo networksetup -setdnsservers Wi-Fi Empty` |
+| 查看当前 DNS | `networksetup -getdnsservers Wi-Fi` |
 
 ## Shell相关命令
 
