@@ -365,6 +365,23 @@ export const cn = (...inputs: ClassValue[]) => {
 
 # formatter
 
+## removeEmpty
+
+移除对象种空字段
+
+```ts
+export const removeEmpty = (obj: any) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => {
+      if (value == null) return false;
+      if (typeof value === "string") return value.trim() !== "";
+      if (Array.isArray(value)) return value.length > 0;
+      return true;
+    }),
+  );
+}
+```
+
 ## formatTimeToChatTime
 
 时间转换
