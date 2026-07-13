@@ -6,8 +6,11 @@ const Page = async () => {
   const categories = await getCategories();
   return (
     <>
-      <div className="mt-4 mb-2 text-center text-3xl font-bold tracking-tight">Categories</div>
-      <div className="bg-accent-violet mx-auto mb-12 h-0.5 w-16" />
+      {/* categories */}
+      <div className="p-8">
+        <div className="text-center text-3xl font-bold tracking-tight">Categories</div>
+        <div className="bg-accent-amber mx-auto h-0.5 w-16" />
+      </div>
       <div className="flex flex-wrap gap-4">
         {categories.map((category, index) => (
           <FadeInUp key={category.name} delay={index * 0.05}>

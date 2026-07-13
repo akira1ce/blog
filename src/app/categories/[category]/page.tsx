@@ -27,10 +27,12 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <h1 className="mt-4 mb-2 text-center text-3xl font-bold tracking-tight">{category}</h1>
-      <div className="bg-accent-sky mx-auto mb-12 h-0.5 w-16" />
+      <div className="p-8">
+        <div className="text-center text-3xl font-bold tracking-tight">{category}</div>
+        <div className="bg-accent-amber mx-auto h-0.5 w-16" />
+      </div>
       <FadeInUp>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5">
           {posts.map((post) => (
             <Link key={post.slug} href={`/posts/${post.slug}`}>
               <PostCard post={post} />

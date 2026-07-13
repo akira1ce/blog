@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="bg-main w-full antialiased">
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
-          <main className="mx-auto max-w-5xl px-6 pb-24 md:px-8">{children}</main>
+          <main className="mx-auto max-w-3xl px-6 pb-24 md:px-8">{children}</main>
         </ThemeProvider>
       </body>
     </html>
