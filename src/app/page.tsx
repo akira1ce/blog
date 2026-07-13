@@ -39,9 +39,9 @@ const Page = async () => {
           <div className="bg-accent-amber h-px w-24" />
 
           <p className="text-fore/70 max-w-2xl text-base leading-relaxed">
-            I&apos;m a web developer passionate about building delightful user experiences.
-            I enjoy exploring the boundaries of frontend technology, writing clean code, and
-            sharing what I learn along the way.
+            I&apos;m a web developer passionate about building delightful user experiences. I enjoy
+            exploring the boundaries of frontend technology, writing clean code, and sharing what I
+            learn along the way.
           </p>
         </section>
       </FadeInUp>
@@ -62,7 +62,7 @@ const Page = async () => {
                 View all →
               </Link>
             </div>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5">
               {recentPosts.map((post) => (
                 <Link key={post.slug} href={`/posts/${post.slug}`}>
                   <PostCard post={post} />
@@ -72,23 +72,6 @@ const Page = async () => {
           </section>
         </FadeInUp>
       )}
-
-      {/* ─── Section 3: Projects ─── */}
-      <FadeInUp delay={0.5}>
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <span className="text-fore/40 text-xs font-semibold tracking-widest uppercase">
-              Open Source
-            </span>
-            <div className="bg-border-color h-px flex-1" />
-          </div>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {projects.map((project) => (
-              <ProjectCard key={project.name} project={project} />
-            ))}
-          </div>
-        </section>
-      </FadeInUp>
     </div>
   );
 };
