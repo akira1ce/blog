@@ -28,7 +28,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <div className="p-8">
-        <div className="text-center text-3xl font-bold tracking-tight">{category}</div>
+        <div className="mb-2 text-center text-3xl font-bold tracking-tight">{category}</div>
         <div className="bg-accent-amber mx-auto h-0.5 w-16" />
       </div>
       <FadeInUp>
