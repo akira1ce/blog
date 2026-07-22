@@ -34,7 +34,11 @@ export default async function Page({ params }: Props) {
       <FadeInUp>
         <div className="grid grid-cols-1 gap-5">
           {posts.map((post) => (
-            <Link key={post.slug} href={`/posts/${post.slug}`}>
+            <Link
+              key={post.slug}
+              href={`/posts/${post.slug}`}
+              className="group rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--accent-sky)] focus-visible:outline-none"
+            >
               <PostCard post={post} />
             </Link>
           ))}

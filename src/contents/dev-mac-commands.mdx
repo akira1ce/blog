@@ -7,12 +7,13 @@ summary: 整理日常开发中在 macOS 系统下常用的一些命令，提升�
 createdTime: '2025-07-26 15:06:11'
 updatedTime: '2026-05-26 10:08:00'
 ---
+
 本文收集mac常用文章。
 
 ## 网络相关命令
 
-| 功能 | 命令  |
-|------|------|
+| 功能 | 命令 |
+| --- | --- |
 | 查看本机IP | `ifconfig \| grep "inet " \| grep -v 127.0.0.1` |
 | 关闭网络服务 | `networksetup -setairportpower en0 off` |
 | 重置DNS | `sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder` |
@@ -27,28 +28,28 @@ updatedTime: '2026-05-26 10:08:00'
 ## Shell相关命令
 
 | 功能 | 命令 |
-|------|------|
+| --- | --- |
 | 查看当前shell | `echo $SHELL` |
 | 查看当前shell的版本 | `echo $SHELL_VERSION` |
 | 查看当前shell的类型 | `echo $SHELL_TYPE` |
 | 同步时间 | `sudo sntp -sS pool.ntp.org` |
+| 下载最新的 macOS 安装程序 | `softwareupdate --fetch-full-installer --full-installer-version 27.0` |
 
 ## brew相关命令
 
-| 功能 | 命令 |
-|------|------|
-| 更新brew | `brew update` |
-| 更新brew包 | `brew upgrade` |
-| 清理brew缓存 | `brew cleanup` |
-| 查看依赖关系 | `brew deps --installed` |
+| 功能           | 命令                       |
+| -------------- | -------------------------- |
+| 更新brew       | `brew update`              |
+| 更新brew包     | `brew upgrade`             |
+| 清理brew缓存   | `brew cleanup`             |
+| 查看依赖关系   | `brew deps --installed`    |
 | 清理brew包缓存 | `brew cleanup --prune=all` |
-| 清理无用依赖 | `brew autoremove` |
-
+| 清理无用依赖   | `brew autoremove`          |
 
 ## Git相关命令
 
-| 功能 | 命令 |
-|------|------|
+| 功能         | 命令                                    |
+| ------------ | --------------------------------------- |
 | 忽略证书错误 | `yarn config set "strict-ssl" false -g` |
 
 ### Github connnect error
@@ -108,11 +109,11 @@ killall Dock
 
 ## tar 相关命令
 
-| 功能 | 命令 |
-|------|------|
-| 压缩文件 | `tar -czvf filename.tar.gz directory/` |
-| 解压文件 | `tar -xzvf filename.tar.gz` |
-| 查看压缩文件内容 | `tar -tzvf filename.tar.gz` |
+| 功能             | 命令                                   |
+| ---------------- | -------------------------------------- |
+| 压缩文件         | `tar -czvf filename.tar.gz directory/` |
+| 解压文件         | `tar -xzvf filename.tar.gz`            |
+| 查看压缩文件内容 | `tar -tzvf filename.tar.gz`            |
 
 > 涉及到大量文件压缩会很慢，可以考虑不压缩直接打包。
 >
@@ -132,15 +133,15 @@ session    required       pam_opendirectory.so
 
 ## npm 相关命令
 
-| 功能 | 命令 |
-|------|------|
-| 发布公开 npm 包 | `npm publish --access public` |
-| 登录 npm 账号 | `npm login` |
-| 查看全局 `node_modules` 安装目录 | `npm root -g` |
-| 查看当前登录的 npm 用户 | `npm whoami` |
-| 查看当前项目已安装依赖 | `npm list` |
-| 查看全局安装的包 | `npm list -g --depth=0` |
-| 查看包信息 | `npm view <package>` |
-| 设置 npm 源 | `npm config set registry <registry-url>` |
-| 查看 npm 缓存目录 | `npm config get cache` |
-| 清理 npm 缓存 | `npm cache clean --force` |
+| 功能                             | 命令                                     |
+| -------------------------------- | ---------------------------------------- |
+| 发布公开 npm 包                  | `npm publish --access public`            |
+| 登录 npm 账号                    | `npm login`                              |
+| 查看全局 `node_modules` 安装目录 | `npm root -g`                            |
+| 查看当前登录的 npm 用户          | `npm whoami`                             |
+| 查看当前项目已安装依赖           | `npm list`                               |
+| 查看全局安装的包                 | `npm list -g --depth=0`                  |
+| 查看包信息                       | `npm view <package>`                     |
+| 设置 npm 源                      | `npm config set registry <registry-url>` |
+| 查看 npm 缓存目录                | `npm config get cache`                   |
+| 清理 npm 缓存                    | `npm cache clean --force`                |

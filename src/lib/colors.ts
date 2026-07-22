@@ -26,15 +26,10 @@ export function getAccentForCategory(category: string): AccentColor {
 }
 
 /**
- * Get the Tailwind text color class for a given accent color.
+ * Get the CSS custom-property reference for a given accent color.
+ * Returned as `var(--accent-*)` so it can drive an inline style; this avoids
+ * Tailwind's JIT dropping dynamically-built `*-accent-${x}` class names.
  */
-export function getAccentTextClass(accent: AccentColor): string {
-  return `text-accent-${accent}`;
-}
-
-/**
- * Get the Tailwind border color class for a given accent color.
- */
-export function getAccentBorderClass(accent: AccentColor): string {
-  return `border-accent-${accent}`;
+export function getAccentVar(accent: AccentColor): string {
+  return `var(--accent-${accent})`;
 }
