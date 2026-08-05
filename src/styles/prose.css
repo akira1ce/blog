@@ -1,0 +1,66 @@
+/* Custom prose styles */
+.prose-custom {
+  @apply prose prose-gray dark:prose-invert mx-auto max-w-4xl p-6;
+  font-family: 'LXGW WenKai', sans-serif;
+
+  /* 标题样式 — editorial type scale */
+  @apply prose-h1:text-3xl prose-h1:my-8 prose-h1:font-bold prose-h1:tracking-tight;
+  @apply prose-h2:text-2xl prose-h2:my-6 prose-h2:font-bold;
+  @apply prose-h3:text-xl prose-h3:my-4 prose-h3:font-semibold;
+  @apply prose-h4:text-lg prose-h4:my-3 prose-h4:font-semibold;
+
+  /* 段落 — comfortable reading line-height */
+  @apply prose-p:leading-relaxed;
+
+  /* 引用块优化 */
+  @apply prose-blockquote:border-l-4 prose-blockquote:border-l-accent-amber prose-blockquote:not-italic;
+
+  /* 代码块样式 */
+  figure {
+    @apply bg-card/40 border-border-color relative my-4 rounded-xl border border-dashed p-4;
+    /* 代码块标题 */
+    figcaption {
+      @apply m-0 mb-2;
+    }
+    /* Code block styles */
+    pre {
+      @apply m-0 max-h-screen overflow-auto bg-transparent p-0;
+      font-family: inherit;
+      code {
+        font-family: inherit;
+      }
+    }
+  }
+
+  /* tabs-wrapper */
+  .tabs-wrapper {
+    figure {
+      @apply m-0;
+    }
+  }
+
+  /* Inline code styles */
+  :not(pre) > code {
+    @apply text-fore bg-card border-border-color rounded-xl border border-dashed px-2 py-0.5 text-sm;
+    font-family: inherit;
+
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+
+  blockquote {
+    p {
+      &::before,
+      &::after {
+        content: none;
+      }
+    }
+  }
+}
+
+/* 隐藏 Tabs 内的代码块 title */
+[data-tabs-container] figcaption[data-rehype-pretty-code-title] {
+  display: none;
+}
