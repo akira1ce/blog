@@ -15,7 +15,7 @@ export const PostCard = ({ post, className, style, ...restProps }: PostCardProps
     <article
       style={{ '--accent': getAccentVar(accent), ...style } as React.CSSProperties}
       className={cn(
-        'border-border-color bg-card relative flex flex-col gap-3 rounded-xl border p-5',
+        'border-border-color bg-card relative flex flex-col gap-3 rounded-xl border border-dashed p-5',
         'transition-all duration-300 ease-out',
         'group-hover:bg-card-hover group-focus-visible:bg-card-hover',
         'group-hover:[border-color:color-mix(in_oklab,var(--accent)_45%,var(--border-color))]',

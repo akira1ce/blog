@@ -8,14 +8,14 @@ const Page = async () => {
     <>
       {/* categories */}
       <div className="p-8">
-        <div className="text-center text-3xl font-bold tracking-tight">Categories</div>
+        <div className="mb-2 text-center text-3xl font-bold tracking-tight">Categories</div>
         <div className="bg-accent-amber mx-auto h-0.5 w-16" />
       </div>
       <div className="flex flex-wrap gap-4">
         {categories.map((category, index) => (
           <FadeInUp key={category.name} delay={index * 0.05}>
             <Link
-              className="bg-card border-border-color hover:bg-card-hover block cursor-pointer rounded-xl border p-2 py-1 transition-all hover:font-bold"
+              className="bg-card border-border-color hover:bg-card-hover block cursor-pointer rounded-xl border border-dashed p-2 py-1 transition-all hover:font-bold"
               href={`/categories/${category.name}`}
             >
               {category.name} ({category.count})
