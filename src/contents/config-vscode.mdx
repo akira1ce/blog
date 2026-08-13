@@ -5,7 +5,7 @@ category:
 slug: config-vscode
 summary: 汇总 Visual Studio Code 的常用配置及插件推荐。
 createdTime: '2025-07-26 15:06:11'
-updatedTime: '2026-08-13 10:07:01'
+updatedTime: '2026-08-13 10:25:28'
 ---
 import { Tabs, TabItem } from '@/components/tabs';
 
@@ -115,5 +115,7 @@ yarn add prettier-plugin-tailwindcss -D
 {
   // 禁用 Copilot Next Edit Suggestions 功能，避免卡顿
   "github.copilot.nextEditSuggestions.enabled": false,
+  // 禁用 TypeScript/JavaScript 语言服务的日志记录，避免卡顿，仅在调试时启用
+  "js/ts.tsserver.log": "off",
 }
 ```
