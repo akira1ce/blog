@@ -102,7 +102,7 @@ crontab -r # 删除定时任务
 ### 减少 dock-hover 延迟
 
 ```bash
-write http://com.apple.dock autohide-time-modifier -float 0.2
+defaults write http://com.apple.dock autohide-time-modifier -float 0.2
 defaults write http://com.apple.dock autohide-delay -float 0
 killall Dock
 ```
