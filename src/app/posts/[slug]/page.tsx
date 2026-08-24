@@ -33,7 +33,7 @@ export default async function Page({ params }: Props) {
     return notFound();
   }
   return (
-    <>
+    <div className="mx-auto max-w-4xl">
       <div className="my-20">
         <div className="text-fore mb-4 text-center text-3xl font-bold tracking-tight">
           {matter?.title}
@@ -65,6 +65,6 @@ export default async function Page({ params }: Props) {
         />
         <footer className="text-fore/60 gap-2 pt-20 text-center">我也是有底线的 🫠</footer>
       </div>
-    </>
+    </div>
   );
 }

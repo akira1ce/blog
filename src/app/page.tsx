@@ -5,7 +5,7 @@ const Page = async () => {
   const items = ['Web Developer', 'Lifelong Learner', 'CS Enthusiast'];
 
   return (
-    <div className="flex min-h-[80vh] w-full flex-col items-center justify-center gap-6 py-12">
+    <div className="mx-auto flex min-h-[80vh] w-full max-w-4xl flex-col items-center justify-center gap-6 py-12">
       <FadeInUp delay={0}>
         <Image
           className="ring-fore/10 rounded-full ring-2 transition-transform duration-300 hover:scale-105"
