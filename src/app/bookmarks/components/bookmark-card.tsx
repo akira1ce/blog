@@ -2,7 +2,7 @@
 
 import { Bookmark, getFaviconUrl } from '@/lib/bookmarks';
 import { cn } from '@/lib/utils';
-import { BOOKMARK_ACCENT, DEFAULT_ACCENT } from '@/lib/colors';
+import { AccentColor } from '@/lib/colors';
 import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -10,12 +10,12 @@ import { BaseCard } from '@/components/base-card';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
+  accentColor?: AccentColor;
 }
 
-export const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
+export const BookmarkCard = ({ bookmark, accentColor }: BookmarkCardProps) => {
   const [faviconError, setFaviconError] = useState(false);
   const faviconUrl = getFaviconUrl(bookmark.url);
-  const accentColor = BOOKMARK_ACCENT[bookmark.type];
 
   return (
     <a
@@ -25,7 +25,7 @@ export const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
       className="group rounded-xl focus-visible:ring-2 focus-visible:outline-none"
     >
       <BaseCard accentColor={accentColor} className="p-4">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <div className="bg-main border-border-color flex size-10 shrink-0 items-center justify-center rounded-lg border">
             {!faviconError && faviconUrl ? (
               <Image
@@ -42,7 +42,7 @@ export const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
             )}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <h3 className="text-fore flex items-center gap-2 text-base leading-snug font-semibold tracking-tight">
               <span className="truncate">{bookmark.name}</span>
               <ExternalLink
@@ -56,24 +56,11 @@ export const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
                 )}
               />
             </h3>
-            <p className="text-fore/60 line-clamp-2 text-sm leading-relaxed">
-              {bookmark.description}
-            </p>
+            {bookmark.label && (
+              <p className="text-fore/45 truncate font-mono text-xs">{bookmark.label}</p>
+            )}
           </div>
         </div>
-
-        {bookmark.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {bookmark.tags.map((tag) => (
-              <span
-                key={tag}
-                className="bg-main border-border-color text-fore/50 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors duration-200 group-hover:border-[color-mix(in_oklab,var(--accent)_30%,var(--border-color))] group-focus-visible:border-[color-mix(in_oklab,var(--accent)_30%,var(--border-color))]"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
       </BaseCard>
     </a>
   );

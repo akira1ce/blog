@@ -24,10 +24,10 @@ export const CATEGORY_ACCENT: Record<string, AccentColor> = {
   Troubleshooting: 'emerald',
 };
 
-/** Bookmark type id → accent color. */
-export const BOOKMARK_ACCENT: Record<string, AccentColor> = {
-  'dev-tools': 'cyan',
-  design: 'rose',
-  learning: 'amber',
-  productivity: 'emerald',
-};
+/**
+ * Accent for list positions, cycled. Bookmark folders come from the gist with
+ * generated ids, so there is nothing stable to key an explicit map on.
+ */
+export function accentByIndex(index: number): AccentColor {
+  return accentMap[index % accentMap.length];
+}

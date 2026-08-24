@@ -1,20 +1,30 @@
-import typesData from '../../public/bookmarks/types.json';
-import sitesData from '../../public/bookmarks/sites.json';
+/** BookmarkHub sync data, always the latest revision of the gist. */
+const GIST_RAW_URL =
+  'https://gist.githubusercontent.com/akira1ce/1e87d376935ce5d5dfdff019c0fda67b/raw/bookmarkhub.json';
+
+interface GistNode {
+  id: string;
+  title: string;
+  url?: string;
+  children?: GistNode[];
+}
+
+interface GistData {
+  nodes: GistNode[];
+}
 
 export interface BookmarkType {
   id: string;
   name: string;
-  icon: string;
-  order: number;
 }
 
 export interface Bookmark {
   id: string;
   name: string;
+  /** Namespace prefix from the gist title, e.g. `tools.css.color`. */
+  label?: string;
   url: string;
-  description: string;
   type: string;
-  tags: string[];
 }
 
 export interface BookmarksByType {
@@ -22,22 +32,46 @@ export interface BookmarksByType {
   sites: Bookmark[];
 }
 
-export function getAllTypes(): BookmarkType[] {
-  return typesData.sort((a, b) => a.order - b.order);
+/** Gist titles look like `tools.css.color - Color Generator`. */
+function parseTitle(title: string): { name: string; label?: string } {
+  const separator = title.indexOf(' - ');
+  if (separator === -1) return { name: title };
+
+  return {
+    label: title.slice(0, separator),
+    name: title.slice(separator + 3),
+  };
 }
 
-export function getAllBookmarks(): Bookmark[] {
-  return sitesData;
+async function fetchBookmarkTree(): Promise<GistNode[]> {
+  const res = await fetch(GIST_RAW_URL, { next: { revalidate: 3600 } });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch bookmarks gist: ${res.status} ${res.statusText}`);
+  }
+
+  const data: GistData = await res.json();
+
+  /* Only the bookmarks bar is published, and it is exactly two levels deep. */
+  return data.nodes[0]?.children ?? [];
 }
 
-export function getBookmarksByType(): BookmarksByType[] {
-  const types = getAllTypes();
-  const bookmarks = getAllBookmarks();
+export async function getBookmarksByType(): Promise<BookmarksByType[]> {
+  const folders = await fetchBookmarkTree();
 
-  return types.map((type) => ({
-    type,
-    sites: bookmarks.filter((bookmark) => bookmark.type === type.id),
-  }));
+  return folders
+    .filter((folder) => folder.children?.length)
+    .map((folder) => ({
+      type: { id: folder.id, name: folder.title },
+      sites: (folder.children ?? [])
+        .filter((node): node is GistNode & { url: string } => Boolean(node.url))
+        .map((node) => ({
+          id: node.id,
+          url: node.url,
+          type: folder.id,
+          ...parseTitle(node.title),
+        })),
+    }));
 }
 
 export function getFaviconUrl(url: string): string {
