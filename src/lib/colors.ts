@@ -13,7 +13,7 @@ const CATEGORY_ACCENT: Record<string, AccentColor> = {
 };
 
 /**
- * Map a category string to an accent color.
+ * Map a category string to an accent color name.
  * Explicit mapping wins; falls back to a deterministic hash for unknown categories.
  */
 export function getAccentForCategory(category: string): AccentColor {
@@ -23,13 +23,4 @@ export function getAccentForCategory(category: string): AccentColor {
     hash = category.charCodeAt(i) + ((hash << 5) - hash);
   }
   return accentMap[Math.abs(hash) % accentMap.length];
-}
-
-/**
- * Get the CSS custom-property reference for a given accent color.
- * Returned as `var(--accent-*)` so it can drive an inline style; this avoids
- * Tailwind's JIT dropping dynamically-built `*-accent-${x}` class names.
- */
-export function getAccentVar(accent: AccentColor): string {
-  return `var(--accent-${accent})`;
 }

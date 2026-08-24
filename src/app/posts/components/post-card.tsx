@@ -1,7 +1,8 @@
 import { FrontMatter } from '@/lib/posts';
 import { cn } from '@/lib/utils';
-import { getAccentForCategory, getAccentVar } from '@/lib/colors';
+import { getAccentForCategory } from '@/lib/colors';
 import { ArrowUpRight } from 'lucide-react';
+import { BaseCard } from '@/components/base-card';
 
 interface PostCardProps extends React.HTMLAttributes<HTMLDivElement> {
   post: FrontMatter;
@@ -12,20 +13,7 @@ export const PostCard = ({ post, className, style, ...restProps }: PostCardProps
   const accent = getAccentForCategory(categories[0]);
 
   return (
-    <article
-      style={{ '--accent': getAccentVar(accent), ...style } as React.CSSProperties}
-      className={cn(
-        'border-border-color bg-card relative flex flex-col gap-3 rounded-xl border border-dashed p-5',
-        'transition-all duration-300 ease-out',
-        'group-hover:bg-card-hover group-focus-visible:bg-card-hover',
-        'group-hover:[border-color:color-mix(in_oklab,var(--accent)_45%,var(--border-color))]',
-        'group-focus-visible:[border-color:color-mix(in_oklab,var(--accent)_45%,var(--border-color))]',
-        'group-hover:[box-shadow:0_14px_30px_-18px_color-mix(in_oklab,var(--accent)_55%,transparent)]',
-        'motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-y-1',
-        className,
-      )}
-      {...restProps}
-    >
+    <BaseCard accentColor={accent} className={className} style={style} {...restProps}>
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-fore line-clamp-2 text-lg leading-snug font-semibold tracking-tight text-balance">
           {post.title}
@@ -59,6 +47,6 @@ export const PostCard = ({ post, className, style, ...restProps }: PostCardProps
           {post.updatedDate?.slice(0, 10)}
         </time>
       </div>
-    </article>
+    </BaseCard>
   );
 };

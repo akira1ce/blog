@@ -1,5 +1,5 @@
-import typesData from '@/../public/bookmarks/types.json';
-import sitesData from '@/../public/bookmarks/sites.json';
+import typesData from '../../public/bookmarks/types.json';
+import sitesData from '../../public/bookmarks/sites.json';
 
 export interface BookmarkType {
   id: string;
