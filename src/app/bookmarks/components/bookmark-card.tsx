@@ -2,7 +2,7 @@
 
 import { Bookmark, getFaviconUrl } from '@/lib/bookmarks';
 import { cn } from '@/lib/utils';
-import { getAccentForBookmark } from '@/lib/bookmark-colors';
+import { BOOKMARK_ACCENT, DEFAULT_ACCENT } from '@/lib/colors';
 import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -15,14 +15,14 @@ interface BookmarkCardProps {
 export const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
   const [faviconError, setFaviconError] = useState(false);
   const faviconUrl = getFaviconUrl(bookmark.url);
-  const accentColor = getAccentForBookmark(bookmark.type);
+  const accentColor = BOOKMARK_ACCENT[bookmark.type];
 
   return (
     <a
       href={bookmark.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--accent-violet)] focus-visible:outline-none"
+      className="group rounded-xl focus-visible:ring-2 focus-visible:outline-none"
     >
       <BaseCard accentColor={accentColor} className="p-4">
         <div className="flex items-start gap-3">
@@ -43,14 +43,14 @@ export const BookmarkCard = ({ bookmark }: BookmarkCardProps) => {
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <h3 className="text-fore flex items-center gap-2 text-base font-semibold leading-snug tracking-tight">
+            <h3 className="text-fore flex items-center gap-2 text-base leading-snug font-semibold tracking-tight">
               <span className="truncate">{bookmark.name}</span>
               <ExternalLink
                 aria-hidden
                 className={cn(
                   'text-fore/25 size-3.5 shrink-0',
                   'transition-all duration-300 ease-out',
-                  'group-hover:text-accent-violet group-focus-visible:text-accent-violet',
+                  'group-hover:[color:var(--accent)] group-focus-visible:[color:var(--accent)]',
                   'motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5',
                   'motion-safe:group-focus-visible:translate-x-0.5 motion-safe:group-focus-visible:-translate-y-0.5',
                 )}

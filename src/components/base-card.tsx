@@ -1,11 +1,12 @@
+import { AccentColor, DEFAULT_ACCENT } from '@/lib/colors';
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 
 interface BaseCardProps extends React.HTMLAttributes<HTMLElement> {
   /**
-   * Accent color name (e.g., 'violet', 'sky', 'amber')
+   * Accent color name (e.g., 'violet', 'sky', 'amber'). Falls back to a neutral accent.
    */
-  accentColor: string;
+  accentColor?: AccentColor;
   /**
    * Content to render inside the card
    */
@@ -21,7 +22,7 @@ interface BaseCardProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export const BaseCard = ({
-  accentColor,
+  accentColor = DEFAULT_ACCENT,
   children,
   as: Component = 'article',
   className,

@@ -1,8 +1,20 @@
-const accentMap = ['sky', 'violet', 'amber', 'rose', 'emerald', 'cyan', 'slate'] as const;
+const accentMap = [
+  'sky',
+  'violet',
+  'amber',
+  'rose',
+  'emerald',
+  'cyan',
+  'slate',
+  'neutral',
+] as const;
 export type AccentColor = (typeof accentMap)[number];
 
-/** Explicit category → accent color mapping. */
-const CATEGORY_ACCENT: Record<string, AccentColor> = {
+/** Fallback accent for anything without an explicit mapping. */
+export const DEFAULT_ACCENT: AccentColor = 'neutral';
+
+/** Post category → accent color. */
+export const CATEGORY_ACCENT: Record<string, AccentColor> = {
   Components: 'sky',
   Configuration: 'violet',
   DevTools: 'cyan',
@@ -12,15 +24,10 @@ const CATEGORY_ACCENT: Record<string, AccentColor> = {
   Troubleshooting: 'emerald',
 };
 
-/**
- * Map a category string to an accent color name.
- * Explicit mapping wins; falls back to a deterministic hash for unknown categories.
- */
-export function getAccentForCategory(category: string): AccentColor {
-  if (CATEGORY_ACCENT[category]) return CATEGORY_ACCENT[category];
-  let hash = 0;
-  for (let i = 0; i < category.length; i++) {
-    hash = category.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return accentMap[Math.abs(hash) % accentMap.length];
-}
+/** Bookmark type id → accent color. */
+export const BOOKMARK_ACCENT: Record<string, AccentColor> = {
+  'dev-tools': 'cyan',
+  design: 'rose',
+  learning: 'amber',
+  productivity: 'emerald',
+};

@@ -35,7 +35,7 @@ export const BookmarkFilters = ({ bookmarkGroups, allTypes }: BookmarkFiltersPro
           <button
             onClick={() => setSelectedType(null)}
             className={cn(
-              'border-border-color rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
+              'border-border-color cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
               selectedType === null
                 ? 'bg-accent-violet border-transparent text-white'
                 : 'bg-card text-fore/70 hover:bg-card-hover hover:border-accent-violet/30',
@@ -50,7 +50,7 @@ export const BookmarkFilters = ({ bookmarkGroups, allTypes }: BookmarkFiltersPro
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
                 className={cn(
-                  'border-border-color rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
+                  'border-border-color cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-200',
                   selectedType === type.id
                     ? 'bg-accent-violet border-transparent text-white'
                     : 'bg-card text-fore/70 hover:bg-card-hover hover:border-accent-violet/30',

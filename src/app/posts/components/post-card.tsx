@@ -1,6 +1,6 @@
 import { FrontMatter } from '@/lib/posts';
 import { cn } from '@/lib/utils';
-import { getAccentForCategory } from '@/lib/colors';
+import { CATEGORY_ACCENT } from '@/lib/colors';
 import { ArrowUpRight } from 'lucide-react';
 import { BaseCard } from '@/components/base-card';
 
@@ -10,7 +10,7 @@ interface PostCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const PostCard = ({ post, className, style, ...restProps }: PostCardProps) => {
   const categories = Array.isArray(post.category) ? post.category : [post.category];
-  const accent = getAccentForCategory(categories[0]);
+  const accent = CATEGORY_ACCENT[categories[0]];
 
   return (
     <BaseCard accentColor={accent} className={className} style={style} {...restProps}>
