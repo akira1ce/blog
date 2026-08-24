@@ -1,7 +1,7 @@
 import { getAllPosts, getPostBySlug } from '@/lib/posts';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { TableOfContents } from '@/components/table-of-contents';
+import { TableOfContents } from '@/app/posts/components/table-of-contents';
 import { ArrowLeftRight, Split } from 'lucide-react';
 
 export interface Params {
@@ -47,7 +47,7 @@ export default async function Page({ params }: Props) {
           {matter?.category.map((item) => (
             <Link
               key={item}
-              className="text-fore/60 bg-card border-border-color rounded-xl border px-2 py-1 text-xs transition-colors hover:bg-card-hover"
+              className="text-fore/60 bg-card border-border-color hover:bg-card-hover rounded-xl border px-2 py-1 text-xs transition-colors"
               href={`/categories/${item}`}
             >
               #{item}

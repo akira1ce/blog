@@ -1,6 +1,6 @@
 import { getAllPosts } from '@/lib/posts';
 import { FadeInUp } from '@/components/fade-in-up';
-import { PostCard } from '@/components/post-card';
+import { PostCard } from '@/app/posts/components/post-card';
 import Link from 'next/link';
 
 const Page = async () => {

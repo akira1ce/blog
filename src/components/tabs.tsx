@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import React, { useId, useState } from 'react';
 import { motion } from 'motion/react';
-import { FadeInUp } from './fade-in-up';
+import { FadeInUp } from '@/components/fade-in-up';
 
 export interface TabItemProps {
   label: React.ReactNode;
