@@ -1,10 +1,10 @@
-import { getBookmarksByType } from '@/lib/bookmarks';
+import { getBookmarkData } from '@/lib/bookmarks';
 import { BookmarkFilters } from './components/bookmark-filters';
 
 export const revalidate = 3600;
 
 const Page = async () => {
-  const bookmarkGroups = await getBookmarksByType();
+  const { bookmarks, types } = await getBookmarkData();
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -14,7 +14,7 @@ const Page = async () => {
       </div>
 
       <div className="space-y-6">
-        <BookmarkFilters bookmarkGroups={bookmarkGroups} />
+        <BookmarkFilters bookmarks={bookmarks} types={types} />
       </div>
     </div>
   );

@@ -24,12 +24,13 @@ export interface Bookmark {
   /** Namespace prefix from the gist title, e.g. `tools.css.color`. */
   label?: string;
   url: string;
-  type: string;
+  typeId: string;
+  typeName: string;
 }
 
-export interface BookmarksByType {
-  type: BookmarkType;
-  sites: Bookmark[];
+export interface BookmarkData {
+  bookmarks: Bookmark[];
+  types: BookmarkType[];
 }
 
 /** Gist titles look like `tools.css.color - Color Generator`. */
@@ -56,22 +57,35 @@ async function fetchBookmarkTree(): Promise<GistNode[]> {
   return data.nodes[0]?.children ?? [];
 }
 
-export async function getBookmarksByType(): Promise<BookmarksByType[]> {
+/**
+ * Flatten the two-level gist tree into a single list of bookmarks, each tagged
+ * with its folder. Grouping back into folders is the caller's concern.
+ */
+export async function getBookmarkData(): Promise<BookmarkData> {
   const folders = await fetchBookmarkTree();
 
-  return folders
-    .filter((folder) => folder.children?.length)
-    .map((folder) => ({
-      type: { id: folder.id, name: folder.title },
-      sites: (folder.children ?? [])
-        .filter((node): node is GistNode & { url: string } => Boolean(node.url))
-        .map((node) => ({
-          id: node.id,
-          url: node.url,
-          type: folder.id,
-          ...parseTitle(node.title),
-        })),
-    }));
+  const types: BookmarkType[] = [];
+  const bookmarks: Bookmark[] = [];
+
+  for (const folder of folders) {
+    if (!folder.children?.length) continue;
+
+    types.push({ id: folder.id, name: folder.title });
+
+    for (const node of folder.children) {
+      if (!node.url) continue;
+
+      bookmarks.push({
+        id: node.id,
+        url: node.url,
+        typeId: folder.id,
+        typeName: folder.title,
+        ...parseTitle(node.title),
+      });
+    }
+  }
+
+  return { bookmarks, types };
 }
 
 export function getFaviconUrl(url: string): string {

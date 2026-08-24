@@ -1,22 +1,24 @@
 'use client';
 
-import { BookmarksByType } from '@/lib/bookmarks';
-import { useState } from 'react';
+import { Bookmark, BookmarkType } from '@/lib/bookmarks';
+import { useMemo, useState } from 'react';
+import groupBy from 'lodash/groupBy';
 import { BookmarkCard } from './bookmark-card';
 import { FadeInUp } from '@/components/fade-in-up';
 import { accentByIndex } from '@/lib/colors';
 import { cn } from '@/lib/utils';
 
 interface BookmarkFiltersProps {
-  bookmarkGroups: BookmarksByType[];
+  bookmarks: Bookmark[];
+  types: BookmarkType[];
 }
 
-export const BookmarkFilters = ({ bookmarkGroups }: BookmarkFiltersProps) => {
+export const BookmarkFilters = ({ bookmarks, types }: BookmarkFiltersProps) => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
-  const filteredGroups = selectedType
-    ? bookmarkGroups.filter((group) => group.type.id === selectedType)
-    : bookmarkGroups;
+  const grouped = useMemo(() => groupBy(bookmarks, 'typeId'), [bookmarks]);
+
+  const visibleTypes = selectedType ? types.filter((type) => type.id === selectedType) : types;
 
   const tabClassName = (active: boolean) =>
     cn(
@@ -34,20 +36,20 @@ export const BookmarkFilters = ({ bookmarkGroups }: BookmarkFiltersProps) => {
           <button onClick={() => setSelectedType(null)} className={tabClassName(!selectedType)}>
             全部
           </button>
-          {bookmarkGroups.map((group) => (
+          {types.map((type) => (
             <button
-              key={group.type.id}
-              onClick={() => setSelectedType(group.type.id)}
-              className={tabClassName(selectedType === group.type.id)}
+              key={type.id}
+              onClick={() => setSelectedType(type.id)}
+              className={tabClassName(selectedType === type.id)}
             >
-              {group.type.name}
+              {type.name}
               <span
                 className={cn(
                   'ml-1.5 tabular-nums',
-                  selectedType === group.type.id ? 'text-white/80' : 'text-fore/50',
+                  selectedType === type.id ? 'text-white/80' : 'text-fore/50',
                 )}
               >
-                {group.sites.length}
+                {grouped[type.id]?.length ?? 0}
               </span>
             </button>
           ))}
@@ -56,13 +58,12 @@ export const BookmarkFilters = ({ bookmarkGroups }: BookmarkFiltersProps) => {
 
       {/* Results */}
       <div className="space-y-12 px-4 pb-12">
-        {filteredGroups.map((group, groupIndex) => {
-          const accentColor = accentByIndex(
-            bookmarkGroups.findIndex((g) => g.type.id === group.type.id),
-          );
+        {visibleTypes.map((type, groupIndex) => {
+          const sites = grouped[type.id] ?? [];
+          const accentColor = accentByIndex(types.findIndex((t) => t.id === type.id));
 
           return (
-            <FadeInUp key={group.type.id} delay={groupIndex * 0.05}>
+            <FadeInUp key={type.id} delay={groupIndex * 0.05}>
               <section>
                 <h2 className="text-fore mb-4 flex items-center gap-2 text-xl font-semibold tracking-tight">
                   <span
@@ -70,13 +71,13 @@ export const BookmarkFilters = ({ bookmarkGroups }: BookmarkFiltersProps) => {
                     style={{ background: `var(--accent-${accentColor})` }}
                     aria-hidden
                   />
-                  {group.type.name}
+                  {type.name}
                   <span className="text-fore/40 ml-1 text-sm font-normal tabular-nums">
-                    {group.sites.length}
+                    {sites.length}
                   </span>
                 </h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {group.sites.map((bookmark) => (
+                  {sites.map((bookmark) => (
                     <BookmarkCard key={bookmark.id} bookmark={bookmark} accentColor={accentColor} />
                   ))}
                 </div>
