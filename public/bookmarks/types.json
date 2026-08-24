@@ -1,0 +1,26 @@
+[
+  {
+    "id": "dev-tools",
+    "name": "开发工具",
+    "icon": "Wrench",
+    "order": 1
+  },
+  {
+    "id": "design",
+    "name": "设计资源",
+    "icon": "Palette",
+    "order": 2
+  },
+  {
+    "id": "learning",
+    "name": "学习资源",
+    "icon": "BookOpen",
+    "order": 3
+  },
+  {
+    "id": "productivity",
+    "name": "效率工具",
+    "icon": "Zap",
+    "order": 4
+  }
+]

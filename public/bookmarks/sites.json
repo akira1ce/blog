@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1",
+    "name": "GitHub",
+    "url": "https://github.com",
+    "description": "代码托管与协作平台",
+    "type": "dev-tools",
+    "tags": ["git", "code", "collaboration"]
+  },
+  {
+    "id": "2",
+    "name": "Stack Overflow",
+    "url": "https://stackoverflow.com",
+    "description": "程序员问答社区",
+    "type": "dev-tools",
+    "tags": ["qa", "community"]
+  },
+  {
+    "id": "3",
+    "name": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
+    "description": "Web 开发文档",
+    "type": "learning",
+    "tags": ["documentation", "web"]
+  },
+  {
+    "id": "4",
+    "name": "Figma",
+    "url": "https://figma.com",
+    "description": "协作设计工具",
+    "type": "design",
+    "tags": ["design", "ui", "collaboration"]
+  },
+  {
+    "id": "5",
+    "name": "Dribbble",
+    "url": "https://dribbble.com",
+    "description": "设计师作品展示平台",
+    "type": "design",
+    "tags": ["design", "inspiration"]
+  },
+  {
+    "id": "6",
+    "name": "Notion",
+    "url": "https://notion.so",
+    "description": "笔记与知识管理工具",
+    "type": "productivity",
+    "tags": ["notes", "workspace"]
+  },
+  {
+    "id": "7",
+    "name": "VS Code",
+    "url": "https://code.visualstudio.com",
+    "description": "轻量级代码编辑器",
+    "type": "dev-tools",
+    "tags": ["editor", "ide"]
+  },
+  {
+    "id": "8",
+    "name": "Unsplash",
+    "url": "https://unsplash.com",
+    "description": "免费高质量图片素材",
+    "type": "design",
+    "tags": ["photos", "free"]
+  }
+]
