@@ -34,8 +34,8 @@ export interface BookmarkData {
 
 /** Gist titles look like `tools.css.color - Color Generator`. */
 function parseTitle(title: string): Pick<Bookmark, 'subType' | 'name'> {
-  const [name = 'untitled', subType = 'uncategorized'] = title.split(' - ');
-  return { subType, name };
+  const [subType = 'uncategorized', name = 'untitled'] = title.split(' - ');
+  return { name, subType };
 }
 
 async function fetchBookmarkTree(): Promise<GistNode[]> {
