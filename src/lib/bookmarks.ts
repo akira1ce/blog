@@ -21,11 +21,10 @@ export interface BookmarkType {
 export interface Bookmark {
   id: string;
   name: string;
-  /** Namespace prefix from the gist title, e.g. `tools.css.color`. */
-  label?: string;
   url: string;
   typeId: string;
   typeName: string;
+  subType: string;
 }
 
 export interface BookmarkData {
@@ -34,14 +33,9 @@ export interface BookmarkData {
 }
 
 /** Gist titles look like `tools.css.color - Color Generator`. */
-function parseTitle(title: string): { name: string; label?: string } {
-  const separator = title.indexOf(' - ');
-  if (separator === -1) return { name: title };
-
-  return {
-    label: title.slice(0, separator),
-    name: title.slice(separator + 3),
-  };
+function parseTitle(title: string): Pick<Bookmark, 'subType' | 'name'> {
+  const [name = 'untitled', subType = 'uncategorized'] = title.split(' - ');
+  return { subType, name };
 }
 
 async function fetchBookmarkTree(): Promise<GistNode[]> {
@@ -85,7 +79,7 @@ export async function getBookmarkData(): Promise<BookmarkData> {
     }
   }
 
-  bookmarks.sort((a, b) => a.name.localeCompare(b.name));
+  bookmarks.sort((a, b) => a.subType.localeCompare(b.subType));
 
   return { bookmarks, types };
 }

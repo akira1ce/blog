@@ -56,8 +56,8 @@ export const BookmarkCard = ({ bookmark, accentColor }: BookmarkCardProps) => {
                 )}
               />
             </h3>
-            {bookmark.label && (
-              <p className="text-fore/45 truncate font-mono text-xs">{bookmark.label}</p>
+            {bookmark.subType && (
+              <p className="text-fore/45 truncate font-mono text-xs">{bookmark.subType}</p>
             )}
           </div>
         </div>
