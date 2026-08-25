@@ -7,6 +7,7 @@ const Header = () => {
     { label: 'About', href: '/about' },
     { label: 'Posts', href: '/posts' },
     { label: 'Categories', href: '/categories' },
+    { label: 'Bookmarks', href: '/bookmarks' },
   ];
   return (
     <header className="bg-main/80 border-border-color sticky top-0 z-10 border-b border-dashed backdrop-blur-md">
