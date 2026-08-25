@@ -85,6 +85,8 @@ export async function getBookmarkData(): Promise<BookmarkData> {
     }
   }
 
+  bookmarks.sort((a, b) => a.name.localeCompare(b.name));
+
   return { bookmarks, types };
 }
 
