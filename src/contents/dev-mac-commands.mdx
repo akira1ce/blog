@@ -10,6 +10,34 @@ updatedTime: '2026-05-26 10:08:00'
 
 本文收集mac常用文章。
 
+## 系统设置
+
+### crontab
+
+crontab 是 Linux 系统下的定时任务管理工具，macOS 系统下也有类似的功能。
+
+crontab 文件位于： `/var/at/tabs`
+
+```bash
+crontab -e # 编辑定时任务
+crontab -l # 查看定时任务
+crontab -r # 删除定时任务
+```
+
+### 减少 dock-hover 延迟
+
+```bash
+defaults write http://com.apple.dock autohide-time-modifier -float 0.2
+defaults write http://com.apple.dock autohide-delay -float 0
+killall Dock
+```
+
+### 中英文切换延迟
+
+```bash
+hidutil property --set '{"CapsLockDelayOverride":0}'
+```
+
 ## 网络相关命令
 
 | 功能 | 命令 |
@@ -83,28 +111,6 @@ and the repository exists.
 Host github.com
 Hostname ssh.github.com
 Port 443
-```
-
-## 系统设置
-
-### crontab
-
-crontab 是 Linux 系统下的定时任务管理工具，macOS 系统下也有类似的功能。
-
-crontab 文件位于： `/var/at/tabs`
-
-```bash
-crontab -e # 编辑定时任务
-crontab -l # 查看定时任务
-crontab -r # 删除定时任务
-```
-
-### 减少 dock-hover 延迟
-
-```bash
-defaults write http://com.apple.dock autohide-time-modifier -float 0.2
-defaults write http://com.apple.dock autohide-delay -float 0
-killall Dock
 ```
 
 ## tar 相关命令
