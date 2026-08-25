@@ -4,7 +4,6 @@ import { Bookmark, getFaviconUrl } from '@/lib/bookmarks';
 import { cn } from '@/lib/utils';
 import { AccentColor } from '@/lib/colors';
 import { ExternalLink } from 'lucide-react';
-import Image from 'next/image';
 import { useState } from 'react';
 import { BaseCard } from '@/components/base-card';
 
@@ -28,20 +27,18 @@ export const BookmarkCard = ({ bookmark, accentColor }: BookmarkCardProps) => {
         <div className="flex items-center gap-3">
           <div className="bg-main border-border-color flex size-10 shrink-0 items-center justify-center rounded-lg border">
             {!faviconError && faviconUrl ? (
-              <Image
+              <img
                 src={faviconUrl}
                 alt=""
                 width={24}
                 height={24}
                 className="size-6"
                 onError={() => setFaviconError(true)}
-                unoptimized
               />
             ) : (
               <ExternalLink className="text-fore/30 size-4" aria-hidden />
             )}
           </div>
-
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <h3 className="text-fore flex items-center gap-2 text-base leading-snug font-semibold tracking-tight">
               <span className="truncate">{bookmark.name}</span>

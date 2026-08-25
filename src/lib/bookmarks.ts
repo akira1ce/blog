@@ -87,7 +87,8 @@ export async function getBookmarkData(): Promise<BookmarkData> {
 export function getFaviconUrl(url: string): string {
   try {
     const domain = new URL(url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+    // return `https://icon.horse/icon/${domain}`;
+    return `https://geticon.dev/?url=${domain}`;
   } catch {
     return '';
   }
