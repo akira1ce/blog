@@ -53,7 +53,7 @@ const GlobalSearch = () => {
   return (
     <>
       <div
-        className="text-fore/60 bg-card border-border-color flex cursor-pointer items-center gap-2 rounded-xl border px-2 py-1 text-sm"
+        className="text-fore/60 bg-card border-border-color flex cursor-pointer items-center gap-2 rounded-xl border border-dashed px-2 py-1 text-sm"
         onClick={() => setOpen(true)}
       >
         <Search className="size-3" />
