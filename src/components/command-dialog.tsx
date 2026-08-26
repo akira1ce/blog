@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
+import { useEventListener } from '@akira1ce/r-hooks';
 
 /**
  * Props for the CommandDialog component
@@ -33,48 +34,13 @@ export const CommandDialog = (props: CommandDialogProps) => {
     onOpenChange(false);
   };
 
-  useEffect(() => {
+  useEventListener('keydown', (event) => {
     if (!closeOnEscape || !open) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        handleClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [open, closeOnEscape]);
-
-  useEffect(() => {
-    if (!closeOnClickOutside || !open) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        handleClose();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [open, closeOnClickOutside]);
-
-  // Lock body scroll when dialog is open
-  useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      handleClose();
+    }
+  });
 
   // Only render portal on client side
   if (typeof document === 'undefined') {
@@ -98,6 +64,7 @@ export const CommandDialog = (props: CommandDialogProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
+            onClick={handleClose}
           />
 
           {/* Dialog Content */}
