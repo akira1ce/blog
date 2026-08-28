@@ -23,7 +23,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="bg-main w-full antialiased">
+      <body className="bg-main min-h-screen w-full antialiased">
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
           <main className="px-6 pb-24 md:px-8">{children}</main>
