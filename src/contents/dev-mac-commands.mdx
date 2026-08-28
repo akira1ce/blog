@@ -25,6 +25,21 @@ updatedTime: '2026-05-26 10:08:00'
 | 重置 DNS 为自动获取 | `sudo networksetup -setdnsservers Wi-Fi Empty` |
 | 查看当前 DNS | `networksetup -getdnsservers Wi-Fi` |
 
+### open-connect 连接失败
+
+一般是缓存导致的，实在不行重启大法。
+
+```bash
+# 清除 DNS 缓存
+sudo networksetup -setdnsservers Wi-Fi Empty
+# 清除静态路由
+sudo route delete 117.74.132.138
+# 从 DHCP 获取了正确的 IP、网关和路由
+sudo ipconfig set en0 DHCP
+# 重新加载网络配置，刷新路由和网络状态
+sudo killall -HUP configd
+```
+
 ## Shell相关命令
 
 | 功能 | 命令 |
