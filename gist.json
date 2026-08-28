@@ -1,0 +1,389 @@
+{
+  "version": "1.0.3",
+  "uniqueId": "VCk2LoDMfckHfBT_af1ma",
+  "clientInfo": {
+    "lastSyncedBy": "dia@mac",
+    "syncedAt": 1787562045844
+  },
+  "sha": "0453867bdefbe5b63ade20a2cd76f80307a6e5d74a010271553a10e0605e450d",
+  "nodes": [
+    {
+      "id": "root_____bar",
+      "title": "Bookmarks Bar",
+      "dateModified": 1787560649416,
+      "children": [
+        {
+          "id": "z-mb9wZ04I_K9NhTo1bPX",
+          "title": "interview",
+          "dateModified": 1787561879171,
+          "children": [
+            {
+              "id": "7xx2PcMmuuRUsQifMfgKa",
+              "title": "interview.qa - 大前端面试题库",
+              "dateModified": 1787560425033,
+              "url": "http://bigerfe.com/"
+            },
+            {
+              "id": "BSQY0J6GFvSlwWFroP9lI",
+              "title": "interview.book - 剑指前端 Offer",
+              "dateModified": 1787560425039,
+              "url": "https://febook.hzfe.org/awesome-interview/"
+            },
+            {
+              "id": "CpfdDJSTVhKRCj4rjZDD5",
+              "title": "interview.notes - Learning-notes",
+              "dateModified": 1787560425039,
+              "url": "https://github.com/li-jia-nan/Learning-notes"
+            },
+            {
+              "id": "T9bwZ91k-CAqgjOUvFbut",
+              "title": "interview.algorithm - React、Vue2、Vue3的三种Diff算法",
+              "dateModified": 1787560425041,
+              "url": "https://juejin.cn/post/6919376064833667080#heading-14"
+            },
+            {
+              "id": "K1xtmd6v63DgmlS8F88Ki",
+              "title": "interview.experience - 五年前端三年面试",
+              "dateModified": 1787560425043,
+              "url": "https://fe.azhubaby.com/"
+            },
+            {
+              "id": "irA9REPT3AIa3kJfpb2-8",
+              "title": "interview.daily - 大厂面试每日一题",
+              "dateModified": 1787560425136,
+              "url": "https://q.shanyue.tech/"
+            }
+          ]
+        },
+        {
+          "id": "Uq3r5b5PfkrzkfHi6xQfh",
+          "title": "devtools",
+          "dateModified": 1787561890075,
+          "children": [
+            {
+              "id": "LW5aQ1McSXzqz4QFixC-U",
+              "title": "docs.nodejs - Node.js 中文网",
+              "dateModified": 1787560425137,
+              "url": "https://nodejs.cn/"
+            },
+            {
+              "id": "lAZ6fbbt5yAW1PIRYMVM3",
+              "title": "tools.ai.prompts - Design Prompts",
+              "dateModified": 1787560425055,
+              "url": "https://www.designprompts.dev/"
+            },
+            {
+              "id": "DywaTxNkdmmzycVWqMfkn",
+              "title": "tools.browser.compatibility - Can I Use",
+              "dateModified": 1787560425055,
+              "url": "https://caniuse.com/"
+            },
+            {
+              "id": "ukpbtT2nNE8-JDWIPU5X0",
+              "title": "tools.css.color - Color Generator",
+              "dateModified": 1787560425057,
+              "url": "https://kigen.design/color"
+            },
+            {
+              "id": "1FToZQobviYfFCSjrk_Ax",
+              "title": "tools.css.gradient - Gradient Generator",
+              "dateModified": 1787560425059,
+              "url": "https://www.joshwcomeau.com/gradient-generator/"
+            },
+            {
+              "id": "VX50Hst4KMI59Fmg6dgSQ",
+              "title": "tools.css.shadow - Shadow Generator",
+              "dateModified": 1787560425060,
+              "url": "https://www.joshwcomeau.com/shadow-palette/"
+            },
+            {
+              "id": "HnYBsSrQf9HHbUgPS1pZ7",
+              "title": "tools.css.svg-filters - SVG Filters Playground",
+              "dateModified": 1787560425061,
+              "url": "https://yoksel.github.io/svg-filters/#/"
+            },
+            {
+              "id": "-sGdkAqr0yskb_ZhIqKDz",
+              "title": "tools.docs - DeepWiki",
+              "dateModified": 1787560425061,
+              "url": "https://deepwiki.com/"
+            },
+            {
+              "id": "5z-CN8o36LR9Ou--sLfgD",
+              "title": "tools.github.license - License Generator",
+              "dateModified": 1787560425061,
+              "url": "https://choosealicense.com/"
+            },
+            {
+              "id": "BzKBzNtXUMqzNZ79xdVeG",
+              "title": "tools.ip - IP111",
+              "dateModified": 1787560425061,
+              "url": "https://www.ip111.cn/"
+            },
+            {
+              "id": "_D7ckXzg__cI5eNs7BAvw",
+              "title": "tools.js.map - Baidu Map Generator",
+              "dateModified": 1787560425061,
+              "url": "http://api.map.baidu.com/lbsapi/creatmap/index.html?qq-pf-to=pcqq.c2c"
+            },
+            {
+              "id": "v3UF1CFlaRSpnyS0EX_S6",
+              "title": "tools.regex - I Hate Regex",
+              "dateModified": 1787560425061,
+              "url": "https://ihateregex.io/"
+            },
+            {
+              "id": "Xjh2pcyynwennM6dPaHG8",
+              "title": "tools.json - JSON Online Tool",
+              "dateModified": 1787560425061,
+              "url": "https://debug.group/json-diff.html"
+            },
+            {
+              "id": "p3sLXllaZR--id1d9-ouJ",
+              "title": "tools.react.cursor - Cursify",
+              "dateModified": 1787560425061,
+              "url": "https://cursify.ui-layouts.com/"
+            },
+            {
+              "id": "ViuG6gr7q9wsw27TZMbd8",
+              "title": "tools.regex.patterns - Any Rule",
+              "dateModified": 1787560425061,
+              "url": "https://any86.github.io/any-rule/"
+            },
+            {
+              "id": "dlJ0I4DQsIJA4F-TSWLYF",
+              "title": "tools.transfer.html-md - HTML to Markdown",
+              "dateModified": 1787560425061,
+              "url": "https://devtool.tech/html-md"
+            },
+            {
+              "id": "qdvq4iqCa96p7Q5OP6d9N",
+              "title": "tools.transfer.json - Transform Tools",
+              "dateModified": 1787560425061,
+              "url": "https://transform.tools/"
+            },
+            {
+              "id": "K14FXW-W4dIZzKww3fE_g",
+              "title": "tools.transfer.excel-json - TableConvert",
+              "dateModified": 1787560425062,
+              "url": "https://tableconvert.com/zh-cn/excel-to-json"
+            }
+          ]
+        },
+        {
+          "id": "IxYKHLI6eYGg9RA6fFXoh",
+          "title": "tool",
+          "dateModified": 1787561427215,
+          "children": [
+            {
+              "id": "S7ZZPXsGxq_LKk6sob-Cy",
+              "title": "tool.win.activation - PKeyToolWeb",
+              "dateModified": 1787560425103,
+              "url": "https://pkeytool.com/ShareKeys"
+            },
+            {
+              "id": "kWPxzdq74gnxYkace1_pG",
+              "title": "tool.media.anime - 爱恋动漫BT下载",
+              "dateModified": 1787560425068,
+              "url": "http://www.kisssub.org/"
+            },
+            {
+              "id": "YJEFcIr-q4mdrhak5IWvk",
+              "title": "tool.media.anime - 动漫花园资源网",
+              "dateModified": 1787560425071,
+              "url": "https://www.dongmanhuayuan.com/"
+            },
+            {
+              "id": "MSWzLP7FIr6rRfa1RzGKR",
+              "title": "tool.vpn - TNTV2",
+              "dateModified": 1787560425103,
+              "url": "https://tntyun.xyz/user/shop"
+            },
+            {
+              "id": "wmAYLzXqqjrwlwMuAjLit",
+              "title": "tool.mail.temp - EmailTick",
+              "dateModified": 1787560425103,
+              "url": "https://www.emailtick.com/zh"
+            },
+            {
+              "id": "OpGm7AfBKlB5C7YoRCsDK",
+              "title": "tool.mail.temp - Temp Mail",
+              "dateModified": 1787560425103,
+              "url": "https://temp-mail.org/zh/"
+            },
+            {
+              "id": "kC4XYhhr1mqJoj4MPFOvc",
+              "title": "tool.cv - CodeCV",
+              "dateModified": 1787560425103,
+              "url": "https://codecv.top/"
+            },
+            {
+              "id": "gf3qkEzwWHr5fiRjkvc-F",
+              "title": "tool.drawing - Excalidraw",
+              "dateModified": 1787560425103,
+              "url": "https://excalidraw.com/"
+            },
+            {
+              "id": "hJF0qWOVtjqfEQNxdKaSx",
+              "title": "tool.game - Byrutgame",
+              "dateModified": 1787560425103,
+              "url": "https://byrutgame.org/"
+            },
+            {
+              "id": "SVPNI46tFQmd6JkwwVDFy",
+              "title": "tool.game - 老登资源站",
+              "dateModified": 1787560425103,
+              "url": "https://www.ldzyz.com/"
+            },
+            {
+              "id": "2S6034ZLKtnMqNDUng7Io",
+              "title": "tool.win.pe - FirPE",
+              "dateModified": 1787560425104,
+              "url": "https://docs.firpe.cn/"
+            },
+            {
+              "id": "PcYYPmAb_t30AaTJdBSuh",
+              "title": "tool.sms - HERO-SMS",
+              "dateModified": 1787560425104,
+              "url": "https://hero-sms.com/cn"
+            },
+            {
+              "id": "r9LELY7HmlByxIOFrSELu",
+              "title": "tool.ip - IPPure",
+              "dateModified": 1787560425104,
+              "url": "https://ippure.com/"
+            },
+            {
+              "id": "fBBEKFIAIkNWaGB9MGMIz",
+              "title": "tool.wall - TAG",
+              "dateModified": 1787560425104,
+              "url": "https://tagss.pro/#/auth/"
+            },
+            {
+              "id": "gQvzAtc51lBXuu7Kr9xcE",
+              "title": "tool.wall - Longmao",
+              "dateModified": 1787560425104,
+              "url": "https://w06.lmweb01.cc/dashboard"
+            },
+            {
+              "id": "5dKGh-ay61JmTDpJ7f_R7",
+              "title": "tool.icon - IconKitchen",
+              "dateModified": 1787560425104,
+              "url": "https://icon.kitchen/i/H4sIAAAAAAAAA1VRwW7DIAz9F-9aVWkoJMttaruddtpuVTURQlIkAlmAqVXUf5-hSachJOzH4z3bTPDDdZAOqgnabme1HaGCpzYtWEH9hzFOGlki1naf10EiJLQa-OgTtJtj1HESD2hky4OOl0pYg0AfnBJfxnoJtyg8i3Qjb5Q0kVh3b0sSZbwdUl3Zv4o2MZM8r_Mas2y9LSjdPhespJu0abxvCCtZGX246TTaEEKS6bt056g5WGU8qh8nuECVrXO6gusSiKVlStj-9YAyM6tYWDF4sNgL2R_Q7HRvS158GNFyAr-EyDUC2xqVwJofD_O07tP4OPM0DvcdOD5BrLdN0PFnjtBzYR2cbr8Ux5EqrgEAAA"
+            },
+            {
+              "id": "ky95cn2a9Nuf-Qn4grRUM",
+              "title": "tool.format.excel-json - TableConvert",
+              "dateModified": 1787560425104,
+              "url": "https://tableconvert.com/zh-cn/"
+            }
+          ]
+        },
+        {
+          "id": "kmwiT5xPTLLRcPSsX8vbe",
+          "title": "blog",
+          "dateModified": 1787560425117,
+          "children": [
+            {
+              "id": "wka1eUecf3ZCzuHQ7fUPA",
+              "title": "blog.personal - akira1ce-blog",
+              "dateModified": 1787560425105,
+              "url": "https://akira1ce-blog.vercel.app/"
+            },
+            {
+              "id": "qBzGHgSCze7kKlMOGG5Bh",
+              "title": "blog.weekly - 潮流周刊",
+              "dateModified": 1787560425105,
+              "url": "https://weekly.tw93.fun/"
+            },
+            {
+              "id": "mDmtJ5Tu_DIfMfbVDT3JP",
+              "title": "blog.personal - Jee 的数字花园",
+              "dateModified": 1787560425110,
+              "url": "https://jeewong.com/"
+            },
+            {
+              "id": "7ONjPUFrBudkImyReEzGT",
+              "title": "blog.tech - J实验室",
+              "dateModified": 1787560425110,
+              "url": "https://weijunext.com/"
+            },
+            {
+              "id": "iY3I1VPbBqBCZ37AC0_HL",
+              "title": "blog.personal - Deadrabbit",
+              "dateModified": 1787560425117,
+              "url": "https://bloooooom.vercel.app/"
+            },
+            {
+              "id": "bHUYsLRPeCvZ7gg0T-fKu",
+              "title": "blog.personal - YYsuni",
+              "dateModified": 1787560425117,
+              "url": "https://www.yysuni.com/"
+            }
+          ]
+        },
+        {
+          "id": "nwVy1YQEi6_rAtoUKGbjC",
+          "title": "vibe-coding",
+          "dateModified": 1787560425130,
+          "children": [
+            {
+              "id": "DJc2zZTo8qMczMfibLGbG",
+              "title": "vibe.transit.api - Passion AI",
+              "dateModified": 1787560425121,
+              "url": "https://api.passionapi.com/dashboard"
+            },
+            {
+              "id": "GDShH73z0rMtV56SVCL0L",
+              "title": "vibe.skills.frontend - Impeccable",
+              "dateModified": 1787560425125,
+              "url": "https://impeccable.style/#cmd-bolder"
+            },
+            {
+              "id": "tZEVRf9qDFxTAKPJFgFlv",
+              "title": "vibe.tools.cursor - Cursor++ Hub",
+              "dateModified": 1787560425129,
+              "url": "https://ccursor.cometix.dev/"
+            },
+            {
+              "id": "ozx_6RguH6imJc4FOXXBL",
+              "title": "vibe.tools.ai-novel - MuMuのAI小说",
+              "dateModified": 1787560425130,
+              "url": "https://mumuverse.space:1566/?view=settings"
+            }
+          ]
+        },
+        {
+          "id": "oDJ-nSgiQ8uahRW1lZPyP",
+          "title": "others",
+          "dateModified": 1787562022696,
+          "children": [
+            {
+              "id": "P5CdDQ1t5Bm7wjnmoTf7g",
+              "title": "exam.civil-service - 公考加油站",
+              "dateModified": 1787560425139,
+              "url": "https://keyushe.com/gk.html"
+            },
+            {
+              "id": "LIYcn5hhKMMtJRcv0gMzs",
+              "title": "news.aggregator - NewsNow",
+              "dateModified": 1787560425137,
+              "url": "https://newsnow.busiyi.world/"
+            },
+            {
+              "id": "3-gLIiUdmf_aNj4mBTkKV",
+              "title": "finance.history - 美股编年史",
+              "dateModified": 1787560425137,
+              "url": "https://historyofmarket.com/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "root_____other",
+      "title": "Other Bookmarks",
+      "dateModified": 1786788381978
+    }
+  ]
+}

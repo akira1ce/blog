@@ -1,12 +1,12 @@
 import { getAllPosts } from '@/lib/posts';
 import { FadeInUp } from '@/components/fade-in-up';
-import { PostCard } from '@/components/post-card';
+import { PostCard } from '@/app/posts/components/post-card';
 import Link from 'next/link';
 
 const Page = async () => {
   const posts = await getAllPosts();
   return (
-    <>
+    <div className="mx-auto max-w-4xl">
       <div className="p-8">
         <div className="mb-2 text-center text-3xl font-bold tracking-tight">Posts</div>
         <div className="bg-accent-amber mx-auto h-0.5 w-16" />
@@ -25,7 +25,7 @@ const Page = async () => {
           ))}
         </div>
       </FadeInUp>
-    </>
+    </div>
   );
 };
 

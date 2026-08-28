@@ -5,7 +5,7 @@ import { FadeInUp } from '@/components/fade-in-up';
 const Page = async () => {
   const categories = await getCategories();
   return (
-    <>
+    <div className="mx-auto max-w-4xl">
       {/* categories */}
       <div className="p-8">
         <div className="mb-2 text-center text-3xl font-bold tracking-tight">Categories</div>
@@ -23,7 +23,7 @@ const Page = async () => {
           </FadeInUp>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

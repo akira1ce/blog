@@ -1,8 +1,20 @@
-const accentMap = ['sky', 'violet', 'amber', 'rose', 'emerald', 'cyan', 'slate'] as const;
+const accentMap = [
+  'sky',
+  'violet',
+  'amber',
+  'rose',
+  'emerald',
+  'cyan',
+  'slate',
+  'neutral',
+] as const;
 export type AccentColor = (typeof accentMap)[number];
 
-/** Explicit category → accent color mapping. */
-const CATEGORY_ACCENT: Record<string, AccentColor> = {
+/** Fallback accent for anything without an explicit mapping. */
+export const DEFAULT_ACCENT: AccentColor = 'neutral';
+
+/** Post category → accent color. */
+export const CATEGORY_ACCENT: Record<string, AccentColor> = {
   Components: 'sky',
   Configuration: 'violet',
   DevTools: 'cyan',
@@ -13,23 +25,9 @@ const CATEGORY_ACCENT: Record<string, AccentColor> = {
 };
 
 /**
- * Map a category string to an accent color.
- * Explicit mapping wins; falls back to a deterministic hash for unknown categories.
+ * Accent for list positions, cycled. Bookmark folders come from the gist with
+ * generated ids, so there is nothing stable to key an explicit map on.
  */
-export function getAccentForCategory(category: string): AccentColor {
-  if (CATEGORY_ACCENT[category]) return CATEGORY_ACCENT[category];
-  let hash = 0;
-  for (let i = 0; i < category.length; i++) {
-    hash = category.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return accentMap[Math.abs(hash) % accentMap.length];
-}
-
-/**
- * Get the CSS custom-property reference for a given accent color.
- * Returned as `var(--accent-*)` so it can drive an inline style; this avoids
- * Tailwind's JIT dropping dynamically-built `*-accent-${x}` class names.
- */
-export function getAccentVar(accent: AccentColor): string {
-  return `var(--accent-${accent})`;
+export function accentByIndex(index: number): AccentColor {
+  return accentMap[index % accentMap.length];
 }

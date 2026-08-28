@@ -1,7 +1,7 @@
 import { getAllPosts, getPostBySlug } from '@/lib/posts';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { TableOfContents } from '@/components/table-of-contents';
+import { TableOfContents } from '@/app/posts/components/table-of-contents';
 import { ArrowLeftRight, Split } from 'lucide-react';
 
 export interface Params {
@@ -33,7 +33,7 @@ export default async function Page({ params }: Props) {
     return notFound();
   }
   return (
-    <>
+    <div className="mx-auto max-w-4xl">
       <div className="my-20">
         <div className="text-fore mb-4 text-center text-3xl font-bold tracking-tight">
           {matter?.title}
@@ -47,7 +47,7 @@ export default async function Page({ params }: Props) {
           {matter?.category.map((item) => (
             <Link
               key={item}
-              className="text-fore/60 bg-card border-border-color rounded-xl border px-2 py-1 text-xs transition-colors hover:bg-card-hover"
+              className="text-fore/60 bg-card border-border-color hover:bg-card-hover rounded-xl border border-dashed px-2 py-1 text-xs transition-colors"
               href={`/categories/${item}`}
             >
               #{item}
@@ -65,6 +65,6 @@ export default async function Page({ params }: Props) {
         />
         <footer className="text-fore/60 gap-2 pt-20 text-center">我也是有底线的 🫠</footer>
       </div>
-    </>
+    </div>
   );
 }
