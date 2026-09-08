@@ -15,6 +15,7 @@ export const DEFAULT_ACCENT: AccentColor = 'neutral';
 
 /** Post category → accent color. */
 export const CATEGORY_ACCENT: Record<string, AccentColor> = {
+  AI: 'neutral',
   Components: 'sky',
   Configuration: 'violet',
   DevTools: 'cyan',
