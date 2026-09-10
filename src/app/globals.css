@@ -10,7 +10,8 @@
 
 @layer base {
   html {
-    font-family: 'LXGW WenKai', sans-serif;
+    /* font-family: 'LXGW WenKai', sans-serif; */
+    font-family: 'DingTalk JinBuTi', sans-serif;
     /* 滚动条浮动 */
     overflow: overlay;
 

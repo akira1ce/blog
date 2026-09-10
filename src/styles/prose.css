@@ -1,7 +1,6 @@
 /* Custom prose styles */
 .prose-custom {
   @apply prose prose-gray dark:prose-invert mx-auto max-w-4xl p-6;
-  font-family: 'LXGW WenKai', sans-serif;
 
   /* 标题样式 — editorial type scale */
   @apply prose-h1:text-3xl prose-h1:my-8 prose-h1:font-bold prose-h1:tracking-tight;
