@@ -91,9 +91,25 @@ sudo killall -HUP configd
 
 ## Git相关命令
 
-| 功能         | 命令                                    |
-| ------------ | --------------------------------------- |
-| 忽略证书错误 | `yarn config set "strict-ssl" false -g` |
+| 功能                         | 命令                                            |
+| ---------------------------- | ----------------------------------------------- |
+| 停止跟踪（保留本地文件）     | `git rm --cached <file>`                        |
+| 停止跟踪目录（保留本地文件） | `git rm -r --cached <dir>`                      |
+| 彻底删除（暂存区+本地）      | `git rm <file>`                                 |
+| 强制删除（文件有改动时）     | `git rm -f <file>`                              |
+| 只预览不执行                 | `git rm -n --cached <file>`                     |
+| 文件不存在也不报错           | `git rm --cached --ignore-unmatch <file>`       |
+| 取消暂存（不产生删除记录）   | `git restore --staged <file>`                   |
+| 取消暂存（旧写法）           | `git reset HEAD <file>`                         |
+| 忽略本地修改（仍跟踪）       | `git update-index --skip-worktree <file>`       |
+| 恢复本地修改跟踪             | `git update-index --no-skip-worktree <file>`    |
+| 临时忽略本地改动             | `git update-index --assume-unchanged <file>`    |
+| 恢复临时忽略                 | `git update-index --no-assume-unchanged <file>` |
+| 查看被忽略跟踪的文件         | `git ls-files -v \| grep ^S`                    |
+| 查看暂存区状态               | `git status`                                    |
+| 查看已跟踪文件列表           | `git ls-files`                                  |
+| 查看某文件是否被跟踪         | `git ls-files --error-unmatch <file>`           |
+| 提交停止跟踪的改动           | `git commit -m "stop tracking <file>"`          |
 
 ### Github connnect error
 
