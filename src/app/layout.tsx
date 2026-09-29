@@ -17,16 +17,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* <link
+        <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css"
           crossOrigin="anonymous"
-        /> */}
-        <link
+        />
+        {/* <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/cn-fontsource-ding-talk-jin-bu-ti-regular/font.css"
           crossOrigin="anonymous"
-        />
+        /> */}
       </head>
       <body className="bg-main min-h-screen w-full antialiased">
         <ThemeProvider attribute="class" defaultTheme="system">
