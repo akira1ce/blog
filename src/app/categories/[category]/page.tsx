@@ -37,7 +37,7 @@ export default async function Page({ params }: Props) {
             <Link
               key={post.slug}
               href={`/posts/${post.slug}`}
-              className="group rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--accent-sky)] focus-visible:outline-none"
+              className="group focus-visible:ring-2 focus-visible:ring-[var(--accent-sky)] focus-visible:outline-none"
             >
               <PostCard post={post} />
             </Link>

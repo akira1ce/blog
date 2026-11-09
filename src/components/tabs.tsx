@@ -25,7 +25,7 @@ export const Tabs = ({ children }: TabsProps) => {
 
   return (
     <div className="tabs-wrapper my-4">
-      <div className="bg-accent mb-4 flex w-fit max-w-full items-center gap-2 overflow-auto rounded-md border border-dashed p-1">
+      <div className="bg-accent mb-4 flex w-fit max-w-full items-center gap-2 overflow-auto border border-dashed p-1">
         {tabs.map((child: any, index) => {
           const label = child.props.label;
           const isActive = activeTab === index;
@@ -34,11 +34,11 @@ export const Tabs = ({ children }: TabsProps) => {
             <div
               key={`${uid}-${index}`}
               onClick={() => setActiveTab(index)}
-              className="relative cursor-pointer rounded-xl px-2 py-1 text-nowrap"
+              className="relative cursor-pointer px-2 py-1 text-nowrap"
             >
               {isActive && (
                 <motion.div
-                  className="bg-main/90 absolute inset-0 z-0 rounded-md"
+                  className="bg-main/90 absolute inset-0 z-0"
                   layoutId={`${uid}-tab-active`}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />

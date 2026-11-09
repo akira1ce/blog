@@ -53,7 +53,7 @@ const GlobalSearch = () => {
   return (
     <>
       <div
-        className="text-fore/60 bg-card border-border-color flex cursor-pointer items-center gap-2 rounded-xl border border-dashed px-2 py-1 text-sm"
+        className="text-fore/60 bg-card border-border-color flex cursor-pointer items-center gap-2 border border-dashed px-2 py-1 text-sm"
         onClick={() => setOpen(true)}
       >
         <Search className="size-3" />
@@ -63,7 +63,7 @@ const GlobalSearch = () => {
         </div>
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <div className="bg-fore/5 border-border-color mb-4 flex w-full items-center gap-2 rounded-xl border px-4 py-2">
+        <div className="bg-fore/5 border-border-color mb-4 flex w-full items-center gap-2 border px-4 py-2">
           <Search className="text-fore/60 size-4" />
           <input
             className="w-full bg-transparent outline-none"
@@ -77,7 +77,7 @@ const GlobalSearch = () => {
           {filteredPosts.map((post) => (
             <div
               key={post.slug}
-              className="hover:bg-card-hover flex cursor-pointer flex-col gap-1 rounded-xl p-3 py-2 transition-colors duration-200"
+              className="hover:bg-card-hover flex cursor-pointer flex-col gap-1 p-3 py-2 transition-colors duration-200"
               onClick={() => handleLink(post.slug)}
             >
               <div className="text-fore text-base font-semibold">{post.title}</div>

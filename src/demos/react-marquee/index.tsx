@@ -2,7 +2,7 @@
 
 import { useMarquee } from './hooks/use-marquee';
 
-const btnCls = 'bg-fore/3 cursor-pointer rounded-md px-2 py-1';
+const btnCls = 'bg-fore/3 cursor-pointer  px-2 py-1';
 
 const items = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 

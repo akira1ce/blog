@@ -16,7 +16,7 @@
 
   /* 代码块样式 */
   figure {
-    @apply bg-card/40 border-border-color relative my-4 rounded-xl border border-dashed p-4;
+    @apply bg-card/40 border-border-color relative my-4 border border-dashed p-4;
     /* 代码块标题 */
     figcaption {
       @apply m-0 mb-2;

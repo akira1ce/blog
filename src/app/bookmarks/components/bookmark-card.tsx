@@ -21,11 +21,11 @@ export const BookmarkCard = ({ bookmark, accentColor }: BookmarkCardProps) => {
       href={bookmark.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group rounded-xl focus-visible:ring-2 focus-visible:outline-none"
+      className="group focus-visible:ring-2 focus-visible:outline-none"
     >
       <BaseCard accentColor={accentColor} className="p-4">
         <div className="flex items-center gap-3">
-          <div className="bg-main border-border-color flex size-10 shrink-0 items-center justify-center rounded-lg border">
+          <div className="bg-main border-border-color flex size-10 shrink-0 items-center justify-center border">
             {!faviconError && faviconUrl ? (
               <img
                 src={faviconUrl}

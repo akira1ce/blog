@@ -11,7 +11,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="bg-accent-amber text-white hover:bg-accent-amber/90 rounded-xl px-6 py-3 font-medium transition-colors duration-200"
+        className="bg-accent-amber hover:bg-accent-amber/90 px-6 py-3 font-medium text-white transition-colors duration-200"
       >
         Back to Home
       </Link>

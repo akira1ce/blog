@@ -40,7 +40,7 @@ const Index = () => {
               key={item}
               style={{ ...getVars(position) }}
               className={cn(
-                'flex-center absolute top-0 left-0 z-[var(--z)] flex size-20 translate-x-[var(--x)] scale-[var(--s)] items-center justify-center rounded-sm border border-gray-400 bg-slate-300 opacity-[var(--o)] transition-all',
+                'flex-center absolute top-0 left-0 z-[var(--z)] flex size-20 translate-x-[var(--x)] scale-[var(--s)] items-center justify-center border border-gray-400 bg-slate-300 opacity-[var(--o)] transition-all',
               )}
             >
               {item}

@@ -29,7 +29,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <button className="flex h-9 w-9 items-center justify-center rounded-xl">
+      <button className="flex h-9 w-9 items-center justify-center">
         <div className="h-4 w-4" />
       </button>
     );
@@ -38,14 +38,10 @@ export function ThemeToggle() {
   return (
     <button
       onClick={handleThemeToggle}
-      className="text-fore/60 hover:text-fore flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors duration-200"
+      className="text-fore/60 hover:text-fore flex h-8 w-8 cursor-pointer items-center justify-center transition-colors duration-200"
       aria-label="Toggle theme"
     >
-      {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
+      {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
   );
 }

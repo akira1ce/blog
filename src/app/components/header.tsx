@@ -24,7 +24,7 @@ const Header = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-fore/60 hover:text-fore rounded-lg px-2.5 py-1.5 text-sm transition-colors duration-200"
+                className="text-fore/60 hover:text-fore px-2.5 py-1.5 text-sm transition-colors duration-200"
               >
                 {link.label}
               </Link>

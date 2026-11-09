@@ -71,7 +71,7 @@ export const CommandDialog = (props: CommandDialogProps) => {
           <motion.div
             ref={dialogRef}
             className={cn(
-              'bg-card/95 border-border-color shadow-fore/10 relative overflow-y-auto rounded-xl border p-4 shadow-2xl backdrop-blur-xl',
+              'bg-card/95 border-border-color shadow-fore/10 relative overflow-y-auto border p-4 shadow-2xl backdrop-blur-xl',
             )}
             role="dialog"
             aria-modal="true"
