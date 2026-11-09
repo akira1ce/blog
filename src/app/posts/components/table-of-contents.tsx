@@ -88,7 +88,7 @@ export const TableOfContents = ({
 
   return (
     <nav
-      className={`border-border-color border-l border-dashed p-4 ${className}`}
+      className={`border-accent-neutral/50 border-l border-dashed p-4 ${className}`}
       aria-label="Table of contents"
     >
       <div className="text-fore/70 mb-3 text-sm font-semibold tracking-wide uppercase">[目录]</div>

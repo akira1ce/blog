@@ -22,7 +22,7 @@ import { Tabs, TabItem } from '@/components/tabs';
   <TabItem label="util/region.ts">
     ```ts
     import PCA_CODE from '../constant/pca-code.json';
-    
+
     /**
      * 根据行政区划代码获取省市区信息
      * @param code 6位行政区划代码，如 110101
@@ -32,18 +32,18 @@ import { Tabs, TabItem } from '@/components/tabs';
       if (!code || code.length !== 6) {
         return null;
       }
-    
+
       const provinceCode = code.substring(0, 2);
       const cityCode = code.substring(0, 4);
       const districtCode = code;
-    
+
       return {
         province: PCA_CODE[provinceCode as keyof typeof PCA_CODE],
         city: PCA_CODE[cityCode as keyof typeof PCA_CODE],
         district: PCA_CODE[districtCode as keyof typeof PCA_CODE],
       };
     }
-    
+
     /**
      * 根据行政区划代码获取完整路径字符串
      * @param code 6位行政区划代码
@@ -52,22 +52,24 @@ import { Tabs, TabItem } from '@/components/tabs';
     export function getRegionPath(code: string, separator: string = ' ') {
       const region = getRegionByCode(code);
       if (!region) return '';
-    
+
       return [region.province, region.city, region.district].filter(Boolean).join(separator);
     }
-    
+
     ```
+
   </TabItem>
   <TabItem label="index.tsx">
     ```tsx
     import { RegionSelect } from "./components/region-select"
-    
+
     const Index = () => {
       return <RegionSelect />
     }
-    
+
     export default Index
     ```
+
   </TabItem>
   <TabItem label="constant/pca.json">
     ```json
@@ -113,8 +115,9 @@ import { Tabs, TabItem } from '@/components/tabs';
         ]
       }
     }
-    
+
     ```
+
   </TabItem>
   <TabItem label="constant/pca-code.json">
     ```json
@@ -138,17 +141,18 @@ import { Tabs, TabItem } from '@/components/tabs';
       "110118": "密云区",
       "110119": "延庆区"
     }
-    
+
     ```
+
   </TabItem>
   <TabItem label="components/region-select.tsx">
     ```tsx
     'use client';
-    
+
     import PCA from '../constant/pca.json';
     import { useControl } from '@akira1ce/r-hooks';
     import React, { useMemo } from 'react';
-    
+
     export interface RegionValue {
       /** 省 */
       province?: string;
@@ -159,7 +163,7 @@ import { Tabs, TabItem } from '@/components/tabs';
       /** 详细地址 */
       detail?: string;
     }
-    
+
     /**
      * 地区选择器组件的属性
      */
@@ -175,12 +179,12 @@ import { Tabs, TabItem } from '@/components/tabs';
       /** 是否显示详细地址输入框 */
       showDetail?: boolean;
     }
-    
+
     const selectCls =
-      'border-border-color bg-card text-fore min-w-0 flex-1 border px-2 py-1 text-sm disabled:opacity-50';
+      'border-accent-neutral/50 bg-card text-fore min-w-0 flex-1 border px-2 py-1 text-sm disabled:opacity-50';
     const inputCls =
-      'border-border-color bg-card text-fore w-full border px-2 py-1 text-sm disabled:opacity-50';
-    
+      'border-accent-neutral/50 bg-card text-fore w-full border px-2 py-1 text-sm disabled:opacity-50';
+
     /**
      * 地区选择器组件
      * 支持省市区三级联动，可配置显示层级和详细地址输入
@@ -188,32 +192,32 @@ import { Tabs, TabItem } from '@/components/tabs';
      */
     export const RegionSelect: React.FC<RegionSelectProps> = props => {
       const { disabled, level = 3, showDetail = false } = props;
-    
+
       const [value, setValue] = useControl(props);
-    
+
       const { province, city, district, detail } = value || {};
-    
+
       const handleChangeValue = (val: Partial<RegionValue>) => {
         setValue(prev => ({ ...prev, ...val }));
       };
-    
+
       /* 省列表 */
       const provinces = useMemo(() => {
         return Object.keys(PCA);
       }, []);
-    
+
       /* 市列表 */
       const cities = useMemo(() => {
         if (!province) return [];
         return Object.keys(PCA[province] || {});
       }, [province]);
-    
+
       /* 区列表 */
       const districts = useMemo(() => {
         if (!province || !city) return [];
         return PCA[province]?.[city] || [];
       }, [province, city]);
-    
+
       return (
         <div className="flex flex-col gap-2 w-full">
           <div className="flex gap-2 w-full">
@@ -239,7 +243,7 @@ import { Tabs, TabItem } from '@/components/tabs';
                 ))}
               </select>
             )}
-    
+
             {/* 城市选择 */}
             {level >= 2 && (
               <select
@@ -258,7 +262,7 @@ import { Tabs, TabItem } from '@/components/tabs';
                 ))}
               </select>
             )}
-    
+
             {/* 区县选择 */}
             {level >= 3 && (
               <select
@@ -276,7 +280,7 @@ import { Tabs, TabItem } from '@/components/tabs';
               </select>
             )}
           </div>
-    
+
           {/* 详细地址输入 */}
           {showDetail && (
             <input
@@ -290,7 +294,8 @@ import { Tabs, TabItem } from '@/components/tabs';
         </div>
       );
     };
-    
+
     ```
+
   </TabItem>
 </Tabs>

@@ -32,9 +32,9 @@ interface RegionSelectProps {
 }
 
 const selectCls =
-  'border-border-color bg-card text-fore min-w-0 flex-1 border px-2 py-1 text-sm disabled:opacity-50';
+  'border-accent-neutral/50 bg-card text-fore min-w-0 flex-1 border px-2 py-1 text-sm disabled:opacity-50';
 const inputCls =
-  'border-border-color bg-card text-fore w-full border px-2 py-1 text-sm disabled:opacity-50';
+  'border-accent-neutral/50 bg-card text-fore w-full border px-2 py-1 text-sm disabled:opacity-50';
 
 /**
  * 地区选择器组件

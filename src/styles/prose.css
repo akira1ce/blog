@@ -16,7 +16,7 @@
 
   /* 代码块样式 */
   figure {
-    @apply bg-card/40 border-border-color relative my-4 border border-dashed p-4;
+    @apply bg-card/40 border-fore/10 relative my-4 border border-dashed p-4;
     /* 代码块标题 */
     figcaption {
       @apply m-0 mb-2;
@@ -40,7 +40,7 @@
 
   /* Inline code styles */
   :not(pre) > code {
-    @apply text-fore bg-card border-border-color rounded-xl border border-dashed px-2 py-0.5 text-sm;
+    @apply text-fore bg-card border-fore/10 border border-dashed px-2 py-0.5 text-sm;
     font-family: inherit;
 
     &::before,

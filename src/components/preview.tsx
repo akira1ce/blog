@@ -6,7 +6,7 @@ import { GalleryThumbnails, RotateCcw } from 'lucide-react';
 const Preview = ({ children }: { children: ReactNode }) => {
   const [key, setKey] = useState(0);
   return (
-    <div className="bg-card border-border-color mb-4 border p-4 shadow">
+    <div className="bg-card border-accent-neutral/50 mb-4 border p-4 shadow">
       <div className="mb-4 flex justify-between">
         <div className="flex items-center gap-2">
           <GalleryThumbnails className="size-4" />

@@ -25,7 +25,7 @@ export const BookmarkCard = ({ bookmark, accentColor }: BookmarkCardProps) => {
     >
       <BaseCard accentColor={accentColor} className="p-4">
         <div className="flex items-center gap-3">
-          <div className="bg-main border-border-color flex size-10 shrink-0 items-center justify-center border">
+          <div className="bg-main flex size-10 shrink-0 items-center justify-center">
             {!faviconError && faviconUrl ? (
               <img
                 src={faviconUrl}
