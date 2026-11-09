@@ -25,7 +25,7 @@ export const Tabs = ({ children }: TabsProps) => {
 
   return (
     <div className="tabs-wrapper my-4">
-      <div className="bg-accent mb-4 flex w-fit max-w-full items-center gap-2 overflow-auto border border-dashed p-1">
+      <div className="bg-card border-border-color mb-4 flex w-fit max-w-full items-center gap-2 overflow-auto border border-dashed p-1">
         {tabs.map((child: any, index) => {
           const label = child.props.label;
           const isActive = activeTab === index;

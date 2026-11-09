@@ -2,14 +2,6 @@
 
 import PCA from '../constant/pca.json';
 import { useControl } from '@akira1ce/r-hooks';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import React, { useMemo } from 'react';
 
 export interface RegionValue {
@@ -39,12 +31,17 @@ interface RegionSelectProps {
   showDetail?: boolean;
 }
 
+const selectCls =
+  'border-border-color bg-card text-fore min-w-0 flex-1 border px-2 py-1 text-sm disabled:opacity-50';
+const inputCls =
+  'border-border-color bg-card text-fore w-full border px-2 py-1 text-sm disabled:opacity-50';
+
 /**
  * 地区选择器组件
  * 支持省市区三级联动，可配置显示层级和详细地址输入
  * 适配 Form 的受控组件规范
  */
-export const RegionSelect: React.FC<RegionSelectProps> = props => {
+export const RegionSelect: React.FC<RegionSelectProps> = (props) => {
   const { disabled, level = 3, showDetail = false } = props;
 
   const [value, setValue] = useControl(props);
@@ -52,7 +49,7 @@ export const RegionSelect: React.FC<RegionSelectProps> = props => {
   const { province, city, district, detail } = value || {};
 
   const handleChangeValue = (val: Partial<RegionValue>) => {
-    setValue(prev => ({ ...prev, ...val }));
+    setValue((prev) => ({ ...prev, ...val }));
   };
 
   /* 省列表 */
@@ -73,76 +70,74 @@ export const RegionSelect: React.FC<RegionSelectProps> = props => {
   }, [province, city]);
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <div className="flex gap-2 w-full">
+    <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full gap-2">
         {/* 省份选择 */}
         {level >= 1 && (
-          <Select
-            value={province}
-            onValueChange={val =>
-              handleChangeValue({ province: val, city: undefined, district: undefined })
+          <select
+            className={selectCls}
+            value={province || ''}
+            onChange={(e) =>
+              handleChangeValue({
+                province: e.target.value || undefined,
+                city: undefined,
+                district: undefined,
+              })
             }
             disabled={disabled}
           >
-            <SelectTrigger className="flex-1 min-w-0">
-              <SelectValue placeholder="请选择省份" />
-            </SelectTrigger>
-            <SelectContent>
-              {provinces.map(p => (
-                <SelectItem key={p} value={p}>
-                  {p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <option value="">请选择省份</option>
+            {provinces.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
         )}
 
         {/* 城市选择 */}
         {level >= 2 && (
-          <Select
-            value={city}
-            onValueChange={val => handleChangeValue({ city: val, district: undefined })}
+          <select
+            className={selectCls}
+            value={city || ''}
+            onChange={(e) =>
+              handleChangeValue({ city: e.target.value || undefined, district: undefined })
+            }
             disabled={disabled || !cities.length}
           >
-            <SelectTrigger className="flex-1 min-w-0">
-              <SelectValue placeholder="请选择城市" />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.map(c => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <option value="">请选择城市</option>
+            {cities.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         )}
 
         {/* 区县选择 */}
         {level >= 3 && (
-          <Select
-            value={district}
-            onValueChange={val => handleChangeValue({ district: val })}
+          <select
+            className={selectCls}
+            value={district || ''}
+            onChange={(e) => handleChangeValue({ district: e.target.value || undefined })}
             disabled={disabled || !districts.length}
           >
-            <SelectTrigger className="flex-1 min-w-0">
-              <SelectValue placeholder="请选择区县" />
-            </SelectTrigger>
-            <SelectContent>
-              {districts.map(d => (
-                <SelectItem key={d} value={d}>
-                  {d}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <option value="">请选择区县</option>
+            {districts.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
         )}
       </div>
 
       {/* 详细地址输入 */}
       {showDetail && (
-        <Input
-          value={detail}
-          onChange={e => handleChangeValue({ detail: e.target.value })}
+        <input
+          className={inputCls}
+          value={detail || ''}
+          onChange={(e) => handleChangeValue({ detail: e.target.value || undefined })}
           placeholder="请输入详细地址"
           disabled={disabled}
         />
