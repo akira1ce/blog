@@ -1,8 +1,28 @@
 import { FadeInUp } from '@/components/fade-in-up';
 import { Icon } from '@iconify/react';
+import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 
 const iconSize = 18;
+const projects = [
+  {
+    name: 'react-vite-template',
+    description:
+      '基于 React、Vite 和 TypeScript 的项目模板，整合状态管理、路由权限和国际化，方便快速开始新项目。',
+  },
+  {
+    name: 'pile',
+    description: 'macOS 菜单栏窗口管理工具，用快捷键将窗口居中、堆叠或展开，也能快速切换窗口。',
+  },
+  {
+    name: 'sonaro',
+    description: '用 SwiftUI 写的 macOS 网易云音乐非官方客户端，支持每日推荐、歌单播放和同步歌词。',
+  },
+  {
+    name: 'r-hooks',
+    description: '自己整理的 React Hooks 库，封装请求、表格和常用交互，少写一些重复代码。',
+  },
+];
 
 const Page = () => {
   return (
@@ -39,6 +59,31 @@ const Page = () => {
                   我是 Akira1ce，一个 Web 开发者，喜欢 Coding 和电子游戏（尤其是CS2）。
                 </p>
               </div>
+            </section>
+
+            <section className="space-y-4" aria-labelledby="projects-heading">
+              <h2 id="projects-heading" className="text-fore text-2xl font-bold">
+                我的项目
+              </h2>
+              <ul className="text-fore/80 list-disc space-y-5 pl-5">
+                {projects.map((project) => (
+                  <li key={project.name}>
+                    <a
+                      href={`https://github.com/akira1ce/${project.name}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-accent-sky inline-flex items-center gap-1 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4"
+                    >
+                      {project.name}
+                      <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                      <span className="sr-only">（在新标签页打开）</span>
+                    </a>
+                    <p className="text-fore/60 mt-1 text-sm leading-relaxed">
+                      {project.description}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </section>
 
             {/* Tech Stack */}
