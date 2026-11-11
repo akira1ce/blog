@@ -38,7 +38,7 @@ export const Tabs = ({ children }: TabsProps) => {
             >
               {isActive && (
                 <motion.div
-                  className="bg-main/90 absolute inset-0 z-0"
+                  className="bg-fore/5 absolute inset-0 z-0"
                   layoutId={`${uid}-tab-active`}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />

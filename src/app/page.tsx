@@ -11,8 +11,8 @@ const Page = async () => {
           className="ring-fore/10 rounded-full ring-2 transition-transform duration-300 hover:scale-105"
           src="/avatar.jpg"
           alt="Akira1ce"
-          width={96}
-          height={96}
+          width={160}
+          height={160}
           priority
         />
       </FadeInUp>

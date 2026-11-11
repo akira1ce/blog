@@ -118,7 +118,7 @@ export const TableOfContents = ({
               </div>
               {isActive && (
                 <motion.div
-                  className="bg-accent-amber absolute top-0 -left-4 h-full w-0.5"
+                  className="broder-l border-accent-amber absolute top-0 -left-4 h-full w-0.5 border border-dashed"
                   layoutId="toc-active-indicator"
                 ></motion.div>
               )}
