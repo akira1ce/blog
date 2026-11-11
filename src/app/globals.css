@@ -90,6 +90,15 @@
   --color-accent-neutral: var(--accent-neutral);
 }
 
+/* Shared surface borders; width and sides are set by native border utilities. */
+@utility surface-border {
+  @apply border-accent-neutral/50 border-dashed;
+}
+
+@utility surface-border-emphasis {
+  @apply border-accent-neutral/80;
+}
+
 /* scrollbar */
 * {
   scrollbar-width: none;

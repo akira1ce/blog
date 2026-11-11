@@ -22,7 +22,7 @@ export const BookmarkFilters = ({ bookmarks, types }: BookmarkFiltersProps) => {
 
   const tabClassName = (active: boolean) =>
     cn(
-      'border-accent-neutral/50 cursor-pointer border-dashed border px-4 py-2 text-sm font-medium transition-all duration-200',
+      'surface-border cursor-pointer border px-4 py-2 text-sm font-medium transition-all duration-200',
       active
         ? 'bg-accent-violet border-transparent text-white'
         : 'bg-card text-fore/70 hover:bg-card-hover hover:border-accent-violet/30',

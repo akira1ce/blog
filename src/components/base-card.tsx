@@ -33,10 +33,10 @@ export const BaseCard = ({
     <Component
       style={{ '--accent': `var(--accent-${accentColor})`, ...style } as React.CSSProperties}
       className={cn(
-        'border-accent-neutral/50 bg-card relative flex flex-col gap-3 border border-dashed p-5',
+        'surface-border bg-card relative flex flex-col gap-3 border p-5',
         'transition-all duration-300 ease-out',
         'group-hover:bg-card-hover group-focus-visible:bg-card-hover',
-        'group-hover:border-accent-neutral/80',
+        'group-hover:surface-border-emphasis',
         'group-hover:[box-shadow:0_14px_30px_-18px_color-mix(in_oklab,var(--accent)_55%,transparent)]',
         'motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-y-1',
         className,

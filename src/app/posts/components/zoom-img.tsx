@@ -11,7 +11,7 @@ export interface ZoomImgProps {
   alt: string;
 }
 
-const imgCls = 'border-accent-neutral/50 cursor-zoom-out  border object-cover';
+const imgCls = 'surface-border cursor-zoom-out border border-solid object-cover';
 
 const ZoomImg = (props: ZoomImgProps) => {
   const id = useId();

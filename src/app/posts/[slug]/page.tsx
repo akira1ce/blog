@@ -47,7 +47,7 @@ export default async function Page({ params }: Props) {
           {matter?.category.map((item) => (
             <Link
               key={item}
-              className="text-fore/60 bg-card border-accent-neutral/50 hover:bg-card-hover border border-dashed px-2 py-1 text-xs transition-colors"
+              className="surface-border text-fore/60 bg-card hover:bg-card-hover border px-2 py-1 text-xs transition-colors"
               href={`/categories/${item}`}
             >
               #{item}

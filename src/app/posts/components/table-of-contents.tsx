@@ -87,10 +87,7 @@ export const TableOfContents = ({
   }
 
   return (
-    <nav
-      className={`border-accent-neutral/50 border-l border-dashed p-4 ${className}`}
-      aria-label="Table of contents"
-    >
+    <nav className={`surface-border border-l p-4 ${className}`} aria-label="Table of contents">
       <div className="text-fore/70 mb-3 text-sm font-semibold tracking-wide uppercase">[目录]</div>
       <div className="space-y-1">
         {headings.map((heading) => {

@@ -53,7 +53,7 @@ const GlobalSearch = () => {
   return (
     <>
       <div
-        className="text-fore/60 bg-card border-accent-neutral/50 flex cursor-pointer items-center gap-2 border border-dashed px-2 py-1 text-sm"
+        className="surface-border text-fore/60 bg-card flex cursor-pointer items-center gap-2 border px-2 py-1 text-sm"
         onClick={() => setOpen(true)}
       >
         <Search className="size-3" />
@@ -63,7 +63,7 @@ const GlobalSearch = () => {
         </div>
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <div className="bg-fore/5 border-accent-neutral/50 mb-4 flex w-full items-center gap-2 border border-dashed px-4 py-2">
+        <div className="surface-border bg-fore/5 mb-4 flex w-full items-center gap-2 border px-4 py-2">
           <Search className="text-fore/60 size-4" />
           <input
             className="w-full bg-transparent outline-none"

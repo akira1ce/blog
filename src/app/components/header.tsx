@@ -10,7 +10,7 @@ const Header = () => {
     { label: 'Bookmarks', href: '/bookmarks' },
   ];
   return (
-    <header className="bg-main/80 border-accent-neutral/50 sticky top-0 z-10 border-b border-dashed backdrop-blur-md">
+    <header className="surface-border bg-main/80 sticky top-0 z-10 border-b backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-6 md:px-8">
         <div className="flex items-center gap-1">
           <Link
